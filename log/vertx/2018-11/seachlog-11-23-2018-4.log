@@ -1,0 +1,331 @@
+2018-11-23T14:14:31,077 DEBUG io.netty.util.internal.logging.InternalLoggerFactory:71 - Using SLF4J as the default logging framework
+2018-11-23T14:14:31,085 DEBUG io.netty.util.ResourceLeakDetector:81 - -Dio.netty.leakDetection.level: simple
+2018-11-23T14:14:31,085 DEBUG io.netty.util.ResourceLeakDetector:81 - -Dio.netty.leakDetection.maxRecords: 4
+2018-11-23T14:14:31,114 DEBUG io.netty.channel.MultithreadEventLoopGroup:76 - -Dio.netty.eventLoopThreads: 8
+2018-11-23T14:14:31,136 DEBUG io.netty.util.internal.PlatformDependent:71 - Platform: Windows
+2018-11-23T14:14:31,138 DEBUG io.netty.util.internal.PlatformDependent0:76 - -Dio.netty.noUnsafe: false
+2018-11-23T14:14:31,138 DEBUG io.netty.util.internal.PlatformDependent0:76 - Java version: 8
+2018-11-23T14:14:31,140 DEBUG io.netty.util.internal.PlatformDependent0:71 - sun.misc.Unsafe.theUnsafe: available
+2018-11-23T14:14:31,141 DEBUG io.netty.util.internal.PlatformDependent0:71 - sun.misc.Unsafe.copyMemory: available
+2018-11-23T14:14:31,141 DEBUG io.netty.util.internal.PlatformDependent0:71 - java.nio.Buffer.address: available
+2018-11-23T14:14:31,142 DEBUG io.netty.util.internal.PlatformDependent0:71 - direct buffer constructor: available
+2018-11-23T14:14:31,143 DEBUG io.netty.util.internal.PlatformDependent0:76 - java.nio.Bits.unaligned: available, true
+2018-11-23T14:14:31,144 DEBUG io.netty.util.internal.PlatformDependent0:71 - jdk.internal.misc.Unsafe.allocateUninitializedArray(int): unavailable prior to Java9
+2018-11-23T14:14:31,144 DEBUG io.netty.util.internal.PlatformDependent0:76 - java.nio.DirectByteBuffer.<init>(long, int): available
+2018-11-23T14:14:31,144 DEBUG io.netty.util.internal.PlatformDependent:76 - sun.misc.Unsafe: available
+2018-11-23T14:14:31,145 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.tmpdir: C:\Users\jin\AppData\Local\Temp (java.io.tmpdir)
+2018-11-23T14:14:31,145 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.bitMode: 64 (sun.arch.data.model)
+2018-11-23T14:14:31,150 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.noPreferDirect: false
+2018-11-23T14:14:31,150 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.maxDirectMemory: 1653604352 bytes
+2018-11-23T14:14:31,151 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.uninitializedArrayAllocationThreshold: -1
+2018-11-23T14:14:31,152 DEBUG io.netty.util.internal.CleanerJava6:71 - java.nio.ByteBuffer.cleaner(): available
+2018-11-23T14:14:31,171 DEBUG io.netty.channel.nio.NioEventLoop:76 - -Dio.netty.noKeySetOptimization: false
+2018-11-23T14:14:31,172 DEBUG io.netty.channel.nio.NioEventLoop:76 - -Dio.netty.selectorAutoRebuildThreshold: 512
+2018-11-23T14:14:31,187 DEBUG io.netty.util.internal.PlatformDependent:71 - org.jctools-core.MpscChunkedArrayQueue: available
+2018-11-23T14:14:31,410 DEBUG io.netty.resolver.dns.DefaultDnsServerAddressStreamProvider:76 - Default DNS servers: [/192.168.1.1:53] (sun.net.dns.ResolverConfiguration)
+2018-11-23T14:14:31,424 DEBUG io.netty.util.NetUtil:76 - -Djava.net.preferIPv4Stack: false
+2018-11-23T14:14:31,425 DEBUG io.netty.util.NetUtil:76 - -Djava.net.preferIPv6Addresses: false
+2018-11-23T14:14:31,888 DEBUG io.netty.util.NetUtil:86 - Loopback interface: lo (Software Loopback Interface 1, 127.0.0.1)
+2018-11-23T14:14:31,889 DEBUG io.netty.util.NetUtil:81 - Failed to get SOMAXCONN from sysctl and file \proc\sys\net\core\somaxconn. Default: 200
+2018-11-23T14:14:32,068 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/mchange-commons.properties' could not be found. Skipping.
+2018-11-23T14:14:32,069 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/mchange-log.properties' could not be found. Skipping.
+2018-11-23T14:14:32,069 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier 'hocon:/reference,/application,/c3p0,/' could not be found. Skipping.
+2018-11-23T14:14:32,069 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/c3p0.properties' could not be found. Skipping.
+2018-11-23T14:14:32,113 INFO  com.mchange.v2.c3p0.C3P0Registry:212 - Initializing c3p0-0.9.5.2 [built 08-December-2015 22:06:04 -0800; debug? true; trace: 10]
+2018-11-23T14:14:32,115 INFO  com.mchange.v2.log.MLog:212 - MLog clients using slf4j logging.
+2018-11-23T14:14:32,123 DEBUG com.mchange.v2.log.MLog:207 - Reading VM config for path list /com/mchange/v2/log/default-mchange-log.properties, /mchange-commons.properties, /c3p0.properties, hocon:/reference,/application,/c3p0,/, /mchange-log.properties, /
+2018-11-23T14:14:32,124 DEBUG com.mchange.v2.log.MLog:207 - The configuration file for resource identifier '/mchange-commons.properties' could not be found. Skipping.
+2018-11-23T14:14:32,124 DEBUG com.mchange.v2.log.MLog:207 - The configuration file for resource identifier '/c3p0.properties' could not be found. Skipping.
+2018-11-23T14:14:32,124 DEBUG com.mchange.v2.log.MLog:207 - The configuration file for resource identifier 'hocon:/reference,/application,/c3p0,/' could not be found. Skipping.
+2018-11-23T14:14:32,124 DEBUG com.mchange.v2.log.MLog:207 - The configuration file for resource identifier '/mchange-log.properties' could not be found. Skipping.
+2018-11-23T14:14:32,149 DEBUG com.mchange.v2.c3p0.management.DynamicPooledDataSourceManagerMBean:204 - MBean: com.mchange.v2.c3p0:type=PooledDataSource,identityToken=1hgf11d9zhjcbs01pcbn0k|10312070,name=1hgf11d9zhjcbs01pcbn0k|10312070 registered.
+2018-11-23T14:14:32,196 DEBUG com.mchange.v2.c3p0.management.DynamicPooledDataSourceManagerMBean:204 - MBean: com.mchange.v2.c3p0:type=PooledDataSource,identityToken=1hgf11d9zhjcbs01pcbn0k|10312070,name=1hgf11d9zhjcbs01pcbn0k|10312070 unregistered, in order to be reregistered after update.
+2018-11-23T14:14:32,197 DEBUG com.mchange.v2.c3p0.management.DynamicPooledDataSourceManagerMBean:204 - MBean: com.mchange.v2.c3p0:type=PooledDataSource,identityToken=1hgf11d9zhjcbs01pcbn0k|10312070,name=1hgf11d9zhjcbs01pcbn0k|10312070 registered.
+2018-11-23T14:14:32,370 DEBUG io.netty.buffer.AbstractByteBuf:81 - -Dio.netty.buffer.bytebuf.checkAccessible: true
+2018-11-23T14:14:32,372 DEBUG io.netty.util.ResourceLeakDetectorFactory:76 - Loaded default ResourceLeakDetector: io.netty.util.ResourceLeakDetector@678ff7c1
+2018-11-23T14:14:34,532 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.numHeapArenas: 8
+2018-11-23T14:14:34,532 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.numDirectArenas: 8
+2018-11-23T14:14:34,533 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.pageSize: 8192
+2018-11-23T14:14:34,533 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.maxOrder: 11
+2018-11-23T14:14:34,533 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.chunkSize: 16777216
+2018-11-23T14:14:34,533 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.tinyCacheSize: 512
+2018-11-23T14:14:34,533 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.smallCacheSize: 256
+2018-11-23T14:14:34,533 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.normalCacheSize: 64
+2018-11-23T14:14:34,533 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.maxCachedBufferCapacity: 32768
+2018-11-23T14:14:34,533 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.cacheTrimInterval: 8192
+2018-11-23T14:14:34,534 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.useCacheForAllThreads: true
+2018-11-23T14:14:34,538 DEBUG io.netty.util.internal.InternalThreadLocalMap:76 - -Dio.netty.threadLocalMap.stringBuilder.initialSize: 1024
+2018-11-23T14:14:34,539 DEBUG io.netty.util.internal.InternalThreadLocalMap:76 - -Dio.netty.threadLocalMap.stringBuilder.maxSize: 4096
+2018-11-23T14:14:34,574 DEBUG io.netty.resolver.dns.UnixResolverDnsServerAddressStreamProvider:86 - failed to parse /etc/resolv.conf and/or /etc/resolver
+java.lang.IllegalArgumentException: \etc\resolv.conf didn't provide any name servers
+	at io.netty.resolver.dns.UnixResolverDnsServerAddressStreamProvider.<init>(UnixResolverDnsServerAddressStreamProvider.java:98) ~[netty-resolver-dns-4.1.15.Final.jar:4.1.15.Final]
+	at io.netty.resolver.dns.UnixResolverDnsServerAddressStreamProvider.<init>(UnixResolverDnsServerAddressStreamProvider.java:124) ~[netty-resolver-dns-4.1.15.Final.jar:4.1.15.Final]
+	at io.netty.resolver.dns.UnixResolverDnsServerAddressStreamProvider.parseSilently(UnixResolverDnsServerAddressStreamProvider.java:66) ~[netty-resolver-dns-4.1.15.Final.jar:4.1.15.Final]
+	at io.netty.resolver.dns.DnsServerAddressStreamProviders.<clinit>(DnsServerAddressStreamProviders.java:28) ~[netty-resolver-dns-4.1.15.Final.jar:4.1.15.Final]
+	at io.netty.resolver.dns.DnsNameResolverBuilder.<init>(DnsNameResolverBuilder.java:54) ~[netty-resolver-dns-4.1.15.Final.jar:4.1.15.Final]
+	at io.vertx.core.impl.resolver.DnsResolverProvider$1$1.newNameResolver(DnsResolverProvider.java:137) ~[vertx-core-3.5.0.jar:?]
+	at io.netty.resolver.dns.DnsAddressResolverGroup.newResolver(DnsAddressResolverGroup.java:86) ~[netty-resolver-dns-4.1.15.Final.jar:4.1.15.Final]
+	at io.netty.resolver.dns.DnsAddressResolverGroup.newResolver(DnsAddressResolverGroup.java:73) ~[netty-resolver-dns-4.1.15.Final.jar:4.1.15.Final]
+	at io.netty.resolver.AddressResolverGroup.getResolver(AddressResolverGroup.java:69) ~[netty-resolver-4.1.15.Final.jar:4.1.15.Final]
+	at io.vertx.core.impl.resolver.DnsResolverProvider$1.newResolver(DnsResolverProvider.java:184) ~[vertx-core-3.5.0.jar:?]
+	at io.netty.resolver.AddressResolverGroup.getResolver(AddressResolverGroup.java:69) ~[netty-resolver-4.1.15.Final.jar:4.1.15.Final]
+	at io.vertx.core.impl.AddressResolver.resolveHostname(AddressResolver.java:83) ~[vertx-core-3.5.0.jar:?]
+	at io.vertx.core.impl.VertxImpl.resolveAddress(VertxImpl.java:766) ~[vertx-core-3.5.0.jar:?]
+	at io.vertx.core.net.impl.AsyncResolveConnectHelper.doBind(AsyncResolveConnectHelper.java:87) ~[vertx-core-3.5.0.jar:?]
+	at io.vertx.core.http.impl.HttpServerImpl.listen(HttpServerImpl.java:344) ~[vertx-core-3.5.0.jar:?]
+	at io.vertx.core.http.impl.HttpServerImpl.listen(HttpServerImpl.java:231) ~[vertx-core-3.5.0.jar:?]
+	at AccountVerticle.start(AccountVerticle.java:114) ~[classes/:?]
+	at io.vertx.core.impl.DeploymentManager.lambda$doDeploy$10(DeploymentManager.java:481) ~[vertx-core-3.5.0.jar:?]
+	at io.vertx.core.impl.ContextImpl.lambda$wrapTask$2(ContextImpl.java:344) ~[vertx-core-3.5.0.jar:?]
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163) [netty-common-4.1.15.Final.jar:4.1.15.Final]
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:403) [netty-common-4.1.15.Final.jar:4.1.15.Final]
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:463) [netty-transport-4.1.15.Final.jar:4.1.15.Final]
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858) [netty-common-4.1.15.Final.jar:4.1.15.Final]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
+2018-11-23T14:14:34,597 DEBUG io.netty.channel.DefaultChannelId:76 - -Dio.netty.processId: 12560 (auto-detected)
+2018-11-23T14:14:34,677 DEBUG io.netty.channel.DefaultChannelId:76 - -Dio.netty.machineId: 00:50:56:ff:fe:c0:00:01 (auto-detected)
+2018-11-23T14:14:34,698 DEBUG io.netty.buffer.ByteBufUtil:76 - -Dio.netty.allocator.type: pooled
+2018-11-23T14:14:34,698 DEBUG io.netty.buffer.ByteBufUtil:76 - -Dio.netty.threadLocalDirectBufferSize: 65536
+2018-11-23T14:14:34,698 DEBUG io.netty.buffer.ByteBufUtil:76 - -Dio.netty.maxThreadLocalCharBufferSize: 16384
+2018-11-23T14:14:34,720 INFO  AccountVerticle:116 - HTTP server running on port 8084
+2018-11-23T14:14:36,059 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.maxCapacityPerThread: 32768
+2018-11-23T14:14:36,059 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.maxSharedCapacityFactor: 2
+2018-11-23T14:14:36,060 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.linkCapacity: 16
+2018-11-23T14:14:36,060 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.ratio: 8
+2018-11-23T14:14:36,388 INFO  AccountVerticle:133 - username：root
+2018-11-23T14:14:36,389 INFO  AccountVerticle:134 - password：admin
+2018-11-23T14:14:36,419 INFO  com.mchange.v2.c3p0.impl.AbstractPoolBackedDataSource:212 - Initializing c3p0 pool... com.mchange.v2.c3p0.ComboPooledDataSource [ acquireIncrement -> 3, acquireRetryAttempts -> 30, acquireRetryDelay -> 1000, autoCommitOnClose -> false, automaticTestTable -> null, breakAfterAcquireFailure -> false, checkoutTimeout -> 0, connectionCustomizerClassName -> null, connectionTesterClassName -> com.mchange.v2.c3p0.impl.DefaultConnectionTester, contextClassLoaderSource -> caller, dataSourceName -> 1hgf11d9zhjcbs01pcbn0k|10312070, debugUnreturnedConnectionStackTraces -> false, description -> null, driverClass -> com.mysql.cj.jdbc.Driver, extensions -> {}, factoryClassLocation -> null, forceIgnoreUnresolvedTransactions -> false, forceSynchronousCheckins -> false, forceUseNamedDriverClass -> false, identityToken -> 1hgf11d9zhjcbs01pcbn0k|10312070, idleConnectionTestPeriod -> 0, initialPoolSize -> 3, jdbcUrl -> jdbc:mysql://localhost/tjaccount?characterEncoding=UTF-8&useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&autoReconnect=true, maxAdministrativeTaskTime -> 0, maxConnectionAge -> 0, maxIdleTime -> 0, maxIdleTimeExcessConnections -> 0, maxPoolSize -> 30, maxStatements -> 0, maxStatementsPerConnection -> 0, minPoolSize -> 3, numHelperThreads -> 3, preferredTestQuery -> null, privilegeSpawnedThreads -> false, properties -> {user=******, password=******}, propertyCycle -> 0, statementCacheNumDeferredCloseThreads -> 0, testConnectionOnCheckin -> false, testConnectionOnCheckout -> false, unreturnedConnectionTimeout -> 0, userOverrides -> {}, usesTraditionalReflectiveProxies -> false ]
+2018-11-23T14:14:36,434 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/mchange-commons.properties' could not be found. Skipping.
+2018-11-23T14:14:36,434 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/mchange-log.properties' could not be found. Skipping.
+2018-11-23T14:14:36,434 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/c3p0.properties' could not be found. Skipping.
+2018-11-23T14:14:36,435 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier 'hocon:/reference,/application,/c3p0,/' could not be found. Skipping.
+2018-11-23T14:14:36,436 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - com.mchange.v2.resourcepool.BasicResourcePool@1922a31b config: [start -> 3; min -> 3; max -> 30; inc -> 3; num_acq_attempts -> 30; acq_attempt_delay -> 1000; check_idle_resources_delay -> 0; max_resource_age -> 0; max_idle_time -> 0; excess_max_idle_time -> 0; destroy_unreturned_resc_time -> 0; expiration_enforcement_delay -> 0; break_on_acquisition_failure -> false; debug_store_checkout_exceptions -> false; force_synchronous_checkins -> false]
+2018-11-23T14:14:36,436 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPoolManager:204 - Created new pool for auth, username (masked): 'ro******'.
+2018-11-23T14:14:36,437 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - acquire test -- pool size: 0; target_pool_size: 3; desired target? 1
+2018-11-23T14:14:36,437 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - awaitAvailable(): [unknown]
+2018-11-23T14:14:36,744 INFO  AccountVerticle:163 - root 登录,2018-11-23 14:14:36-------------------------
+2018-11-23T14:19:28,302 INFO  AccountVerticle:133 - username：root111
+2018-11-23T14:19:28,303 INFO  AccountVerticle:134 - password：admin
+2018-11-23T14:19:28,308 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:19:31,117 INFO  AccountVerticle:133 - username：root11111
+2018-11-23T14:19:31,118 INFO  AccountVerticle:134 - password：admin
+2018-11-23T14:19:31,121 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:19:31,974 INFO  AccountVerticle:133 - username：root11111
+2018-11-23T14:19:31,974 INFO  AccountVerticle:134 - password：admin
+2018-11-23T14:19:31,977 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:19:32,501 INFO  AccountVerticle:133 - username：root11111
+2018-11-23T14:19:32,501 INFO  AccountVerticle:134 - password：admin
+2018-11-23T14:19:32,503 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:19:32,693 INFO  AccountVerticle:133 - username：root11111
+2018-11-23T14:19:32,693 INFO  AccountVerticle:134 - password：admin
+2018-11-23T14:19:32,696 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:22:49,170 INFO  AccountVerticle:133 - username：root11111111
+2018-11-23T14:22:49,171 INFO  AccountVerticle:134 - password：admin
+2018-11-23T14:22:49,173 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:22:49,718 INFO  AccountVerticle:133 - username：root11111111
+2018-11-23T14:22:49,718 INFO  AccountVerticle:134 - password：admin
+2018-11-23T14:22:49,720 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:22:49,893 INFO  AccountVerticle:133 - username：root11111111
+2018-11-23T14:22:49,893 INFO  AccountVerticle:134 - password：admin
+2018-11-23T14:22:49,896 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:22:50,093 INFO  AccountVerticle:133 - username：root11111111
+2018-11-23T14:22:50,093 INFO  AccountVerticle:134 - password：admin
+2018-11-23T14:22:50,097 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:22:50,309 INFO  AccountVerticle:133 - username：root11111111
+2018-11-23T14:22:50,310 INFO  AccountVerticle:134 - password：admin
+2018-11-23T14:22:50,311 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:22:50,502 INFO  AccountVerticle:133 - username：root11111111
+2018-11-23T14:22:50,502 INFO  AccountVerticle:134 - password：admin
+2018-11-23T14:22:50,504 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:23:00,021 INFO  AccountVerticle:133 - username：root1111111111
+2018-11-23T14:23:00,021 INFO  AccountVerticle:134 - password：adm
+2018-11-23T14:23:00,023 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:23:00,543 INFO  AccountVerticle:133 - username：root1111111111
+2018-11-23T14:23:00,544 INFO  AccountVerticle:134 - password：adm
+2018-11-23T14:23:00,546 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:23:00,711 INFO  AccountVerticle:133 - username：root1111111111
+2018-11-23T14:23:00,711 INFO  AccountVerticle:134 - password：adm
+2018-11-23T14:23:00,714 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:23:00,878 INFO  AccountVerticle:133 - username：root1111111111
+2018-11-23T14:23:00,878 INFO  AccountVerticle:134 - password：adm
+2018-11-23T14:23:00,882 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:23:01,046 INFO  AccountVerticle:133 - username：root1111111111
+2018-11-23T14:23:01,046 INFO  AccountVerticle:134 - password：adm
+2018-11-23T14:23:01,049 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:23:01,238 INFO  AccountVerticle:133 - username：root1111111111
+2018-11-23T14:23:01,238 INFO  AccountVerticle:134 - password：adm
+2018-11-23T14:23:01,240 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:23:01,405 INFO  AccountVerticle:133 - username：root1111111111
+2018-11-23T14:23:01,405 INFO  AccountVerticle:134 - password：adm
+2018-11-23T14:23:01,408 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:23:01,549 INFO  AccountVerticle:133 - username：root1111111111
+2018-11-23T14:23:01,549 INFO  AccountVerticle:134 - password：adm
+2018-11-23T14:23:01,550 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:23:02,254 INFO  AccountVerticle:133 - username：root1111111111
+2018-11-23T14:23:02,255 INFO  AccountVerticle:134 - password：adm
+2018-11-23T14:23:02,257 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:23:02,447 INFO  AccountVerticle:133 - username：root1111111111
+2018-11-23T14:23:02,447 INFO  AccountVerticle:134 - password：adm
+2018-11-23T14:23:02,450 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:23:02,630 INFO  AccountVerticle:133 - username：root1111111111
+2018-11-23T14:23:02,631 INFO  AccountVerticle:134 - password：adm
+2018-11-23T14:23:02,633 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:23:03,710 INFO  AccountVerticle:133 - username：root1111111111
+2018-11-23T14:23:03,710 INFO  AccountVerticle:134 - password：adm
+2018-11-23T14:23:03,712 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:23:03,902 INFO  AccountVerticle:133 - username：root1111111111
+2018-11-23T14:23:03,902 INFO  AccountVerticle:134 - password：adm
+2018-11-23T14:23:03,904 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:23:04,086 INFO  AccountVerticle:133 - username：root1111111111
+2018-11-23T14:23:04,086 INFO  AccountVerticle:134 - password：adm
+2018-11-23T14:23:04,088 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:23:04,269 INFO  AccountVerticle:133 - username：root1111111111
+2018-11-23T14:23:04,270 INFO  AccountVerticle:134 - password：adm
+2018-11-23T14:23:04,271 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:23:04,870 INFO  AccountVerticle:133 - username：root1111111111
+2018-11-23T14:23:04,871 INFO  AccountVerticle:134 - password：adm
+2018-11-23T14:23:04,872 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:23:05,068 INFO  AccountVerticle:133 - username：root1111111111
+2018-11-23T14:23:05,069 INFO  AccountVerticle:134 - password：adm
+2018-11-23T14:23:05,070 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:23:05,247 INFO  AccountVerticle:133 - username：root1111111111
+2018-11-23T14:23:05,247 INFO  AccountVerticle:134 - password：adm
+2018-11-23T14:23:05,249 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:23:05,437 INFO  AccountVerticle:133 - username：root1111111111
+2018-11-23T14:23:05,438 INFO  AccountVerticle:134 - password：adm
+2018-11-23T14:23:05,439 ERROR AccountVerticle:172 - 登录失败:io.vertx.core.impl.NoStackTraceThrowable: Invalid username/password
+2018-11-23T14:23:08,185 INFO  AccountVerticle:133 - username：root
+2018-11-23T14:23:08,186 INFO  AccountVerticle:134 - password：admin
+2018-11-23T14:23:08,195 INFO  AccountVerticle:163 - root 登录,2018-11-23 14:23:08-------------------------
+2018-11-23T14:23:12,763 INFO  AccountVerticle:133 - username：root
+2018-11-23T14:23:12,763 INFO  AccountVerticle:134 - password：admin
+2018-11-23T14:23:12,772 INFO  AccountVerticle:163 - root 登录,2018-11-23 14:23:12-------------------------
+2018-11-23T14:24:05,114 INFO  AccountVerticle:133 - username：root
+2018-11-23T14:24:05,114 INFO  AccountVerticle:134 - password：admin
+2018-11-23T14:24:05,121 INFO  AccountVerticle:163 - root 登录,2018-11-23 14:24:05-------------------------
+2018-11-23T14:47:56,501 INFO  AccountVerticle:133 - username：root
+2018-11-23T14:47:56,502 INFO  AccountVerticle:134 - password：admin
+2018-11-23T14:47:56,512 INFO  AccountVerticle:163 - root 登录,2018-11-23 14:47:56-------------------------
+2018-11-23T15:06:47,767 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:06:47,767 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:06:47,777 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:06:47-------------------------
+2018-11-23T15:07:39,714 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:07:39,714 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:07:39,722 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:07:39-------------------------
+2018-11-23T15:08:26,658 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:08:26,659 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:08:26,667 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:08:26-------------------------
+2018-11-23T15:08:28,838 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:08:28,838 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:08:28,849 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:08:28-------------------------
+2018-11-23T15:10:44,096 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:10:44,096 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:10:44,103 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:10:44-------------------------
+2018-11-23T15:14:45,386 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:14:45,386 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:14:45,393 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:14:45-------------------------
+2018-11-23T15:14:47,382 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:14:47,383 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:14:47,391 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:14:47-------------------------
+2018-11-23T15:14:48,302 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:14:48,302 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:14:48,310 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:14:48-------------------------
+2018-11-23T15:14:48,773 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:14:48,774 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:14:48,784 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:14:48-------------------------
+2018-11-23T15:14:48,966 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:14:48,966 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:14:48,974 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:14:48-------------------------
+2018-11-23T15:14:49,174 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:14:49,174 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:14:49,182 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:14:49-------------------------
+2018-11-23T15:15:26,443 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:15:26,443 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:15:26,450 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:15:26-------------------------
+2018-11-23T15:16:45,185 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:16:45,186 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:16:45,192 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:16:45-------------------------
+2018-11-23T15:17:44,573 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:17:44,574 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:17:44,582 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:17:44-------------------------
+2018-11-23T15:18:20,581 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:18:20,581 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:18:20,587 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:18:20-------------------------
+2018-11-23T15:19:49,358 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:19:49,358 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:19:49,364 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:19:49-------------------------
+2018-11-23T15:20:37,575 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:20:37,575 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:20:37,582 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:20:37-------------------------
+2018-11-23T15:20:55,786 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:20:55,787 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:20:55,794 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:20:55-------------------------
+2018-11-23T15:21:00,049 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:21:00,050 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:21:00,061 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:21:00-------------------------
+2018-11-23T15:21:21,170 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:21:21,171 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:21:21,177 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:21:21-------------------------
+2018-11-23T15:21:54,743 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:21:54,743 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:21:54,749 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:21:54-------------------------
+2018-11-23T15:25:54,807 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:25:54,807 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:25:54,815 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:25:54-------------------------
+2018-11-23T15:26:14,442 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:26:14,442 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:26:14,449 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:26:14-------------------------
+2018-11-23T15:30:39,898 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:30:39,899 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:30:39,905 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:30:39-------------------------
+2018-11-23T15:39:44,775 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:39:44,775 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:39:44,784 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:39:44-------------------------
+2018-11-23T15:40:22,871 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:40:22,871 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:40:22,877 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:40:22-------------------------
+2018-11-23T15:43:08,428 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:43:08,429 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:43:08,436 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:43:08-------------------------
+2018-11-23T15:44:02,820 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:44:02,820 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:44:02,827 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:44:02-------------------------
+2018-11-23T15:54:54,380 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:54:54,381 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:54:54,388 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:54:54-------------------------
+2018-11-23T15:56:41,876 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:56:41,876 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:56:41,884 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:56:41-------------------------
+2018-11-23T15:56:57,729 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:56:57,729 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:56:57,736 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:56:57-------------------------
+2018-11-23T15:59:30,300 INFO  AccountVerticle:133 - username：root
+2018-11-23T15:59:30,300 INFO  AccountVerticle:134 - password：admin
+2018-11-23T15:59:30,311 INFO  AccountVerticle:163 - root 登录,2018-11-23 15:59:30-------------------------
+2018-11-23T16:05:45,937 INFO  AccountVerticle:133 - username：root
+2018-11-23T16:05:45,938 INFO  AccountVerticle:134 - password：admin
+2018-11-23T16:05:45,950 INFO  AccountVerticle:163 - root 登录,2018-11-23 16:05:45-------------------------
+2018-11-23T16:15:43,686 INFO  AccountVerticle:133 - username：root
+2018-11-23T16:15:43,686 INFO  AccountVerticle:134 - password：admin
+2018-11-23T16:15:43,696 INFO  AccountVerticle:163 - root 登录,2018-11-23 16:15:43-------------------------
+2018-11-23T17:00:19,205 INFO  AccountVerticle:133 - username：root
+2018-11-23T17:00:19,206 INFO  AccountVerticle:134 - password：admin
+2018-11-23T17:00:19,236 INFO  AccountVerticle:163 - root 登录,2018-11-23 17:00:19-------------------------
+2018-11-23T17:04:24,282 INFO  AccountVerticle:133 - username：root
+2018-11-23T17:04:24,282 INFO  AccountVerticle:134 - password：admin
+2018-11-23T17:04:24,297 INFO  AccountVerticle:163 - root 登录,2018-11-23 17:04:24-------------------------
+2018-11-23T17:07:45,718 INFO  AccountVerticle:133 - username：root
+2018-11-23T17:07:45,719 INFO  AccountVerticle:134 - password：admin
+2018-11-23T17:07:45,737 INFO  AccountVerticle:163 - root 登录,2018-11-23 17:07:45-------------------------
+2018-11-23T17:07:55,054 INFO  AccountVerticle:133 - username：root
+2018-11-23T17:07:55,055 INFO  AccountVerticle:134 - password：admin
+2018-11-23T17:07:55,068 INFO  AccountVerticle:163 - root 登录,2018-11-23 17:07:55-------------------------
+2018-11-23T17:07:56,778 INFO  AccountVerticle:133 - username：root
+2018-11-23T17:07:56,778 INFO  AccountVerticle:134 - password：admin
+2018-11-23T17:07:56,788 INFO  AccountVerticle:163 - root 登录,2018-11-23 17:07:56-------------------------
+2018-11-23T17:09:10,550 INFO  AccountVerticle:133 - username：root
+2018-11-23T17:09:10,550 INFO  AccountVerticle:134 - password：admin
+2018-11-23T17:09:10,559 INFO  AccountVerticle:163 - root 登录,2018-11-23 17:09:10-------------------------
+2018-11-23T17:24:33,903 INFO  AccountVerticle:133 - username：root
+2018-11-23T17:24:33,905 INFO  AccountVerticle:134 - password：admin
+2018-11-23T17:24:33,927 INFO  AccountVerticle:163 - root 登录,2018-11-23 17:24:33-------------------------

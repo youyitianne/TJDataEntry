@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Table-vue</title>
+    <script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+    <script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
+</head>
+<body>
+<h1>广告数据表</h1>
+
+<div id="app">
+    游戏名：<select v-model="selected" name="fruit">
+    <option value="">选择一个游戏</option>
+    <option v-for="name in names">
+        {{ name }}
+    </option>
+</select>
+    <div id="output">
+        选择的游戏名是: {{selected}}
+    </div>
+    开始时间：<select v-model="selectedtime1" name="fruit">
+    <option value="">选择日期</option>
+    <option v-for="time in times">
+        {{ time }}
+    </option>
+</select>
+    <div id="outputtime">
+        选择开始时间是: {{selectedtime1}}
+    </div>
+
+    结束时间：<select v-model="selectedtime2" name="fruit">
+    <option value="">选择日期</option>
+    <option v-for="time in times">
+        {{ time }}
+    </option>
+</select>
+    <div id="aoutputtime">
+        选择结束时间是: {{selectedtime2}}
+    </div>
+
+</div>
+<div id="box">
+    <input type="button" @click="get()" value="获取全部">
+    <table style="border: 1px black solid">
+        <tr>
+            <td>id</td>
+            <td>日期</td>
+            <td>游戏名称</td>
+            <td>渠道</td>
+            <td>广告类型</td>
+            <td>收入</td>
+            <td>点击率</td>
+            <td>ecpm</td>
+            <td>展示次数</td>
+            <td>点击数</td>
+            <td>点击率</td>
+            <td>平台</td>
+        </tr>
+        <tr v-for="site in sites">
+            <td>{{site.id}}</td>
+            <td>{{site.date}}</td>
+            <td>{{site.app_name}}</td>
+            <td>{{site.channel}}</td>
+            <td>{{site.advertising_type}}</td>
+            <td>{{site.earned}}</td>
+            <td>{{site.clickrate}}</td>
+            <td>{{site.ecpm}}</td>
+            <td>{{site.impression}}</td>
+            <td>{{site.click}}</td>
+            <td>{{site.fill_rate}}</td>
+            <td>{{site.platform}}</td>
+        </tr>
+    </table>
+</div>
+</body>
+<script>
+    var initpage = new Vue({
+        el: '#app',
+        data: {
+            names: {
+                message: '游戏数据获取失败'
+            },
+            times: {
+                message: '日期获取失败'
+            },
+            selected: '',
+            selectedtime1: '',
+            selectedtime2: ''
+        },
+        mounted() {
+            this.get()
+       //     this.init_time()
+        },
+        methods: {
+            get: function () {
+                //发送get请求
+                this.$http.get('http://192.168.1.144:8081/name').then(function (res) {
+                    initpage.names = res.body.gamename.split(",");
+                      // initpage.times = res.body.gamename.split(",");
+                }, function () {
+                    initpage.nameas = {
+                        message: '游戏数据获取失败'
+                    };
+                });
+                Date.prototype.Format = function (fmt) {
+                    var o = {
+                        "M+": this.getMonth() + 1,//月份
+                        "d+": this.getDate(),//日
+                        "H+": this.getHours(),//小时
+                        "m+": this.getMinutes(),//分
+                        "s+": this.getSeconds(),//秒
+                        "q+": Math.floor((this.getMonth() + 3) / 3),//季度
+                        "S+": this.getMilliseconds()//毫毛
+                    };
+                    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+                    for (var k in o)
+                        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+                    return fmt;
+                };
+
+                var lastMonths = new Array();
+                for (var i = 0; i < 30; i++) {
+                    lastMonths.unshift(new Date(new Date().setDate(new Date().getDate() - i)).Format("yyyy-MM-dd").toString().trim());
+                };
+                if (lastMonths!=undefined){
+                    this.times = lastMonths;
+                }
+            }
+        }
+    })
+
+    window.onload = function () {
+        var vm = new Vue({
+            el: '#box',
+            data: {
+                sites: {}
+            },
+            methods: {
+                get: function () {
+                    //发送get请求
+                    this.$http.get("http://192.168.1.144:8081/data/"+initpage.selectedtime1+"_"+initpage.selectedtime2+"_"+initpage.selected).then(function (res) {
+                        console.log("http://192.168.1.144:8081/data/"+initpage.selectedtime1+"_"+initpage.selectedtime2+"_"+initpage.selected)
+                        vm.sites = res.body.data;
+                    }, function (res) {
+                        alert("请选择正确的游戏或时间");
+                    });
+                }
+            }
+        });
+    }
+
+
+</script>
+</html>

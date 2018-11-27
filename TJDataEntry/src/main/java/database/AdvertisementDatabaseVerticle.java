@@ -3,6 +3,7 @@ package database;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.jdbc.JDBCClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.pubmethod.InitConf;
@@ -18,7 +19,7 @@ import java.util.Properties;
 
 public class AdvertisementDatabaseVerticle extends AbstractVerticle {
     private static Logger logger= LoggerFactory.getLogger(AdvertisementDatabaseVerticle.class.getName());
-    private AdvertisementService advertisementService;
+    private AdvertisementService advertisementService=new AdvertisementService();
     @Override
     public void start(Future<Void> startFuture){
         InitConf initConf=new InitConf();
@@ -30,10 +31,10 @@ public class AdvertisementDatabaseVerticle extends AbstractVerticle {
                 .put("user",conf.get(ConfigConstants.DATABASE_USER))
                 .put("password",conf.get(ConfigConstants.DATABASE_PASSWORD));
 
-        advertisementService=new AdvertisementService(vertx,config);
 
+        JDBCClient jdbcClient=JDBCClient.createShared(vertx,config);
 
-        advertisementService.batch(databaseInitSqlQueries).setHandler(rs->{
+        advertisementService.batch(jdbcClient,databaseInitSqlQueries).setHandler(rs->{
             if (rs.succeeded()){
                 logger.info("database is ready");
                 startFuture.complete();

@@ -1,0 +1,86 @@
+2018-11-24T18:54:33,971 DEBUG io.netty.util.internal.logging.InternalLoggerFactory:71 - Using SLF4J as the default logging framework
+2018-11-24T18:54:33,976 DEBUG io.netty.util.ResourceLeakDetector:81 - -Dio.netty.leakDetection.level: simple
+2018-11-24T18:54:33,977 DEBUG io.netty.util.ResourceLeakDetector:81 - -Dio.netty.leakDetection.maxRecords: 4
+2018-11-24T18:54:34,302 DEBUG io.netty.channel.MultithreadEventLoopGroup:76 - -Dio.netty.eventLoopThreads: 8
+2018-11-24T18:54:34,617 DEBUG io.netty.util.internal.PlatformDependent:71 - Platform: Windows
+2018-11-24T18:54:34,619 DEBUG io.netty.util.internal.PlatformDependent0:76 - -Dio.netty.noUnsafe: false
+2018-11-24T18:54:34,619 DEBUG io.netty.util.internal.PlatformDependent0:76 - Java version: 8
+2018-11-24T18:54:34,620 DEBUG io.netty.util.internal.PlatformDependent0:71 - sun.misc.Unsafe.theUnsafe: available
+2018-11-24T18:54:34,621 DEBUG io.netty.util.internal.PlatformDependent0:71 - sun.misc.Unsafe.copyMemory: available
+2018-11-24T18:54:34,621 DEBUG io.netty.util.internal.PlatformDependent0:71 - java.nio.Buffer.address: available
+2018-11-24T18:54:34,622 DEBUG io.netty.util.internal.PlatformDependent0:71 - direct buffer constructor: available
+2018-11-24T18:54:34,623 DEBUG io.netty.util.internal.PlatformDependent0:76 - java.nio.Bits.unaligned: available, true
+2018-11-24T18:54:34,623 DEBUG io.netty.util.internal.PlatformDependent0:71 - jdk.internal.misc.Unsafe.allocateUninitializedArray(int): unavailable prior to Java9
+2018-11-24T18:54:34,623 DEBUG io.netty.util.internal.PlatformDependent0:76 - java.nio.DirectByteBuffer.<init>(long, int): available
+2018-11-24T18:54:34,623 DEBUG io.netty.util.internal.PlatformDependent:76 - sun.misc.Unsafe: available
+2018-11-24T18:54:34,624 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.tmpdir: C:\Users\jin\AppData\Local\Temp (java.io.tmpdir)
+2018-11-24T18:54:34,624 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.bitMode: 64 (sun.arch.data.model)
+2018-11-24T18:54:34,625 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.noPreferDirect: false
+2018-11-24T18:54:34,626 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.maxDirectMemory: 1653604352 bytes
+2018-11-24T18:54:34,626 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.uninitializedArrayAllocationThreshold: -1
+2018-11-24T18:54:34,627 DEBUG io.netty.util.internal.CleanerJava6:71 - java.nio.ByteBuffer.cleaner(): available
+2018-11-24T18:54:34,640 DEBUG io.netty.channel.nio.NioEventLoop:76 - -Dio.netty.noKeySetOptimization: false
+2018-11-24T18:54:34,641 DEBUG io.netty.channel.nio.NioEventLoop:76 - -Dio.netty.selectorAutoRebuildThreshold: 512
+2018-11-24T18:54:34,685 DEBUG io.netty.util.internal.PlatformDependent:71 - org.jctools-core.MpscChunkedArrayQueue: available
+2018-11-24T18:54:36,527 DEBUG io.netty.resolver.dns.DefaultDnsServerAddressStreamProvider:76 - Default DNS servers: [/192.168.1.1:53] (sun.net.dns.ResolverConfiguration)
+2018-11-24T18:54:36,539 DEBUG io.netty.util.NetUtil:76 - -Djava.net.preferIPv4Stack: false
+2018-11-24T18:54:36,539 DEBUG io.netty.util.NetUtil:76 - -Djava.net.preferIPv6Addresses: false
+2018-11-24T18:54:36,668 DEBUG io.netty.util.NetUtil:86 - Loopback interface: lo (Software Loopback Interface 1, 127.0.0.1)
+2018-11-24T18:54:36,669 DEBUG io.netty.util.NetUtil:81 - Failed to get SOMAXCONN from sysctl and file \proc\sys\net\core\somaxconn. Default: 200
+2018-11-24T18:54:37,351 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.numHeapArenas: 8
+2018-11-24T18:54:37,352 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.numDirectArenas: 8
+2018-11-24T18:54:37,352 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.pageSize: 8192
+2018-11-24T18:54:37,352 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.maxOrder: 11
+2018-11-24T18:54:37,352 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.chunkSize: 16777216
+2018-11-24T18:54:37,352 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.tinyCacheSize: 512
+2018-11-24T18:54:37,353 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.smallCacheSize: 256
+2018-11-24T18:54:37,353 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.normalCacheSize: 64
+2018-11-24T18:54:37,353 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.maxCachedBufferCapacity: 32768
+2018-11-24T18:54:37,353 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.cacheTrimInterval: 8192
+2018-11-24T18:54:37,353 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.useCacheForAllThreads: true
+2018-11-24T18:54:37,357 DEBUG io.netty.util.internal.InternalThreadLocalMap:76 - -Dio.netty.threadLocalMap.stringBuilder.initialSize: 1024
+2018-11-24T18:54:37,357 DEBUG io.netty.util.internal.InternalThreadLocalMap:76 - -Dio.netty.threadLocalMap.stringBuilder.maxSize: 4096
+2018-11-24T18:54:37,395 DEBUG io.netty.resolver.dns.UnixResolverDnsServerAddressStreamProvider:86 - failed to parse /etc/resolv.conf and/or /etc/resolver
+java.lang.IllegalArgumentException: \etc\resolv.conf didn't provide any name servers
+	at io.netty.resolver.dns.UnixResolverDnsServerAddressStreamProvider.<init>(UnixResolverDnsServerAddressStreamProvider.java:98) ~[netty-resolver-dns-4.1.15.Final.jar:4.1.15.Final]
+	at io.netty.resolver.dns.UnixResolverDnsServerAddressStreamProvider.<init>(UnixResolverDnsServerAddressStreamProvider.java:124) ~[netty-resolver-dns-4.1.15.Final.jar:4.1.15.Final]
+	at io.netty.resolver.dns.UnixResolverDnsServerAddressStreamProvider.parseSilently(UnixResolverDnsServerAddressStreamProvider.java:66) ~[netty-resolver-dns-4.1.15.Final.jar:4.1.15.Final]
+	at io.netty.resolver.dns.DnsServerAddressStreamProviders.<clinit>(DnsServerAddressStreamProviders.java:28) ~[netty-resolver-dns-4.1.15.Final.jar:4.1.15.Final]
+	at io.netty.resolver.dns.DnsNameResolverBuilder.<init>(DnsNameResolverBuilder.java:54) ~[netty-resolver-dns-4.1.15.Final.jar:4.1.15.Final]
+	at io.vertx.core.impl.resolver.DnsResolverProvider$1$1.newNameResolver(DnsResolverProvider.java:137) ~[vertx-core-3.5.0.jar:?]
+	at io.netty.resolver.dns.DnsAddressResolverGroup.newResolver(DnsAddressResolverGroup.java:86) ~[netty-resolver-dns-4.1.15.Final.jar:4.1.15.Final]
+	at io.netty.resolver.dns.DnsAddressResolverGroup.newResolver(DnsAddressResolverGroup.java:73) ~[netty-resolver-dns-4.1.15.Final.jar:4.1.15.Final]
+	at io.netty.resolver.AddressResolverGroup.getResolver(AddressResolverGroup.java:69) ~[netty-resolver-4.1.15.Final.jar:4.1.15.Final]
+	at io.vertx.core.impl.resolver.DnsResolverProvider$1.newResolver(DnsResolverProvider.java:184) ~[vertx-core-3.5.0.jar:?]
+	at io.netty.resolver.AddressResolverGroup.getResolver(AddressResolverGroup.java:69) ~[netty-resolver-4.1.15.Final.jar:4.1.15.Final]
+	at io.vertx.core.impl.AddressResolver.resolveHostname(AddressResolver.java:83) ~[vertx-core-3.5.0.jar:?]
+	at io.vertx.core.impl.VertxImpl.resolveAddress(VertxImpl.java:766) ~[vertx-core-3.5.0.jar:?]
+	at io.vertx.core.net.impl.AsyncResolveConnectHelper.doBind(AsyncResolveConnectHelper.java:87) ~[vertx-core-3.5.0.jar:?]
+	at io.vertx.core.http.impl.HttpServerImpl.listen(HttpServerImpl.java:344) ~[vertx-core-3.5.0.jar:?]
+	at io.vertx.core.http.impl.HttpServerImpl.listen(HttpServerImpl.java:231) ~[vertx-core-3.5.0.jar:?]
+	at UiServerVerticle.start(UiServerVerticle.java:53) ~[classes/:?]
+	at io.vertx.core.impl.DeploymentManager.lambda$doDeploy$10(DeploymentManager.java:481) ~[vertx-core-3.5.0.jar:?]
+	at io.vertx.core.impl.ContextImpl.lambda$wrapTask$2(ContextImpl.java:344) ~[vertx-core-3.5.0.jar:?]
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163) [netty-common-4.1.15.Final.jar:4.1.15.Final]
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:403) [netty-common-4.1.15.Final.jar:4.1.15.Final]
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:463) [netty-transport-4.1.15.Final.jar:4.1.15.Final]
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858) [netty-common-4.1.15.Final.jar:4.1.15.Final]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
+2018-11-24T18:54:37,422 DEBUG io.netty.channel.DefaultChannelId:76 - -Dio.netty.processId: 16264 (auto-detected)
+2018-11-24T18:54:37,512 DEBUG io.netty.channel.DefaultChannelId:76 - -Dio.netty.machineId: 00:50:56:ff:fe:c0:00:01 (auto-detected)
+2018-11-24T18:54:37,542 DEBUG io.netty.buffer.ByteBufUtil:76 - -Dio.netty.allocator.type: pooled
+2018-11-24T18:54:37,542 DEBUG io.netty.buffer.ByteBufUtil:76 - -Dio.netty.threadLocalDirectBufferSize: 65536
+2018-11-24T18:54:37,542 DEBUG io.netty.buffer.ByteBufUtil:76 - -Dio.netty.maxThreadLocalCharBufferSize: 16384
+2018-11-24T18:54:37,572 INFO  UiServerVerticle:55 - HTTP server running on port 8082
+2018-11-24T18:54:42,770 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.maxCapacityPerThread: 32768
+2018-11-24T18:54:42,771 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.maxSharedCapacityFactor: 2
+2018-11-24T18:54:42,771 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.linkCapacity: 16
+2018-11-24T18:54:42,772 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.ratio: 8
+2018-11-24T18:54:42,781 DEBUG io.netty.buffer.AbstractByteBuf:81 - -Dio.netty.buffer.bytebuf.checkAccessible: true
+2018-11-24T18:54:42,783 DEBUG io.netty.util.ResourceLeakDetectorFactory:76 - Loaded default ResourceLeakDetector: io.netty.util.ResourceLeakDetector@3b5fbff7
+2018-11-24T18:54:45,509 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.maxCapacityPerThread: 32768
+2018-11-24T18:54:45,510 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.maxSharedCapacityFactor: 2
+2018-11-24T18:54:45,510 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.linkCapacity: 16
+2018-11-24T18:54:45,510 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.ratio: 8
+2018-11-24T18:54:45,523 DEBUG io.netty.buffer.AbstractByteBuf:81 - -Dio.netty.buffer.bytebuf.checkAccessible: true
+2018-11-24T18:54:45,525 DEBUG io.netty.util.ResourceLeakDetectorFactory:76 - Loaded default ResourceLeakDetector: io.netty.util.ResourceLeakDetector@30119654

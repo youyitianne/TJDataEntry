@@ -1,0 +1,29 @@
+2018-10-31 10:24:47,633 database.AdvertisementDatabaseVerticle.lambda$start$0(AdvertisementDatabaseVerticle.java:39)     39  database is ready
+2018-10-31 10:24:48,170 http.HttpServerVerticle.lambda$start$0(HttpServerVerticle.java:68)     68  HTTP server running on port 8081
+2018-10-31 10:27:36,821 database.AdvertisementDatabaseVerticle.lambda$start$0(AdvertisementDatabaseVerticle.java:39)     39  database is ready
+2018-10-31 10:27:37,339 http.HttpServerVerticle.lambda$start$0(HttpServerVerticle.java:68)     68  HTTP server running on port 8081
+2018-10-31 10:29:56,568 http.HttpServerVerticle.lambda$start$0(HttpServerVerticle.java:71)     71  Could not start a HTTP server
+java.net.BindException: Address already in use: bind
+	at sun.nio.ch.Net.bind0(Native Method)
+	at sun.nio.ch.Net.bind(Net.java:433)
+	at sun.nio.ch.Net.bind(Net.java:425)
+	at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:223)
+	at io.netty.channel.socket.nio.NioServerSocketChannel.doBind(NioServerSocketChannel.java:128)
+	at io.netty.channel.AbstractChannel$AbstractUnsafe.bind(AbstractChannel.java:558)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.bind(DefaultChannelPipeline.java:1283)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeBind(AbstractChannelHandlerContext.java:501)
+	at io.netty.channel.AbstractChannelHandlerContext.bind(AbstractChannelHandlerContext.java:486)
+	at io.netty.channel.DefaultChannelPipeline.bind(DefaultChannelPipeline.java:989)
+	at io.netty.channel.AbstractChannel.bind(AbstractChannel.java:254)
+	at io.netty.bootstrap.AbstractBootstrap$2.run(AbstractBootstrap.java:365)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasksFrom(SingleThreadEventExecutor.java:379)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:354)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:454)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858)
+	at java.lang.Thread.run(Thread.java:748)
+2018-10-31 10:30:08,716 http.HttpServerVerticle.lambda$start$0(HttpServerVerticle.java:68)     68  HTTP server running on port 8081
+2018-10-31 10:33:23,546 http.HttpServerVerticle.lambda$start$0(HttpServerVerticle.java:62)     62  HTTP server running on port 8081
+2018-10-31 10:34:04,304 http.HttpServerVerticle.lambda$start$0(HttpServerVerticle.java:62)     62  HTTP server running on port 8081
+2018-10-31 10:35:21,816 http.HttpServerVerticle.lambda$start$0(HttpServerVerticle.java:66)     66  HTTP server running on port 8081
+2018-10-31 10:37:19,346 http.HttpServerVerticle.lambda$start$0(HttpServerVerticle.java:66)     66  HTTP server running on port 8081
