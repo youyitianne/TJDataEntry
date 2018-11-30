@@ -1,3 +1,5 @@
+package database;
+
 public enum ConfigConstants {
     DATABASE_URL,
     DATABASE_DRIVER_CLASS,

@@ -1,71 +1,72 @@
-2018-11-27T15:43:22,438 DEBUG io.netty.util.internal.logging.InternalLoggerFactory:71 - Using SLF4J as the default logging framework
-2018-11-27T15:43:22,442 DEBUG io.netty.util.ResourceLeakDetector:81 - -Dio.netty.leakDetection.level: simple
-2018-11-27T15:43:22,442 DEBUG io.netty.util.ResourceLeakDetector:81 - -Dio.netty.leakDetection.maxRecords: 4
-2018-11-27T15:43:22,474 DEBUG io.netty.channel.MultithreadEventLoopGroup:76 - -Dio.netty.eventLoopThreads: 8
-2018-11-27T15:43:22,519 DEBUG io.netty.util.internal.PlatformDependent:71 - Platform: Windows
-2018-11-27T15:43:22,526 DEBUG io.netty.util.internal.PlatformDependent0:76 - -Dio.netty.noUnsafe: false
-2018-11-27T15:43:22,527 DEBUG io.netty.util.internal.PlatformDependent0:76 - Java version: 8
-2018-11-27T15:43:22,531 DEBUG io.netty.util.internal.PlatformDependent0:71 - sun.misc.Unsafe.theUnsafe: available
-2018-11-27T15:43:22,532 DEBUG io.netty.util.internal.PlatformDependent0:71 - sun.misc.Unsafe.copyMemory: available
-2018-11-27T15:43:22,534 DEBUG io.netty.util.internal.PlatformDependent0:71 - java.nio.Buffer.address: available
-2018-11-27T15:43:22,534 DEBUG io.netty.util.internal.PlatformDependent0:71 - direct buffer constructor: available
-2018-11-27T15:43:22,536 DEBUG io.netty.util.internal.PlatformDependent0:76 - java.nio.Bits.unaligned: available, true
-2018-11-27T15:43:22,537 DEBUG io.netty.util.internal.PlatformDependent0:71 - jdk.internal.misc.Unsafe.allocateUninitializedArray(int): unavailable prior to Java9
-2018-11-27T15:43:22,537 DEBUG io.netty.util.internal.PlatformDependent0:76 - java.nio.DirectByteBuffer.<init>(long, int): available
-2018-11-27T15:43:22,537 DEBUG io.netty.util.internal.PlatformDependent:76 - sun.misc.Unsafe: available
-2018-11-27T15:43:22,540 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.tmpdir: C:\Users\jin\AppData\Local\Temp (java.io.tmpdir)
-2018-11-27T15:43:22,540 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.bitMode: 64 (sun.arch.data.model)
-2018-11-27T15:43:22,542 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.noPreferDirect: false
-2018-11-27T15:43:22,543 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.maxDirectMemory: 1653604352 bytes
-2018-11-27T15:43:22,543 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.uninitializedArrayAllocationThreshold: -1
-2018-11-27T15:43:22,546 DEBUG io.netty.util.internal.CleanerJava6:71 - java.nio.ByteBuffer.cleaner(): available
-2018-11-27T15:43:22,573 DEBUG io.netty.channel.nio.NioEventLoop:76 - -Dio.netty.noKeySetOptimization: false
-2018-11-27T15:43:22,574 DEBUG io.netty.channel.nio.NioEventLoop:76 - -Dio.netty.selectorAutoRebuildThreshold: 512
-2018-11-27T15:43:22,582 DEBUG io.netty.util.internal.PlatformDependent:71 - org.jctools-core.MpscChunkedArrayQueue: available
-2018-11-27T15:43:22,990 DEBUG io.netty.resolver.dns.DefaultDnsServerAddressStreamProvider:76 - Default DNS servers: [/192.168.1.1:53] (sun.net.dns.ResolverConfiguration)
-2018-11-27T15:43:23,025 DEBUG io.netty.util.NetUtil:76 - -Djava.net.preferIPv4Stack: false
-2018-11-27T15:43:23,025 DEBUG io.netty.util.NetUtil:76 - -Djava.net.preferIPv6Addresses: false
-2018-11-27T15:43:23,418 DEBUG io.netty.util.NetUtil:86 - Loopback interface: lo (Software Loopback Interface 1, 127.0.0.1)
-2018-11-27T15:43:23,419 DEBUG io.netty.util.NetUtil:81 - Failed to get SOMAXCONN from sysctl and file \proc\sys\net\core\somaxconn. Default: 200
-2018-11-27T15:43:23,509 INFO  com.mchange.v2.log.MLog:212 - MLog clients using slf4j logging.
-2018-11-27T15:43:23,538 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/mchange-commons.properties' could not be found. Skipping.
-2018-11-27T15:43:23,539 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/mchange-log.properties' could not be found. Skipping.
-2018-11-27T15:43:23,539 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier 'hocon:/reference,/application,/c3p0,/' could not be found. Skipping.
-2018-11-27T15:43:23,539 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/c3p0.properties' could not be found. Skipping.
-2018-11-27T15:43:23,539 DEBUG com.mchange.v2.log.MLog:207 - Reading VM config for path list /com/mchange/v2/log/default-mchange-log.properties, /mchange-commons.properties, /c3p0.properties, hocon:/reference,/application,/c3p0,/, /mchange-log.properties, /
-2018-11-27T15:43:23,540 DEBUG com.mchange.v2.log.MLog:207 - The configuration file for resource identifier '/mchange-commons.properties' could not be found. Skipping.
-2018-11-27T15:43:23,540 DEBUG com.mchange.v2.log.MLog:207 - The configuration file for resource identifier '/c3p0.properties' could not be found. Skipping.
-2018-11-27T15:43:23,540 DEBUG com.mchange.v2.log.MLog:207 - The configuration file for resource identifier 'hocon:/reference,/application,/c3p0,/' could not be found. Skipping.
-2018-11-27T15:43:23,541 DEBUG com.mchange.v2.log.MLog:207 - The configuration file for resource identifier '/mchange-log.properties' could not be found. Skipping.
-2018-11-27T15:43:23,561 INFO  com.mchange.v2.c3p0.C3P0Registry:212 - Initializing c3p0-0.9.5.2 [built 08-December-2015 22:06:04 -0800; debug? true; trace: 10]
-2018-11-27T15:43:23,589 DEBUG com.mchange.v2.c3p0.management.DynamicPooledDataSourceManagerMBean:204 - MBean: com.mchange.v2.c3p0:type=PooledDataSource,identityToken=1hgf11d9znca0801m7xbg6|3a8a2223,name=1hgf11d9znca0801m7xbg6|3a8a2223 registered.
-2018-11-27T15:43:23,613 DEBUG com.mchange.v2.c3p0.management.DynamicPooledDataSourceManagerMBean:204 - MBean: com.mchange.v2.c3p0:type=PooledDataSource,identityToken=1hgf11d9znca0801m7xbg6|3a8a2223,name=1hgf11d9znca0801m7xbg6|3a8a2223 unregistered, in order to be reregistered after update.
-2018-11-27T15:43:23,615 DEBUG com.mchange.v2.c3p0.management.DynamicPooledDataSourceManagerMBean:204 - MBean: com.mchange.v2.c3p0:type=PooledDataSource,identityToken=1hgf11d9znca0801m7xbg6|3a8a2223,name=1hgf11d9znca0801m7xbg6|3a8a2223 registered.
-2018-11-27T15:43:23,647 INFO  com.mchange.v2.c3p0.impl.AbstractPoolBackedDataSource:212 - Initializing c3p0 pool... com.mchange.v2.c3p0.ComboPooledDataSource [ acquireIncrement -> 3, acquireRetryAttempts -> 30, acquireRetryDelay -> 1000, autoCommitOnClose -> false, automaticTestTable -> null, breakAfterAcquireFailure -> false, checkoutTimeout -> 0, connectionCustomizerClassName -> null, connectionTesterClassName -> com.mchange.v2.c3p0.impl.DefaultConnectionTester, contextClassLoaderSource -> caller, dataSourceName -> 1hgf11d9znca0801m7xbg6|3a8a2223, debugUnreturnedConnectionStackTraces -> false, description -> null, driverClass -> com.mysql.cj.jdbc.Driver, extensions -> {}, factoryClassLocation -> null, forceIgnoreUnresolvedTransactions -> false, forceSynchronousCheckins -> false, forceUseNamedDriverClass -> false, identityToken -> 1hgf11d9znca0801m7xbg6|3a8a2223, idleConnectionTestPeriod -> 0, initialPoolSize -> 3, jdbcUrl -> jdbc:mysql://localhost/advertisement?characterEncoding=UTF-8&useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&autoReconnect=true, maxAdministrativeTaskTime -> 0, maxConnectionAge -> 0, maxIdleTime -> 0, maxIdleTimeExcessConnections -> 0, maxPoolSize -> 50, maxStatements -> 0, maxStatementsPerConnection -> 0, minPoolSize -> 3, numHelperThreads -> 3, preferredTestQuery -> null, privilegeSpawnedThreads -> false, properties -> {user=******, password=******}, propertyCycle -> 0, statementCacheNumDeferredCloseThreads -> 0, testConnectionOnCheckin -> false, testConnectionOnCheckout -> false, unreturnedConnectionTimeout -> 0, userOverrides -> {}, usesTraditionalReflectiveProxies -> false ]
-2018-11-27T15:43:23,660 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/mchange-commons.properties' could not be found. Skipping.
-2018-11-27T15:43:23,661 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/mchange-log.properties' could not be found. Skipping.
-2018-11-27T15:43:23,661 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/c3p0.properties' could not be found. Skipping.
-2018-11-27T15:43:23,662 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier 'hocon:/reference,/application,/c3p0,/' could not be found. Skipping.
-2018-11-27T15:43:23,665 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - com.mchange.v2.resourcepool.BasicResourcePool@7ca1cc5b config: [start -> 3; min -> 3; max -> 50; inc -> 3; num_acq_attempts -> 30; acq_attempt_delay -> 1000; check_idle_resources_delay -> 0; max_resource_age -> 0; max_idle_time -> 0; excess_max_idle_time -> 0; destroy_unreturned_resc_time -> 0; expiration_enforcement_delay -> 0; break_on_acquisition_failure -> false; debug_store_checkout_exceptions -> false; force_synchronous_checkins -> false]
-2018-11-27T15:43:23,665 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPoolManager:204 - Created new pool for auth, username (masked): 'ro******'.
-2018-11-27T15:43:23,666 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - acquire test -- pool size: 0; target_pool_size: 3; desired target? 1
-2018-11-27T15:43:23,666 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - awaitAvailable(): [unknown]
-2018-11-27T15:43:23,941 INFO  database.AdvertisementDatabaseVerticle:39 - database is ready
-2018-11-27T15:43:23,949 DEBUG com.mchange.v2.c3p0.impl.NewProxyConnection:204 - com.mchange.v2.c3p0.impl.NewProxyConnection@61df14ff [wrapping: null]: close() called more than once.
-2018-11-27T15:43:24,443 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.numHeapArenas: 8
-2018-11-27T15:43:24,444 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.numDirectArenas: 8
-2018-11-27T15:43:24,444 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.pageSize: 8192
-2018-11-27T15:43:24,445 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.maxOrder: 11
-2018-11-27T15:43:24,446 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.chunkSize: 16777216
-2018-11-27T15:43:24,446 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.tinyCacheSize: 512
-2018-11-27T15:43:24,446 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.smallCacheSize: 256
-2018-11-27T15:43:24,448 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.normalCacheSize: 64
-2018-11-27T15:43:24,448 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.maxCachedBufferCapacity: 32768
-2018-11-27T15:43:24,449 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.cacheTrimInterval: 8192
-2018-11-27T15:43:24,449 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.useCacheForAllThreads: true
-2018-11-27T15:43:24,452 DEBUG io.netty.util.internal.InternalThreadLocalMap:76 - -Dio.netty.threadLocalMap.stringBuilder.initialSize: 1024
-2018-11-27T15:43:24,452 DEBUG io.netty.util.internal.InternalThreadLocalMap:76 - -Dio.netty.threadLocalMap.stringBuilder.maxSize: 4096
-2018-11-27T15:43:24,512 DEBUG io.netty.resolver.dns.UnixResolverDnsServerAddressStreamProvider:86 - failed to parse /etc/resolv.conf and/or /etc/resolver
+2018-11-30T14:20:01,944 DEBUG io.netty.util.internal.logging.InternalLoggerFactory:71 - Using SLF4J as the default logging framework
+2018-11-30T14:20:01,952 DEBUG io.netty.util.ResourceLeakDetector:81 - -Dio.netty.leakDetection.level: simple
+2018-11-30T14:20:01,952 DEBUG io.netty.util.ResourceLeakDetector:81 - -Dio.netty.leakDetection.maxRecords: 4
+2018-11-30T14:20:01,991 DEBUG io.netty.channel.MultithreadEventLoopGroup:76 - -Dio.netty.eventLoopThreads: 8
+2018-11-30T14:20:02,071 DEBUG io.netty.util.internal.PlatformDependent:71 - Platform: Windows
+2018-11-30T14:20:02,074 DEBUG io.netty.util.internal.PlatformDependent0:76 - -Dio.netty.noUnsafe: false
+2018-11-30T14:20:02,074 DEBUG io.netty.util.internal.PlatformDependent0:76 - Java version: 8
+2018-11-30T14:20:02,077 DEBUG io.netty.util.internal.PlatformDependent0:71 - sun.misc.Unsafe.theUnsafe: available
+2018-11-30T14:20:02,078 DEBUG io.netty.util.internal.PlatformDependent0:71 - sun.misc.Unsafe.copyMemory: available
+2018-11-30T14:20:02,079 DEBUG io.netty.util.internal.PlatformDependent0:71 - java.nio.Buffer.address: available
+2018-11-30T14:20:02,080 DEBUG io.netty.util.internal.PlatformDependent0:71 - direct buffer constructor: available
+2018-11-30T14:20:02,081 DEBUG io.netty.util.internal.PlatformDependent0:76 - java.nio.Bits.unaligned: available, true
+2018-11-30T14:20:02,081 DEBUG io.netty.util.internal.PlatformDependent0:71 - jdk.internal.misc.Unsafe.allocateUninitializedArray(int): unavailable prior to Java9
+2018-11-30T14:20:02,081 DEBUG io.netty.util.internal.PlatformDependent0:76 - java.nio.DirectByteBuffer.<init>(long, int): available
+2018-11-30T14:20:02,081 DEBUG io.netty.util.internal.PlatformDependent:76 - sun.misc.Unsafe: available
+2018-11-30T14:20:02,082 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.tmpdir: C:\Users\jin\AppData\Local\Temp (java.io.tmpdir)
+2018-11-30T14:20:02,082 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.bitMode: 64 (sun.arch.data.model)
+2018-11-30T14:20:02,083 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.noPreferDirect: false
+2018-11-30T14:20:02,084 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.maxDirectMemory: 1653604352 bytes
+2018-11-30T14:20:02,084 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.uninitializedArrayAllocationThreshold: -1
+2018-11-30T14:20:02,085 DEBUG io.netty.util.internal.CleanerJava6:71 - java.nio.ByteBuffer.cleaner(): available
+2018-11-30T14:20:02,102 DEBUG io.netty.channel.nio.NioEventLoop:76 - -Dio.netty.noKeySetOptimization: false
+2018-11-30T14:20:02,102 DEBUG io.netty.channel.nio.NioEventLoop:76 - -Dio.netty.selectorAutoRebuildThreshold: 512
+2018-11-30T14:20:02,112 DEBUG io.netty.util.internal.PlatformDependent:71 - org.jctools-core.MpscChunkedArrayQueue: available
+2018-11-30T14:20:02,309 DEBUG io.netty.resolver.dns.DefaultDnsServerAddressStreamProvider:76 - Default DNS servers: [/192.168.1.1:53] (sun.net.dns.ResolverConfiguration)
+2018-11-30T14:20:02,314 DEBUG io.netty.util.NetUtil:76 - -Djava.net.preferIPv4Stack: false
+2018-11-30T14:20:02,315 DEBUG io.netty.util.NetUtil:76 - -Djava.net.preferIPv6Addresses: false
+2018-11-30T14:20:02,382 DEBUG io.netty.util.NetUtil:86 - Loopback interface: lo (Software Loopback Interface 1, 127.0.0.1)
+2018-11-30T14:20:02,383 DEBUG io.netty.util.NetUtil:81 - Failed to get SOMAXCONN from sysctl and file \proc\sys\net\core\somaxconn. Default: 200
+2018-11-30T14:20:02,488 INFO  com.mchange.v2.log.MLog:212 - MLog clients using slf4j logging.
+2018-11-30T14:20:02,498 DEBUG com.mchange.v2.log.MLog:207 - Reading VM config for path list /com/mchange/v2/log/default-mchange-log.properties, /mchange-commons.properties, /c3p0.properties, hocon:/reference,/application,/c3p0,/, /mchange-log.properties, /
+2018-11-30T14:20:02,499 DEBUG com.mchange.v2.log.MLog:207 - The configuration file for resource identifier '/mchange-commons.properties' could not be found. Skipping.
+2018-11-30T14:20:02,499 DEBUG com.mchange.v2.log.MLog:207 - The configuration file for resource identifier '/c3p0.properties' could not be found. Skipping.
+2018-11-30T14:20:02,500 DEBUG com.mchange.v2.log.MLog:207 - The configuration file for resource identifier 'hocon:/reference,/application,/c3p0,/' could not be found. Skipping.
+2018-11-30T14:20:02,500 DEBUG com.mchange.v2.log.MLog:207 - The configuration file for resource identifier '/mchange-log.properties' could not be found. Skipping.
+2018-11-30T14:20:02,508 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/mchange-commons.properties' could not be found. Skipping.
+2018-11-30T14:20:02,509 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/mchange-log.properties' could not be found. Skipping.
+2018-11-30T14:20:02,509 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier 'hocon:/reference,/application,/c3p0,/' could not be found. Skipping.
+2018-11-30T14:20:02,511 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/c3p0.properties' could not be found. Skipping.
+2018-11-30T14:20:02,549 INFO  com.mchange.v2.c3p0.C3P0Registry:212 - Initializing c3p0-0.9.5.2 [built 08-December-2015 22:06:04 -0800; debug? true; trace: 10]
+2018-11-30T14:20:02,591 DEBUG com.mchange.v2.c3p0.management.DynamicPooledDataSourceManagerMBean:204 - MBean: com.mchange.v2.c3p0:type=PooledDataSource,identityToken=1hgf11d9zrjmdeosnbmfi|2a5e7e78,name=1hgf11d9zrjmdeosnbmfi|2a5e7e78 registered.
+2018-11-30T14:20:02,630 DEBUG com.mchange.v2.c3p0.management.DynamicPooledDataSourceManagerMBean:204 - MBean: com.mchange.v2.c3p0:type=PooledDataSource,identityToken=1hgf11d9zrjmdeosnbmfi|2a5e7e78,name=1hgf11d9zrjmdeosnbmfi|2a5e7e78 unregistered, in order to be reregistered after update.
+2018-11-30T14:20:02,631 DEBUG com.mchange.v2.c3p0.management.DynamicPooledDataSourceManagerMBean:204 - MBean: com.mchange.v2.c3p0:type=PooledDataSource,identityToken=1hgf11d9zrjmdeosnbmfi|2a5e7e78,name=1hgf11d9zrjmdeosnbmfi|2a5e7e78 registered.
+2018-11-30T14:20:02,672 INFO  com.mchange.v2.c3p0.impl.AbstractPoolBackedDataSource:212 - Initializing c3p0 pool... com.mchange.v2.c3p0.ComboPooledDataSource [ acquireIncrement -> 3, acquireRetryAttempts -> 30, acquireRetryDelay -> 1000, autoCommitOnClose -> false, automaticTestTable -> null, breakAfterAcquireFailure -> false, checkoutTimeout -> 0, connectionCustomizerClassName -> null, connectionTesterClassName -> com.mchange.v2.c3p0.impl.DefaultConnectionTester, contextClassLoaderSource -> caller, dataSourceName -> 1hgf11d9zrjmdeosnbmfi|2a5e7e78, debugUnreturnedConnectionStackTraces -> false, description -> null, driverClass -> com.mysql.cj.jdbc.Driver, extensions -> {}, factoryClassLocation -> null, forceIgnoreUnresolvedTransactions -> false, forceSynchronousCheckins -> false, forceUseNamedDriverClass -> false, identityToken -> 1hgf11d9zrjmdeosnbmfi|2a5e7e78, idleConnectionTestPeriod -> 0, initialPoolSize -> 3, jdbcUrl -> jdbc:mysql://localhost/tjaccount?characterEncoding=UTF-8&useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&autoReconnect=true  , maxAdministrativeTaskTime -> 0, maxConnectionAge -> 0, maxIdleTime -> 0, maxIdleTimeExcessConnections -> 0, maxPoolSize -> 50, maxStatements -> 0, maxStatementsPerConnection -> 0, minPoolSize -> 3, numHelperThreads -> 3, preferredTestQuery -> null, privilegeSpawnedThreads -> false, properties -> {user=******, password=******}, propertyCycle -> 0, statementCacheNumDeferredCloseThreads -> 0, testConnectionOnCheckin -> false, testConnectionOnCheckout -> false, unreturnedConnectionTimeout -> 0, userOverrides -> {}, usesTraditionalReflectiveProxies -> false ]
+2018-11-30T14:20:02,687 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/mchange-commons.properties' could not be found. Skipping.
+2018-11-30T14:20:02,687 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/mchange-log.properties' could not be found. Skipping.
+2018-11-30T14:20:02,687 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/c3p0.properties' could not be found. Skipping.
+2018-11-30T14:20:02,687 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier 'hocon:/reference,/application,/c3p0,/' could not be found. Skipping.
+2018-11-30T14:20:02,689 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - com.mchange.v2.resourcepool.BasicResourcePool@5c463a21 config: [start -> 3; min -> 3; max -> 50; inc -> 3; num_acq_attempts -> 30; acq_attempt_delay -> 1000; check_idle_resources_delay -> 0; max_resource_age -> 0; max_idle_time -> 0; excess_max_idle_time -> 0; destroy_unreturned_resc_time -> 0; expiration_enforcement_delay -> 0; break_on_acquisition_failure -> false; debug_store_checkout_exceptions -> false; force_synchronous_checkins -> false]
+2018-11-30T14:20:02,690 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPoolManager:204 - Created new pool for auth, username (masked): 'ro******'.
+2018-11-30T14:20:02,690 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - acquire test -- pool size: 0; target_pool_size: 3; desired target? 1
+2018-11-30T14:20:02,690 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - awaitAvailable(): [unknown]
+2018-11-30T14:20:03,000 INFO  database.AccountDatabaseVerticle:43 - database start success
+2018-11-30T14:20:03,233 DEBUG io.netty.buffer.AbstractByteBuf:81 - -Dio.netty.buffer.bytebuf.checkAccessible: true
+2018-11-30T14:20:03,236 DEBUG io.netty.util.ResourceLeakDetectorFactory:76 - Loaded default ResourceLeakDetector: io.netty.util.ResourceLeakDetector@7fdf0200
+2018-11-30T14:20:04,504 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.numHeapArenas: 8
+2018-11-30T14:20:04,505 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.numDirectArenas: 8
+2018-11-30T14:20:04,505 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.pageSize: 8192
+2018-11-30T14:20:04,505 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.maxOrder: 11
+2018-11-30T14:20:04,505 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.chunkSize: 16777216
+2018-11-30T14:20:04,505 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.tinyCacheSize: 512
+2018-11-30T14:20:04,505 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.smallCacheSize: 256
+2018-11-30T14:20:04,505 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.normalCacheSize: 64
+2018-11-30T14:20:04,505 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.maxCachedBufferCapacity: 32768
+2018-11-30T14:20:04,506 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.cacheTrimInterval: 8192
+2018-11-30T14:20:04,506 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.useCacheForAllThreads: true
+2018-11-30T14:20:04,508 DEBUG io.netty.util.internal.InternalThreadLocalMap:76 - -Dio.netty.threadLocalMap.stringBuilder.initialSize: 1024
+2018-11-30T14:20:04,508 DEBUG io.netty.util.internal.InternalThreadLocalMap:76 - -Dio.netty.threadLocalMap.stringBuilder.maxSize: 4096
+2018-11-30T14:20:04,553 DEBUG io.netty.resolver.dns.UnixResolverDnsServerAddressStreamProvider:86 - failed to parse /etc/resolv.conf and/or /etc/resolver
 java.lang.IllegalArgumentException: \etc\resolv.conf didn't provide any name servers
 	at io.netty.resolver.dns.UnixResolverDnsServerAddressStreamProvider.<init>(UnixResolverDnsServerAddressStreamProvider.java:98) ~[netty-resolver-dns-4.1.15.Final.jar:4.1.15.Final]
 	at io.netty.resolver.dns.UnixResolverDnsServerAddressStreamProvider.<init>(UnixResolverDnsServerAddressStreamProvider.java:124) ~[netty-resolver-dns-4.1.15.Final.jar:4.1.15.Final]
@@ -83,7 +84,7 @@ java.lang.IllegalArgumentException: \etc\resolv.conf didn't provide any name ser
 	at io.vertx.core.net.impl.AsyncResolveConnectHelper.doBind(AsyncResolveConnectHelper.java:87) ~[vertx-core-3.5.0.jar:?]
 	at io.vertx.core.http.impl.HttpServerImpl.listen(HttpServerImpl.java:344) ~[vertx-core-3.5.0.jar:?]
 	at io.vertx.core.http.impl.HttpServerImpl.listen(HttpServerImpl.java:231) ~[vertx-core-3.5.0.jar:?]
-	at http.HttpServerVerticle.start(HttpServerVerticle.java:115) ~[classes/:?]
+	at http.AccountHttpVerticle.start(AccountHttpVerticle.java:140) ~[classes/:?]
 	at io.vertx.core.impl.DeploymentManager.lambda$doDeploy$10(DeploymentManager.java:481) ~[vertx-core-3.5.0.jar:?]
 	at io.vertx.core.impl.ContextImpl.lambda$wrapTask$2(ContextImpl.java:344) ~[vertx-core-3.5.0.jar:?]
 	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163) [netty-common-4.1.15.Final.jar:4.1.15.Final]
@@ -91,34 +92,16 @@ java.lang.IllegalArgumentException: \etc\resolv.conf didn't provide any name ser
 	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:463) [netty-transport-4.1.15.Final.jar:4.1.15.Final]
 	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858) [netty-common-4.1.15.Final.jar:4.1.15.Final]
 	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-2018-11-27T15:43:24,535 DEBUG io.netty.channel.DefaultChannelId:76 - -Dio.netty.processId: 8580 (auto-detected)
-2018-11-27T15:43:24,620 DEBUG io.netty.channel.DefaultChannelId:76 - -Dio.netty.machineId: 00:50:56:ff:fe:c0:00:01 (auto-detected)
-2018-11-27T15:43:24,647 DEBUG io.netty.buffer.ByteBufUtil:76 - -Dio.netty.allocator.type: pooled
-2018-11-27T15:43:24,648 DEBUG io.netty.buffer.ByteBufUtil:76 - -Dio.netty.threadLocalDirectBufferSize: 65536
-2018-11-27T15:43:24,648 DEBUG io.netty.buffer.ByteBufUtil:76 - -Dio.netty.maxThreadLocalCharBufferSize: 16384
-2018-11-27T15:43:24,677 INFO  http.HttpServerVerticle:117 - HTTP server running on port 8083
-2018-11-27T15:43:26,138 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.maxCapacityPerThread: 32768
-2018-11-27T15:43:26,139 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.maxSharedCapacityFactor: 2
-2018-11-27T15:43:26,139 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.linkCapacity: 16
-2018-11-27T15:43:26,139 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.ratio: 8
-2018-11-27T15:43:26,154 DEBUG io.netty.buffer.AbstractByteBuf:81 - -Dio.netty.buffer.bytebuf.checkAccessible: true
-2018-11-27T15:43:26,156 DEBUG io.netty.util.ResourceLeakDetectorFactory:76 - Loaded default ResourceLeakDetector: io.netty.util.ResourceLeakDetector@6b5f7fea
-2018-11-27T15:43:26,403 INFO  http.HttpServerVerticle:921 - TJDataEntry\file-uploads\2018-11-27\魅族_2018_2018-11-01至2018-11-27_数据报表.xls   copy and delete success     
-2018-11-27T15:45:04,933 INFO  http.HttpServerVerticle:921 - TJDataEntry\file-uploads\2018-11-27\友盟_保护气球_渠道(oppo)_日趋势变化_20181029_20181127.csv   copy and delete success     
-2018-11-27T15:45:27,534 INFO  http.HttpServerVerticle:687 - TJDataEntry\2018-11-26_2018-11-26_保护气球.xls
-2018-11-27T16:03:28,271 INFO  http.HttpServerVerticle:687 - TJDataEntry\2018-11-27_2018-11-27_保护气球.xls
-2018-11-27T16:05:51,497 INFO  http.HttpServerVerticle:687 - TJDataEntry\2018-11-15_2018-11-27_保护气球.xls
-2018-11-27T16:14:45,440 INFO  AccountVerticle:178 - root 登录,2018-11-27 16:14:45-------------------------
-2018-11-27T16:14:45,459 INFO  AccountVerticle:209 - root  get info success["admin"]-------------------------------
-2018-11-27T16:34:39,711 INFO  AccountVerticle:178 - foo 登录,2018-11-27 16:34:39-------------------------
-2018-11-27T16:34:39,729 INFO  AccountVerticle:209 - foo  get info success["editor"]-------------------------------
-2018-11-27T16:34:42,435 INFO  AccountVerticle:209 - foo  get info success["editor"]-------------------------------
-2018-11-27T16:34:52,305 INFO  AccountVerticle:209 - foo  get info success["editor"]-------------------------------
-2018-11-27T16:35:23,754 INFO  AccountVerticle:209 - foo  get info success["editor"]-------------------------------
-2018-11-27T16:35:41,389 INFO  AccountVerticle:209 - foo  get info success["editor"]-------------------------------
-2018-11-27T16:35:50,538 INFO  AccountVerticle:209 - foo  get info success["editor"]-------------------------------
-2018-11-27T16:37:04,398 INFO  AccountVerticle:209 - foo  get info success["editor"]-------------------------------
-2018-11-27T16:37:20,209 INFO  AccountVerticle:209 - foo  get info success["editor"]-------------------------------
-2018-11-27T16:45:18,411 INFO  AccountVerticle:209 - foo  get info success["editor"]-------------------------------
-2018-11-27T16:45:57,974 INFO  AccountVerticle:209 - foo  get info success["editor"]-------------------------------
-2018-11-27T16:46:02,081 INFO  AccountVerticle:209 - foo  get info success["editor"]-------------------------------
+2018-11-30T14:20:04,572 DEBUG io.netty.channel.DefaultChannelId:76 - -Dio.netty.processId: 13868 (auto-detected)
+2018-11-30T14:20:04,651 DEBUG io.netty.channel.DefaultChannelId:76 - -Dio.netty.machineId: 00:50:56:ff:fe:c0:00:01 (auto-detected)
+2018-11-30T14:20:04,673 DEBUG io.netty.buffer.ByteBufUtil:76 - -Dio.netty.allocator.type: pooled
+2018-11-30T14:20:04,673 DEBUG io.netty.buffer.ByteBufUtil:76 - -Dio.netty.threadLocalDirectBufferSize: 65536
+2018-11-30T14:20:04,673 DEBUG io.netty.buffer.ByteBufUtil:76 - -Dio.netty.maxThreadLocalCharBufferSize: 16384
+2018-11-30T14:20:04,687 INFO  http.AccountHttpVerticle:142 - HTTP server running on port 8084
+2018-11-30T14:20:17,721 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.maxCapacityPerThread: 32768
+2018-11-30T14:20:17,721 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.maxSharedCapacityFactor: 2
+2018-11-30T14:20:17,721 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.linkCapacity: 16
+2018-11-30T14:20:17,721 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.ratio: 8
+2018-11-30T14:20:18,027 INFO  http.AccountHttpVerticle:309 - admin  get info success["admin"]-------------------------------
+2018-11-30T14:20:18,235 INFO  http.AccountHttpVerticle:163 - ok
+2018-11-30T14:21:02,590 INFO  http.AccountHttpVerticle:163 - ok

@@ -1,3 +1,8 @@
+package http;
+
+import database.AccountDatabaseService;
+import database.ConfigConstants;
+import database.SqlQuery;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpMethod;
@@ -21,17 +26,23 @@ import org.slf4j.LoggerFactory;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class AccountVerticle extends AbstractVerticle {
-    private Logger logger = LoggerFactory.getLogger(AccountVerticle.class.getName());
-    JWTAuth jwtAuth = null;
-    JDBCClient jdbcClient = null;
-    SessionStore store = null;
-    JDBCAuth authProvider = null;
-    SqlService sqlService=new SqlService();
+public class AccountHttpVerticle extends AbstractVerticle {
+    public static final String CONFIG_HTTP_SERVER_PORT = "http.server.port";
+    public static final String CONFIG_ACCOUNTDB_QUEUE = "accountdb.queue";
+    private Logger logger = LoggerFactory.getLogger(AccountHttpVerticle.class.getName());
+    private AccountDatabaseService dbService;
+    private String accountDbQueue;
+    private JWTAuth jwtAuth = null;
+    private JDBCClient jdbcClient = null;
+    private SessionStore store = null;
+    private JDBCAuth authProvider = null;
 
     @Override
     public void start(Future<Void> startFuture) throws Exception {
-        Method method = new Method();
+        accountDbQueue = config().getString(CONFIG_ACCOUNTDB_QUEUE, "accountdb.queue");
+        dbService=AccountDatabaseService.createProxy(vertx,CONFIG_ACCOUNTDB_QUEUE);
+
+        AccountHttpService method = new AccountHttpService();
         HashMap<ConfigConstants, String> conf = method.loadSqlQueries();
         Router router = Router.router(vertx);
 
@@ -80,7 +91,8 @@ public class AccountVerticle extends AbstractVerticle {
 
         jwtAuth = JWTAuth.create(vertx, authConfig);
 
-        router.route("/user/*").handler(JWTAuthHandler.create(jwtAuth));     //token验证
+        router.route("/user/*").handler(JWTAuthHandler.create(jwtAuth));     //token验证,生成user
+        router.route("/api/*").handler(JWTAuthHandler.create(jwtAuth));
         //token end
 
         //路由    start
@@ -94,20 +106,25 @@ public class AccountVerticle extends AbstractVerticle {
         router.get("/user/info").handler(this::getInfoHandler);
         router.post("/login/logout").handler(this::logoutHandler);
         //account相关
-        router.get("/account").handler(this::findAccount);
-        router.patch("/account/:id").handler(this::updateUser);
-        router.post("/account").handler(this::addAccount);
-        router.delete("/account/:id").handler(this::delAccount);
+        router.get("/api/account").handler(this::findAccount);
+        router.patch("/api/account/:id").handler(this::updateUser);
+        router.post("/api/account").handler(this::addAccount);
+        router.delete("/api/account/:id").handler(this::delAccount);
         //role相关
-        router.get("/role").handler(this::findRole);
-        router.post("/role").handler(this::addRole);
-        router.patch("/role/:id").handler(this::updateRole);
-        router.delete("/role/:id").handler(this::delRole);
+        router.get("/api/role").handler(this::findRole);
+        router.post("/api/role").handler(this::addRole);
+        router.patch("/api/role/:id").handler(this::updateRole);
+        router.delete("/api/role/:id").handler(this::delRole);
         //perm相关
-        router.get("/perm").handler(this::findPerm);
-        router.post("/perm").handler(this::addPerm);
-        router.patch("/perm/:id").handler(this::updatePerm);
-        router.delete("/perm/:id").handler(this::delPerm);
+        router.get("/api/perm").handler(this::findPerm);
+        router.post("/api/perm").handler(this::addPerm);
+        router.patch("/api/perm/:id").handler(this::updatePerm);
+        router.delete("/api/perm/:id").handler(this::delPerm);
+        //权限相关
+        router.get("/api/perms/:id").handler(this::findPerms);
+        router.post("/api/perms").handler(this::addPerms);
+        //
+        router.get("/api/getchannel").handler(this::testgetchannel);
 
         //路由    end
         Router apirouter = Router.router(vertx);
@@ -118,7 +135,7 @@ public class AccountVerticle extends AbstractVerticle {
                 .allowedMethods(allowMethods)
                 .allowedHeaders(allowHeaders));
         //跨域 end
-        int portNumber = Integer.valueOf(conf.get(ConfigConstants.HTTP_PORT));
+        Integer portNumber = Integer.valueOf(conf.get(ConfigConstants.HTTP_PORT));
         HttpServer httpServer = vertx.createHttpServer();
         httpServer.requestHandler(router::accept).listen(portNumber, ar -> {
             if (ar.succeeded()) {
@@ -131,6 +148,89 @@ public class AccountVerticle extends AbstractVerticle {
         });
     }
 
+    /**
+     * 测试获取渠道
+     * @param context
+     */
+    private void testgetchannel(RoutingContext context) {
+        List<JsonObject> jsonObjects=new ArrayList<>();
+        for (int i=0;i<10;i++){
+            JsonObject jsonObject=new JsonObject();
+            jsonObject.put("id",i).put("label","label"+i);
+            jsonObjects.add(jsonObject);
+        }
+        JsonObject json = new JsonObject().put("code", 20000).put("data", jsonObjects);
+        logger.info("ok");
+        context.response().setStatusCode(200).end(Json.encodePrettily(json));
+    }
+
+
+    /**
+     * 获得权限列表
+     * @param context
+     */
+    private void findPerms(RoutingContext context) {
+        Integer id = -1;
+        try {
+            id = Integer.valueOf(context.request().getParam("id"));
+        } catch (Exception e) {
+            badRequest(context);
+            return;
+        }
+        dbService.fetchDatas(SqlQuery.SELECT_PERMS,new JsonArray().add(id),res->{
+            if (res.succeeded()){
+                List<JsonObject> jsonObjects=res.result();
+                List<String> list=new ArrayList<>();
+                for (int i=0;i<jsonObjects.size();i++){
+                    list.add(i,jsonObjects.get(i).getString("permission"));
+                }
+                JsonObject json = new JsonObject().put("code", 20000).put("data", list);
+                logger.info("ok");
+                context.response().setStatusCode(200).end(Json.encodePrettily(json));
+            }else {
+                logger.error("发生错误------->" + res.cause());
+                serviceError(context, Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
+            }
+        });
+    }
+
+    /**
+     * 更新权限
+     * @param context
+     */
+    private void addPerms(RoutingContext context) {
+        String username = context.request().getParam("username");
+        String username_mark = context.request().getParam("username_mark");
+        String permissions = context.request().getParam("permissions");
+        List<JsonArray> jsonArrays=new ArrayList<>();
+        String [] list=permissions.split(",");
+        for (int i=0;i<list.length;i++){
+            if (list[i]==null||list[i].length()==0)continue;
+            JsonArray jsonArray=new JsonArray();
+            jsonArray.add(username);
+            jsonArray.add(username_mark);
+            jsonArray.add(list[i]);
+            jsonArrays.add(jsonArray);
+        }
+        dbService.query(SqlQuery.DELETE_PERMS,new JsonArray().add(username_mark),res->{
+            if (res.succeeded()){
+                dbService.batch(SqlQuery.INSERT_PERMS,jsonArrays,result->{
+                   if (result.succeeded()){
+                       JsonObject json = new JsonObject().put("code", 20000);
+                       context.response().setStatusCode(200).end(Json.encodePrettily(json));
+                   }else {
+                       //-------
+                       result.cause().printStackTrace();
+                   }
+                });
+            }else {
+                //-------
+                res.cause().printStackTrace();
+            }
+        });
+    }
+
+
     private void authValid(RoutingContext context){
 
     }
@@ -141,8 +241,8 @@ public class AccountVerticle extends AbstractVerticle {
      * @param context
      */
     private void loginHandler(RoutingContext context) {
-        String username = context.getBodyAsJson().getString("username");
-        String password = context.getBodyAsJson().getString("password");
+        String username = context.getBodyAsJson().getString("username").trim();
+        String password = context.getBodyAsJson().getString("password").trim();
         JsonObject authInfo = new JsonObject().put("username", username).put("password", password);
         authProvider.authenticate(authInfo, res -> {
             if (res.succeeded()) {
@@ -170,7 +270,7 @@ public class AccountVerticle extends AbstractVerticle {
                                                         .put("canDelete", canDelete.succeeded() && canDelete.result())
                                                         .put("canUpdate", canUpdate.succeeded() && canUpdate.result())
                                                         .put("roles", roles),
-                                                new JWTOptions().setExpiresInMinutes(45L));
+                                                new JWTOptions().setExpiresInMinutes(999L));
                                         //token生成
                                         JsonObject jsonObject = new JsonObject();
                                         jsonObject.put("code", 20000)
@@ -184,7 +284,7 @@ public class AccountVerticle extends AbstractVerticle {
                     });
                 });
             } else {
-                System.out.println(res.cause());
+                res.cause().printStackTrace();
                 logger.error("登录失败:" + res.cause());
                 context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 50009).put("data", "")));
             }
@@ -201,7 +301,7 @@ public class AccountVerticle extends AbstractVerticle {
         String username = context.user().principal().getString("username", null);
         JsonArray roles = context.user().principal().getJsonArray("roles", null);
         vertx.executeBlocking(event -> {
-            JsonObject data = new JsonObject().put("roles", Method.toList(roles)).put("name", username);
+            JsonObject data = new JsonObject().put("roles", AccountHttpService.toList(roles)).put("name", username);
             event.complete(data);
         }, asyncResult -> {
             if (asyncResult.succeeded()) {
@@ -230,7 +330,7 @@ public class AccountVerticle extends AbstractVerticle {
      *api获取帐号列表
      */
     private void findAccount(RoutingContext context) {
-        sqlService.find(jdbcClient,SqlQuery.SELECT_USER).setHandler(rs->{
+        dbService.fetchAllData(SqlQuery.SELECT_USER,rs->{
             if (rs.succeeded()){
                 List<JsonObject> jsonObjects=rs.result();
                 JsonObject json = new JsonObject().put("code", 20000).put("data", jsonObjects);
@@ -249,21 +349,23 @@ public class AccountVerticle extends AbstractVerticle {
         String name = context.request().getParam("username");
         String password = context.request().getParam("psd");
         String note = context.request().getParam("note");
-        if (name == null || password == null || note == null ||  name.length() == 0 || password.length() == 0 || note.length() == 0) {
-            System.out.println(111);
+        String position = context.request().getParam("position");
+        String department = context.request().getParam("department");
+        if (name == null || password == null|| note == null || position ==null || department ==null||  name.length() == 0 || password.length() == 0 ||  note.length() == 0 || position.length() == 0 ||  department.length() == 0 ) {
             badRequest(context);
             return;
         }
         String salt = authProvider.generateSalt();
         String hash = authProvider.computeHash(password, salt);
 
-        sqlService.excuteWithParams(jdbcClient,SqlQuery.INSERT_USER,new JsonArray().add(name).add(hash).add(salt).add(note).add(password)).setHandler(rs->{
-           if (rs.succeeded()){
-               context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
-           }else {
-               logger.error("发生错误------->" + rs.cause());
-               serviceError(context, Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
-           }
+        dbService.query(SqlQuery.INSERT_USER,new JsonArray().add(name).add(hash).add(salt).add(note).add(password).add(position).add(department),res->{
+            if (res.succeeded()){
+                context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
+            }else {
+                logger.error("发生错误------->" + res.cause());
+                serviceError(context, Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
+            }
+
         });
     }
 
@@ -279,13 +381,13 @@ public class AccountVerticle extends AbstractVerticle {
             badRequest(context);
             return;
         }
-        sqlService.excuteWithParams(jdbcClient,SqlQuery.DELETE_USER,new JsonArray().add(id)).setHandler(rs->{
-           if (rs.succeeded()){
-               context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
-           }else {
-               logger.error("发生错误------->" + rs.cause());
-               serviceError(context, Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
-           }
+        dbService.query(SqlQuery.DELETE_USER,new JsonArray().add(id),res->{
+            if (res.succeeded()){
+                context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
+            }else {
+                logger.error("发生错误------->" + res.cause());
+                serviceError(context, Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
+            }
         });
     }
 
@@ -296,6 +398,8 @@ public class AccountVerticle extends AbstractVerticle {
         String name = context.getBodyAsJson().getString("username");
         String password = context.getBodyAsJson().getString("password");
         String note = context.getBodyAsJson().getString("note");
+        String position = context.getBodyAsJson().getString("position");
+        String department = context.getBodyAsJson().getString("department");
         Integer id = -1;
         try {
             id = Integer.valueOf(context.request().getParam("id"));
@@ -303,17 +407,17 @@ public class AccountVerticle extends AbstractVerticle {
             badRequest(context);
             return;
         }
-        if (name == null || password == null|| note == null ||  name.length() == 0 || password.length() == 0 ||  note.length() == 0 ) {
+        if (name == null || password == null|| note == null || position ==null || department ==null||  name.length() == 0 || password.length() == 0 ||  note.length() == 0 || position.length() == 0 ||  department.length() == 0 ) {
             badRequest(context);
             return;
         }
         String salt = authProvider.generateSalt();
         String hash = authProvider.computeHash(password, salt);
-        sqlService.excuteWithParams(jdbcClient,SqlQuery.UPDATE_USER,new JsonArray().add(name).add(hash).add(note).add(password).add(id)).setHandler(rs->{
-            if (rs.succeeded()){
+        dbService.query(SqlQuery.UPDATE_USER,new JsonArray().add(salt).add(name).add(hash).add(note).add(password).add(position).add(department).add(id),res->{
+            if (res.succeeded()){
                 context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
             }else {
-                logger.error("发生错误------->" + rs.cause());
+                logger.error("发生错误------->" + res.cause());
                 serviceError(context, Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
             }
         });
@@ -323,13 +427,13 @@ public class AccountVerticle extends AbstractVerticle {
      *api获取角色表
      */
     private void findRole(RoutingContext context) {
-        sqlService.find(jdbcClient,SqlQuery.SELECT_ROLE).setHandler(rs->{
-            if (rs.succeeded()){
-                List<JsonObject> jsonObjects=rs.result();
+        dbService.fetchAllData(SqlQuery.SELECT_ROLE,res->{
+            if (res.succeeded()){
+                List<JsonObject> jsonObjects=res.result();
                 JsonObject json = new JsonObject().put("code", 20000).put("data", jsonObjects);
                 context.response().setStatusCode(200).end(Json.encodePrettily(json));
             }else {
-                logger.error("发生错误------->" + rs.cause());
+                logger.error("发生错误------->" + res.cause());
                 serviceError(context, Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
             }
         });
@@ -342,15 +446,17 @@ public class AccountVerticle extends AbstractVerticle {
         String name = context.request().getParam("username");
         String role = context.request().getParam("role");
         String note = context.request().getParam("note");
-        if (name == null || role == null ||  name.length() == 0 || role.length() == 0 || note == null ||  note.length() == 0 ) {
+        String role_name = context.request().getParam("role_name");
+        String role_describe = context.request().getParam("role_describe");
+        if (role_name == null ||  role_name.length() == 0|| role_describe == null  || role_describe.length() == 0||name == null || role == null ||  name.length() == 0 || role.length() == 0 || note == null ||  note.length() == 0 ) {
             badRequest(context);
             return;
         }
-        sqlService.excuteWithParams(jdbcClient,SqlQuery.INSERT_ROLE,new JsonArray().add(name).add(role).add(note)).setHandler(rs->{
-            if (rs.succeeded()){
+        dbService.query(SqlQuery.INSERT_ROLE,new JsonArray().add(name).add(role).add(note).add(role_name).add(role_describe),res->{
+            if (res.succeeded()){
                 context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
             }else {
-                logger.error("发生错误------->" + rs.cause());
+                logger.error("发生错误------->" + res.cause());
                 serviceError(context, Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
             }
         });
@@ -363,6 +469,9 @@ public class AccountVerticle extends AbstractVerticle {
         String name = context.getBodyAsJson().getString("username");
         String role = context.getBodyAsJson().getString("role");
         String note = context.getBodyAsJson().getString("note");
+        String role_name = context.getBodyAsJson().getString("role_name");
+        String role_describe = context.getBodyAsJson().getString("role_describe");
+        System.out.println(name+role+note+role_name+role_describe);
         Integer id = -1;
         try {
             id = Integer.valueOf(context.request().getParam("id"));
@@ -370,15 +479,15 @@ public class AccountVerticle extends AbstractVerticle {
             badRequest(context);
             return;
         }
-        if (name == null || role == null ||  name.length() == 0 || role.length() == 0|| note == null ||  note.length() == 0 ) {
+        if (role_name == null ||  role_name.length() == 0|| role_describe == null  || role_describe.length() == 0||name == null ||  name.length() == 0|| role == null  || role.length() == 0|| note == null ||  note.length() == 0 ) {
             badRequest(context);
             return;
         }
-        sqlService.excuteWithParams(jdbcClient,SqlQuery.UPDATE_ROLE,new JsonArray().add(name).add(role).add(note).add(id)).setHandler(rs->{
-            if (rs.succeeded()){
+        dbService.query(SqlQuery.UPDATE_ROLE,new JsonArray().add(name).add(role).add(note).add(role_name).add(role_describe).add(id),res->{
+            if (res.succeeded()){
                 context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
             }else {
-                logger.error("发生错误------->" + rs.cause());
+                logger.error("发生错误------->" + res.cause());
                 serviceError(context, Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
             }
         });
@@ -395,11 +504,11 @@ public class AccountVerticle extends AbstractVerticle {
             badRequest(context);
             return;
         }
-        sqlService.excuteWithParams(jdbcClient,SqlQuery.DELETE_ROLE,new JsonArray().add(id)).setHandler(rs->{
-            if (rs.succeeded()){
+        dbService.query(SqlQuery.DELETE_ROLE,new JsonArray().add(id),res->{
+            if (res.succeeded()){
                 context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
             }else {
-                logger.error("发生错误------->" + rs.cause());
+                logger.error("发生错误------->" + res.cause());
                 serviceError(context, Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
             }
         });
@@ -409,13 +518,13 @@ public class AccountVerticle extends AbstractVerticle {
      *api获取权限
      */
     private void findPerm(RoutingContext context) {
-        sqlService.find(jdbcClient,SqlQuery.SELECT_PERM).setHandler(rs->{
-            if (rs.succeeded()){
-                List<JsonObject> jsonObjects=rs.result();
+        dbService.fetchAllData(SqlQuery.SELECT_PERM,res->{
+            if (res.succeeded()){
+                List<JsonObject> jsonObjects=res.result();
                 JsonObject json = new JsonObject().put("code", 20000).put("data", jsonObjects);
                 context.response().setStatusCode(200).end(Json.encodePrettily(json));
             }else {
-                logger.error("发生错误------->" + rs.cause());
+                logger.error("发生错误------->" + res.cause());
                 serviceError(context, Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
             }
         });
@@ -432,11 +541,11 @@ public class AccountVerticle extends AbstractVerticle {
             badRequest(context);
             return;
         }
-        sqlService.excuteWithParams(jdbcClient,SqlQuery.INSERT_PERM,new JsonArray().add(role).add(perm).add(note)).setHandler(rs->{
-            if (rs.succeeded()){
+        dbService.query(SqlQuery.INSERT_PERM,new JsonArray().add(role).add(perm).add(note),res->{
+            if (res.succeeded()){
                 context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
             }else {
-                logger.error("发生错误------->" + rs.cause());
+                logger.error("发生错误------->" + res.cause());
                 serviceError(context, Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
             }
         });
@@ -460,11 +569,11 @@ public class AccountVerticle extends AbstractVerticle {
             badRequest(context);
             return;
         }
-        sqlService.excuteWithParams(jdbcClient,SqlQuery.UPDATE_PERM,new JsonArray().add(role).add(perm).add(note).add(id)).setHandler(rs->{
-            if (rs.succeeded()){
+        dbService.query(SqlQuery.UPDATE_PERM,new JsonArray().add(role).add(perm).add(note).add(id),res->{
+            if (res.succeeded()){
                 context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
             }else {
-                logger.error("发生错误------->" + rs.cause());
+                logger.error("发生错误------->" + res.cause());
                 serviceError(context, Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
             }
         });
@@ -481,11 +590,11 @@ public class AccountVerticle extends AbstractVerticle {
             badRequest(context);
             return;
         }
-        sqlService.excuteWithParams(jdbcClient,SqlQuery.DELETE_PERM,new JsonArray().add(id)).setHandler(rs->{
-            if (rs.succeeded()){
+        dbService.query(SqlQuery.DELETE_PERM,new JsonArray().add(id),res->{
+            if (res.succeeded()){
                 context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
             }else {
-                logger.error("发生错误------->" + rs.cause());
+                logger.error("发生错误------->" + res.cause());
                 serviceError(context, Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
             }
         });
@@ -496,7 +605,8 @@ public class AccountVerticle extends AbstractVerticle {
      */
     private Boolean JWTBlackListAuth(RoutingContext context){
         String token=context.request().getHeader("Authorization");
-        if (Method.mach_TOKEN_BLACKLIST(token)){
+        if (AccountHttpService.mach_TOKEN_BLACKLIST(token)){
+            System.err.println(1111);
             String username = context.user().principal().getString("username", null);
             logger.error(username+" bad request "+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())+"----------------------");
             context.response().setStatusCode(401).end();

@@ -1,3 +1,6 @@
+package http;
+
+import database.ConfigConstants;
 import io.vertx.core.json.JsonArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,8 +9,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-public class Method{
-    private Logger logger = LoggerFactory.getLogger(Method.class.getName());
+public class AccountHttpService {
+    private static Logger logger = LoggerFactory.getLogger(AccountHttpService.class.getName());
+
     /**
      * 读取文件中sqlQueries
      * @return
@@ -70,12 +74,12 @@ public class Method{
     public static Boolean mach_TOKEN_BLACKLIST(String token){
         List<String> lists= CacheList.TOKEN_CACHE_BLACKLIST;
         if (lists!=null){
-           Iterator iterator=lists.iterator();
-           while (iterator.hasNext()){
-               if (iterator.next().equals(token)){
-                   return true;
-               }
-           }
+            Iterator iterator=lists.iterator();
+            while (iterator.hasNext()){
+                if (iterator.next().equals(token)){
+                    return true;
+                }
+            }
         }
         return false;
     }
