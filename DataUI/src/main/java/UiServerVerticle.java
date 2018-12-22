@@ -3,6 +3,7 @@ import io.vertx.core.Future;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
 import io.vertx.ext.web.handler.StaticHandler;
@@ -45,8 +46,11 @@ public class UiServerVerticle extends AbstractVerticle {
         router.route().handler(CorsHandler.create("*")
                 .allowedMethods(allowMethods)
                 .allowedHeaders(allowHeaders));
+
         //静态资源处理
         router.route("/static/*").handler(StaticHandler.create());
+        //静态资源处理
+        router.route("/*").handler(this::loginHandler);
 
         int portNumber = Integer.valueOf(conf.get(ConfigConstants.HTTP_PORT));
         HttpServer httpServer = vertx.createHttpServer();
@@ -59,6 +63,10 @@ public class UiServerVerticle extends AbstractVerticle {
                 startFuture.fail(ar.cause());
             }
         });
+    }
+
+    private void loginHandler(RoutingContext context) {
+        context.response().sendFile("webroot/index.html");
     }
 
     /**

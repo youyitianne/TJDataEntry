@@ -1,13 +1,9 @@
 package service.dataprocessing;
 
 import http.HttpServerVerticle;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.List;
@@ -29,12 +25,23 @@ public class ExcelWrite {
             HSSFWorkbook wb = new HSSFWorkbook(new FileInputStream(filePath));
             HSSFSheet sheet = wb.getSheetAt(0);
             HSSFCell cell = null;
+            HSSFCellStyle style = wb.createCellStyle();
             FileOutputStream os = null;
-
             for (int i = 0; i < value.size(); i++) {
                 List stringList=value.get(i);
                 for (int j=0;j<stringList.size();j++) {
                     cell = setcell(sheet, x + j, y+i, String.valueOf(stringList.get(j)));
+                    //样式设置
+                    HSSFRow row = sheet.getRow(x + j);
+                    if (row == null) {
+                        row = sheet.createRow(x + j);
+                    }
+                    HSSFCell newcell = row.getCell(y+i-1);
+                    if (cell == null) {
+                        cell = row.createCell(y+i-1);
+                    }
+                   style=newcell.getCellStyle();
+                    cell.setCellStyle(style);
                 }
             }
             os = new FileOutputStream(filePath);
@@ -68,4 +75,6 @@ public class ExcelWrite {
         cell.setCellValue(value);
         return cell;
     }
+
+
 }

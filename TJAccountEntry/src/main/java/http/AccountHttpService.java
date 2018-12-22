@@ -76,7 +76,7 @@ public class AccountHttpService {
         if (lists!=null){
             Iterator iterator=lists.iterator();
             while (iterator.hasNext()){
-                if (iterator.next().equals(token)){
+                if (token.equals(iterator.next())){
                     return true;
                 }
             }

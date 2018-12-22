@@ -138,7 +138,6 @@ public class Judgement {
      * @return
      */
     public static List<JsonArray> removeUseless(List<JsonArray> jsonArrays){
-        System.out.println(jsonArrays);
         Iterator<JsonArray> it = jsonArrays.iterator();
         while(it.hasNext()){
             JsonArray jsonArray = it.next();

@@ -5,7 +5,7 @@ public class SqlStatement {
             "where \n" +
             "(a.date,a.app_name,a.channel,a.advertising_type,a.platform,a.note) in (select date,app_name,channel,advertising_type,platform,note from advertisement.advertisingdata group by date,app_name,channel,advertising_type,platform,note having count(*) > 1) \n" +
             "and\n" +
-            " id not in (select max(id) from advertisement.advertisingdata group by date,app_name,channel,advertising_type,platform having count(*) > 1);" ;
+            " id not in (select max(id) from advertisement.advertisingdata group by date,app_name,channel,advertising_type,platform,note having count(*) > 1);" ;
 
 
     public static String REPEAT_ID_USER="select * from advertisement.userdata a \n" +
@@ -78,8 +78,10 @@ public class SqlStatement {
 
     public static String SELECT_CHANNEL_NAME="SELECT name,program_mark FROM advertisement.channel;\n";
 
-    public static String SELECT_GAME_NAME=" SELECT name FROM advertisement.appname;\n";
+    public static String SELECT_GAME_NAME=" SELECT name FROM advertisement.appname;";
 
     public static String SELECT_ADTYPE_NAME="SELECT name FROM advertisement.advertisingtype;\n";
 
+    public static String SELECT_USERDATA_BY_TIME=" SELECT `userdata`.`id`,`userdata`.`date`,`userdata`.`app_name`,`userdata`.`channel`,`userdata`.`dnu`,`userdata`.`dau`,`userdata`.`startup_time`,`userdata`.`single_use_time`,\n" +
+            " `userdata`.`retention`,`userdata`.`version` FROM  `advertisement`.`userdata` where date >= ? and date <= ?;";
 }

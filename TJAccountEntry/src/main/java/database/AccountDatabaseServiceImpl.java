@@ -32,7 +32,7 @@ public class AccountDatabaseServiceImpl implements AccountDatabaseService {
                         LOGGER.error("Database preparation err", create.cause());
                         readyHandler.handle(Future.failedFuture(create.cause()));
                     } else {
-                        readyHandler.handle(Future.succeededFuture(this));
+                        readyHandler.handle(Future. succeededFuture(this));
                     }
                 });
             }

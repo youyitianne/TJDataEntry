@@ -228,7 +228,8 @@ public class DataOperation {
         Future<List<AdData>> future = Future.future();
         vertx.executeBlocking(future1 -> {
             List<AdData> adDataList = new ArrayList<>();
-            List list = excelRead.readGuang(path,"utf-8");
+            List list = excelRead.readGuang(path,"gbk");
+            System.out.println(list);
             if (list == null || list.isEmpty()) {
                 future.fail("读取失败");
                 logger.error("读取失败");
@@ -368,11 +369,11 @@ public class DataOperation {
             } else {
                 for (int i = 0; i < list.size(); i++) {
                     List array = (ArrayList) list.get(i);
-                    if (i == list.size() - 1) {
+                    if (i == list.size() - 2||i == list.size() - 1) {
                         continue;
                     }
                     AdData adData = ToAdData.meizuToAdData(array,matchinglist,year);
-                    adDataList.add(i, adData);
+                    adDataList.add(adData);
                 }
             }
             future1.complete(adDataList);
@@ -391,7 +392,6 @@ public class DataOperation {
     /**
      * 360数据转addata
      * @param path
-     * @param adType
      * @return
      */
     public Future<List<AdData>> qihooOperation(String path,List<List<String>> matchinglist){
@@ -586,7 +586,7 @@ public class DataOperation {
             totalVO.setNewUser(newUser);
             totalVO.setActivityUser(activityUser);
             totalVO.setRetention(0.0);
-            totalVO.setDauarpu(activityUser==0?0:income/activityUser);
+            totalVO.setDauarpu(Judgement.formatDouble2(activityUser==0?0:income/activityUser));
             totalVO.setChannelVOList(channelVOS);
             list.add(totalVO);
         }
@@ -685,7 +685,6 @@ public class DataOperation {
                 }
             }
             Boolean inline_bool = oneday.equals(jsonObject.getLong("date")) && jsonObject.getString("channel").contains(channel) && platform.equals(jsonObject.getString("platform")) && jsonObject.getString("advertising_type").contains("插屏");
-        //    System.out.println("inline_bool:"+inline_bool);
             if (inline_bool) {
                 if (adDataVOList.get(1).getIncome()==0.0){
                     adDataVO = adJsonToAdDataVO(jsonObject);
@@ -695,7 +694,7 @@ public class DataOperation {
                 }
             }
             Boolean splish_bool = oneday.equals(jsonObject.getLong("date")) && jsonObject.getString("channel").contains(channel) && platform.equals(jsonObject.getString("platform")) && jsonObject.getString("advertising_type").contains("开屏");
-        //    System.out.println("splish_bool:"+splish_bool);
+
             if (splish_bool) {
                 if (adDataVOList.get(2).getIncome()==0.0){
                     adDataVO = adJsonToAdDataVO(jsonObject);
@@ -705,7 +704,7 @@ public class DataOperation {
                 }
             }
             Boolean video_bool = oneday.equals(jsonObject.getLong("date")) && jsonObject.getString("channel").contains(channel) && platform.equals(jsonObject.getString("platform")) && jsonObject.getString("advertising_type").contains("视频");
-        //    System.out.println("video_bool:"+video_bool);
+
             if (video_bool) {
                 if (adDataVOList.get(3).getIncome()==0.0){
                     adDataVO = adJsonToAdDataVO(jsonObject);
@@ -754,7 +753,7 @@ public class DataOperation {
         Double guangdiantong_dauarpu = activity == 0 ? 0 : guangdiantong_income / activity;
 
         channelVO.setGuangdiantong_income(guangdiantong_income);
-        channelVO.setGuangdiantong_dauarpu(guangdiantong_dauarpu);
+        channelVO.setGuangdiantong_dauarpu(Judgement.formatDouble2(guangdiantong_dauarpu));
 
         //渠道
         channelVO.setQudao(qudao);
@@ -769,36 +768,26 @@ public class DataOperation {
         Double qudao_dauarpu = activity == 0 ? 0 : qudao_income / activity;
 
         channelVO.setQudao_income(qudao_income);
-        channelVO.setQudao_dauarpu(qudao_dauarpu);
+        channelVO.setQudao_dauarpu(Judgement.formatDouble2(qudao_dauarpu));
         //移信
         channelVO.setYixin(yixin);
         Double yixin_income = 0.0;
         for (int i = 0; i < yixin.size(); i++) {
             AdDataVO adDataVO = yixin.get(i);
-//            if (channel.equals("yyh")) {
-//                System.out.println("---------");
-//                System.out.println(adDataVO);
-//                System.out.println("---------");
-//            }
             if (adDataVO!=null){
                 adDataVO.setPerImpression(activity == 0 ? 0 : Judgement.formatDouble2((double)adDataVO.getImpressions() / activity));
                 yixin_income = yixin_income + adDataVO.getIncome();
             }
 
         }
-        Double yixin_dauarpu = activity == 0 ? 0 : yixin_income / activity;
+        Double yixin_dauarpu = Judgement.formatDouble2(activity == 0 ? 0 : yixin_income / activity);
 
         channelVO.setYixin_income(yixin_income);
-        channelVO.setYixin_dauarpu(yixin_dauarpu);
-//        if (channel.equals("yyh")){
-//            System.out.println("guangdiantong_income"+guangdiantong_income);
-//            System.out.println("qudao_income"+qudao_income);
-//            System.out.println("yixin_income"+yixin_income);
-//
-//        }
+        channelVO.setYixin_dauarpu(Judgement.formatDouble2(yixin_dauarpu));
+
         Double channel_income_all = guangdiantong_income + qudao_income + yixin_income;
         channelVO.setChannel_income_all(channel_income_all);
-        channelVO.setChhannel_dauarpu_all(activity == 0 ? 0 : channel_income_all / activity);
+        channelVO.setChhannel_dauarpu_all(Judgement.formatDouble2(activity == 0 ? 0 : channel_income_all / activity));
         return channelVO;
     }
 
@@ -924,12 +913,6 @@ public class DataOperation {
         adDataVO.setImpressions(impression+adDataVOs.getImpressions());
         adDataVO.setIncome(earned+adDataVOs.getIncome());
         Integer clicks=(int)(adDataVOs.getImpressions()*adDataVOs.getClickRate());
-        System.out.println("--------------------------");
-        System.out.println("click:"+click);
-        System.out.println("clicks:"+clicks);
-        System.out.println("impression:"+impression);
-        System.out.println("adDataVOs.getImpressions():"+adDataVOs.getImpressions());
-        System.out.println("--------------------------");
         adDataVO.setClickRate((impression+adDataVOs.getImpressions())==0?0:Double.valueOf(click+clicks)/(adDataVOs.getImpressions()+impression));
         adDataVO.setEcpm((impression+adDataVOs.getImpressions())==0?0:Double.valueOf(earned+adDataVOs.getIncome())/(impression+adDataVOs.getImpressions())*1000);
         return adDataVO;

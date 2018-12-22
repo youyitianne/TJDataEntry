@@ -82,6 +82,7 @@ public class AdvertisementService {
                 SQLConnection conn = result.result();
                 conn.batchWithParams(sql, values, rs -> {
                     if (rs.succeeded()) {
+
                         conn.close();
                         future.complete(true);
                     } else {
@@ -122,7 +123,6 @@ public class AdvertisementService {
                         }
                     }
                     String delete = del + buffer;
-                    System.out.println(delete);
                     client.update(delete, result -> {
                         future.complete(true);
                     });

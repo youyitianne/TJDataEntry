@@ -13,7 +13,7 @@
 
     <properties>
         <vertx.version>3.5.2</vertx.version>
-        <main.verticle>AccountVerticle</main.verticle>
+        <main.verticle>MainVerticle</main.verticle>
     </properties>
 
     <dependencies>
@@ -99,7 +99,6 @@
             <version>3.5.0</version>
             <scope>provided</scope>
         </dependency>
-
     </dependencies>
 
     <build>

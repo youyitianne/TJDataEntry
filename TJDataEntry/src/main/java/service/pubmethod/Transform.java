@@ -62,7 +62,11 @@ public class Transform {
         try {
             date = sdf.parse(dateStr);
         } catch (ParseException e) {
-            logger.error("日期转时间戳失败：", e);
+            try{
+                date = new SimpleDateFormat("yyyy/MM/dd").parse(dateStr);
+            }catch (Exception E){
+                logger.error("日期转时间戳失败：", E);
+            }
         }
         return date == null ? 0 : transForMilliSecond(date);
     }
@@ -149,7 +153,6 @@ public class Transform {
     public static String getData(String path) throws IOException {
         // 创建指定url的url对象
         URL url = new URL(path);
-        //System.out.println(url.toString());
         // 创建http链接对象
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         // 设置请求方式
@@ -164,7 +167,6 @@ public class Transform {
         String temp = null;
         // 获取数据
         while ((temp = reader.readLine()) != null) {
-            //System.out.println(temp);
             sb.append(temp);
         }
         // 关闭流
@@ -216,8 +218,8 @@ public class Transform {
            jsonArray.add(userDataList.get(i).getDailyNewUser());
            jsonArray.add(userDataList.get(i).getDailyActivityUser());
            jsonArray.add(userDataList.get(i).getStartupTime());
-           jsonArray.add(userDataList.get(i).getSingleUseTime());
-           jsonArray.add(userDataList.get(i).getRetention());
+           jsonArray.add(" "+userDataList.get(i).getSingleUseTime());
+           jsonArray.add(Judgement.formatDouble4(userDataList.get(i).getRetention()));
            jsonArray.add("1.0.0");
            jsonArrays.add(jsonArray);
        }

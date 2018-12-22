@@ -12,6 +12,7 @@
         <module>TJDataEntry</module>
         <module>DataUI</module>
         <module>TJAccountEntry</module>
+        <module>TJSDKEntry</module>
     </modules>
 
 

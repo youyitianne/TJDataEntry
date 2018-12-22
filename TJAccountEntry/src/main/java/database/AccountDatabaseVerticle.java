@@ -46,7 +46,8 @@ public class AccountDatabaseVerticle extends AbstractVerticle {
                 logger.error("database start failed ",ready.cause());
                 startFuture.fail(ready.cause());
             }
-        });
+        }
+        );
 
 //        jdbcClient.getConnection(conn -> {
 //            if (conn.succeeded()) {

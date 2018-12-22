@@ -68,6 +68,11 @@ public class test {
         System.out.println(Transform.transForDate(time));
     }
 
+    @Test
+    public void test9(){
+        Integer time=Transform.transForMilliSecondByTim("2018/11/1", "yyyy/MM/dd");
+        System.out.println(time);
+    }
 
 
 }

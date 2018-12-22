@@ -30,7 +30,6 @@ import service.pubmethod.CacheOpertion;
 import service.pubmethod.InitConf;
 import service.pubmethod.Judgement;
 import service.pubmethod.Transform;
-
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -83,8 +82,9 @@ public class HttpServerVerticle extends AbstractVerticle {
 //        //静态资源处理
 //        router.route("/static/*").handler(StaticHandler.create());
 
-        router.post("/yixin").handler(this::uploadYixinHandler);
+        //文件上传
         router.post("/fileupload").handler(this::uploadHandler);
+        //文件下载
         router.get("/file/*").handler(this::DownloadFileHandler);
         //api获取广告数据
         router.get("/data/*").handler(this::FindDatasHandler);
@@ -93,6 +93,8 @@ public class HttpServerVerticle extends AbstractVerticle {
         router.get("/names").handler(this::namesHandler);
         //api获取移信数据
         router.get("/yixin/:starttime/:endtime").handler(this::yixinHandler);
+        //api获取用户数据
+        router.get("/userdata/:starttime/:endtime").handler(this::userDataHandler);
         //channel相关
         router.get("/channel").handler(this::findChannel);
         router.post("/channel").handler(this::addChannel);
@@ -108,8 +110,11 @@ public class HttpServerVerticle extends AbstractVerticle {
         router.post("/adtype").handler(this::addAdType);
         router.patch("/adtype/:id").handler(this::updateAdType);
         router.delete("/adtype/:id").handler(this::delAdType);
+        //权限获取应用名
+        router.get("/getapplist").handler(this::findApp_perms);
 
 //        router.get("/test").handler(this::getMatchingData);
+
         int portNumber = Integer.valueOf(conf.get(ConfigConstants.HTTP_PORT));
         HttpServer httpServer = vertx.createHttpServer();
         httpServer.requestHandler(router::accept).listen(portNumber, ar -> {
@@ -123,6 +128,8 @@ public class HttpServerVerticle extends AbstractVerticle {
         });
     }
 
+
+
     /**
      * 文件上传路由
      */
@@ -132,7 +139,6 @@ public class HttpServerVerticle extends AbstractVerticle {
         for (FileUpload f : fileUploads) {
             filename = f.fileName();
         }
-        System.out.println("filename:" + filename);
         String channel = "未知";
         if (filename.indexOf("_") > -1) {
             channel = filename.split("_")[0].trim();
@@ -143,7 +149,6 @@ public class HttpServerVerticle extends AbstractVerticle {
                 channel = filename.substring(0, filename.indexOf(".")).trim();     //比如广点通
             }
         }
-        System.out.println("channel:" + channel);
         switch (channel) {
             case "友盟":
                 this.uploadUserDataHandler(context);
@@ -190,57 +195,58 @@ public class HttpServerVerticle extends AbstractVerticle {
      * @param context
      */
     private void uploadUserDataHandler(RoutingContext context) {
-        String name = "";
-        String channel = "";
-        Set<FileUpload> fileUploads = context.fileUploads();
-        String filename = "";
-        String uploadfilename = "";
-        for (FileUpload f : fileUploads) {
-            filename = f.fileName();
-            uploadfilename = f.uploadedFileName();
-        }
-        String finnalfilename = filename;
-        String[] sp = filename.split("_");
-        if (sp.length < 5 || filename.indexOf("(") < 0 || filename.indexOf(")") < 0) {
-            context.response().setStatusCode(503).end(Json.encodePrettily(new JsonObject().put("data", "请规范文件名")));
-            return;
-        } else {
-            String qudao = sp[sp.length - 4];
-            String game = sp[sp.length - 5];
-            name = game;
-            channel = qudao.substring(qudao.indexOf("(") + 1, qudao.indexOf(")"));
-        }
-        String finalname = name;
-        String finalchannel = channel;
-        fileClassification(uploadfilename, filename).setHandler(rs -> {
-            if (rs.succeeded()) {
-                String newpath = rs.result();
-                dataOperation.userDataOpertion(newpath, finalname, finalchannel).setHandler(listAsyncResult -> {
-                    if (listAsyncResult.succeeded()) {
-                        List<JsonArray> value = Transform.userDatatoUserJsonArrayList(listAsyncResult.result());
-                        advertisementService.batchWithParams(jdbcClient,SqlStatement.INSERT_USER, value).setHandler(result -> {
-                            if (result.succeeded()) {
-                                advertisementService.removeRepeat(jdbcClient,SqlStatement.REPEAT_ID_USER, SqlStatement.DEL_ID_USER).setHandler(result1 -> {
-                                    if (result1.succeeded()) {
-                                        operationSuccess(context, new JsonObject().put("data", finnalfilename + "     数据已成功上传，并未发现异常~"));
+        getMatchingData().setHandler(matching->{
+            if (matching.succeeded()){
+                List<List<String>> matchinglist=matching.result();
+
+                Set<FileUpload> fileUploads = context.fileUploads();
+                String filename = "";
+                String uploadfilename = "";
+                for (FileUpload f : fileUploads) {
+                    filename = f.fileName();
+                    uploadfilename = f.uploadedFileName();
+                }
+                String finnalfilename = filename;
+
+                String finalname =  Judgement.matchName(finnalfilename,matchinglist.get(0));
+                String finalchannel = Judgement.matchChannel(finnalfilename,matchinglist.get(3),matchinglist.get(3));
+                if(finalname.equals("未知")||finalchannel.equals("未知")){
+                    context.response().setStatusCode(503).end(Json.encodePrettily(new JsonObject().put("data", "请规范文件名")));
+                }
+                fileClassification(uploadfilename, filename).setHandler(rs -> {
+                    if (rs.succeeded()) {
+                        String newpath = rs.result();
+                        dataOperation.userDataOpertion(newpath, finalname, finalchannel).setHandler(listAsyncResult -> {
+                            if (listAsyncResult.succeeded()) {
+                                List<JsonArray> value = Transform.userDatatoUserJsonArrayList(listAsyncResult.result());
+                                advertisementService.batchWithParams(jdbcClient,SqlStatement.INSERT_USER, value).setHandler(result -> {
+                                    if (result.succeeded()) {
+                                        advertisementService.removeRepeat(jdbcClient,SqlStatement.REPEAT_ID_USER, SqlStatement.DEL_ID_USER).setHandler(result1 -> {
+                                            if (result1.succeeded()) {
+                                                operationSuccess(context, new JsonObject().put("data", finnalfilename + "     数据已成功上传，并未发现异常~"));
+                                            } else {
+                                                logger.error("用户数据去重失败------->" + result1.cause());
+                                                serviceError(context, Json.encodePrettily(new JsonObject().put("data", "用户数据去重失败")));
+                                            }
+                                        });
                                     } else {
-                                        logger.error("用户数据去重失败------->" + result1.cause());
-                                        serviceError(context, Json.encodePrettily(new JsonObject().put("data", "用户数据去重失败")));
+                                        logger.error("用户数据插入失败------->" + result.cause());
+                                        serviceError(context, Json.encodePrettily(new JsonObject().put("data", "用户数据插入失败")));
                                     }
                                 });
                             } else {
-                                logger.error("用户数据插入失败------->" + result.cause());
-                                serviceError(context, Json.encodePrettily(new JsonObject().put("data", "用户数据插入失败")));
+                                logger.error("用户数据读取失败------->" + listAsyncResult.cause());
+                                serviceError(context, Json.encodePrettily(new JsonObject().put("data", "用户数据读取失败")));
                             }
                         });
                     } else {
-                        logger.error("用户数据读取失败------->" + listAsyncResult.cause());
-                        serviceError(context, Json.encodePrettily(new JsonObject().put("data", "用户数据读取失败")));
+                        logger.error("文件路径出错------->" + rs.cause());
+                        serviceError(context, Json.encodePrettily(new JsonObject().put("data", "文件路径出错")));
                     }
                 });
-            } else {
-                logger.error("文件路径出错------->" + rs.cause());
-                serviceError(context, Json.encodePrettily(new JsonObject().put("data", "文件路径出错")));
+            }else {
+                logger.error("文件路径出错------->" + matching.cause());
+                serviceError(context, Json.encodePrettily(new JsonObject().put("data", "读取出错")));
             }
         });
     }
@@ -375,8 +381,6 @@ public class HttpServerVerticle extends AbstractVerticle {
                                         serviceError(context, Json.encodePrettily(new JsonObject().put("data", "魅族数据读取失败")));
                                     }
                                 });
-
-
                             }else {
                                 logger.error("匹配数据读取失败------->" + matching.cause().toString());
                                 serviceError(context, Json.encodePrettily(new JsonObject().put("data", "匹配读取失败")));
@@ -526,6 +530,7 @@ public class HttpServerVerticle extends AbstractVerticle {
                 getMatchingData().setHandler(matching -> {
                     if (matching.succeeded()) {
                         List<List<String>> lists = matching.result();
+
                         dataOperation.guangdiantongOperation(newpath, lists).setHandler(result -> {
                             if (result.succeeded()) {
                                 List<AdData> adDataList = result.result();
@@ -613,6 +618,8 @@ public class HttpServerVerticle extends AbstractVerticle {
                         serviceError(context, Json.encodePrettily(new JsonObject().put("data", "请联系管理员。")));
                     }
                 });
+
+
             } else {
                 logger.error("广告数据格式有错误,插入失败------->" + result.cause().toString());
                 serviceError(context, Json.encodePrettily(new JsonObject().put("data", "广告数据格式有错误")));
@@ -628,7 +635,12 @@ public class HttpServerVerticle extends AbstractVerticle {
     private void DownloadFileHandler(RoutingContext context) {
         FileSystem fileSystem = vertx.fileSystem();
         String url = context.request().absoluteURI();
-        String ur = url.substring(url.indexOf("file/") + 5);
+        String ur = "";
+        if (url.indexOf("=")!=-1){
+            ur = url.substring(url.indexOf("=") + 1);
+        }else {
+            ur = url.substring(url.indexOf("file/") + 5);
+        }
         if (ur.split("_").length < 3) {
             serviceError(context, Json.encodePrettily(new JsonObject().put("data", "请选择正确的时间段")));
             return;
@@ -649,7 +661,6 @@ public class HttpServerVerticle extends AbstractVerticle {
 
         List<String> dates = datess;
         String filename = starttime + "_" + endtime + "_" + name + ".xls";
-        System.err.println(dates + filename);
         if (new File(TemplateFile.DOWNLOAD_FILE_PATH + filename).exists()) {
             fileSystem.deleteBlocking(TemplateFile.DOWNLOAD_FILE_PATH + filename);
         }
@@ -674,19 +685,13 @@ public class HttpServerVerticle extends AbstractVerticle {
                         if (listAsyncResult1.succeeded()) {
                             List<JsonObject> adlist = listAsyncResult1.result();
 
-
                             List<TotalVO> list1 = dataOperation.listToTotalVO(userlist, adlist, longdates, name);
                             List<List> listList = dataOperation.listToTotalVOToList(list1);
-
-                            System.err.println("adlist: " + adlist);
-                            System.err.println("userlist:   " + userlist);
-                            System.out.println("list1`  :" + list1);
-                            System.err.println("listList:   " + listList);
 
                             excelWrite.writeall(TemplateFile.DOWNLOAD_FILE_PATH + filename, 0, 3, listList);
                             logger.info(TemplateFile.DOWNLOAD_FILE_PATH + filename);
                             JsonObject jsonObject = new JsonObject().put("code", 20000);
-                            context.response().putHeader("Content-Disposition", "filename=aaa.xls").putHeader("Content-Type", "application/octet-stream").setStatusMessage("wenjian").sendFile(TemplateFile.DOWNLOAD_FILE_PATH + filename);
+                            context.response().putHeader("mark","wenjian").putHeader("Content-Disposition", "filename=aaa.xls").putHeader("Content-Type", "application/octet-stream").setStatusMessage("wenjian").sendFile(TemplateFile.DOWNLOAD_FILE_PATH + filename);
                         } else {
                             logger.error("在数据库中查找用户数据时发生错误------->" + listAsyncResult.cause());
                             serviceError(context, Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
@@ -710,7 +715,6 @@ public class HttpServerVerticle extends AbstractVerticle {
             if (rs.succeeded()) {
                 context.response().putHeader("content-type", "application/json").end(Json.encode(rs.result()));
             } else {
-                System.out.println(rs.cause());
                 context.response().setStatusCode(404).end();
             }
         });
@@ -724,10 +728,13 @@ public class HttpServerVerticle extends AbstractVerticle {
     private void FindDatasHandler(RoutingContext context) {
         FileSystem fileSystem = vertx.fileSystem();
         String url = context.request().absoluteURI();
-        System.out.println(url);
-        String ur = url.substring(url.indexOf("data/") + 5);
+        String ur="";
+        if (url.indexOf("=")!=-1){
+            ur = url.substring(url.indexOf("=") + 1);
+        }else {
+            ur = url.substring(url.indexOf("data/") + 5);
+        }
         if (ur.split("_").length < 2) {
-            System.out.println(1);
             badRequest(context);
             return;
         }
@@ -745,7 +752,6 @@ public class HttpServerVerticle extends AbstractVerticle {
         }
         List<String> dates = datess;
         if (dates.size() == 0) {
-            System.out.println(3);
             badRequest(context);
             return;
         }
@@ -768,7 +774,6 @@ public class HttpServerVerticle extends AbstractVerticle {
                                 adlist.get(e).put("date", Transform.transForDate(adlist.get(e).getInteger("date")));
                             }
                             JsonObject jsonObject = new JsonObject().put("code", 20000).put("data", adlist);
-                            System.out.println(jsonObject);
                             context.response().setStatusCode(200).end(Json.encodePrettily(jsonObject));
                         } else {
                             logger.error("在数据库中查找用户数据时发生错误------->" + listAsyncResult.cause());
@@ -796,15 +801,44 @@ public class HttpServerVerticle extends AbstractVerticle {
                 List namess = new ArrayList();
                 String[] gamename = rs.result().getString("gamename").split(",");
                 for (int i = 0; i < gamename.length; i++) {
-                    JsonObject a1 = new JsonObject().put("name", gamename[i]);
                     namess.add(gamename[i]);
                 }
                 names.put("data", namess);
-                System.out.println(names);
                 context.response().setStatusCode(200).end(Json.encode(names));
             } else {
-                System.out.println(rs.cause());
+               logger.error("获取游戏名失败---------》",rs.cause());
                 context.response().setStatusCode(404).end();
+            }
+        });
+    }
+
+    /**
+     * 查找用户数据
+     * @param context
+     */
+    private void userDataHandler(RoutingContext context) {
+        String starttime = context.request().getParam("starttime");
+        String endtime = context.request().getParam("endtime");
+        Long start=0L;
+        Long end=0L;
+        try {
+            start=new SimpleDateFormat("yyyy-MM-dd").parse(starttime).getTime()/1000;
+            end=new SimpleDateFormat("yyyy-MM-dd").parse(starttime).getTime()/1000;
+        }catch (Exception e){
+            badRequest(context);
+        }
+        advertisementService.findDatasWithParams(jdbcClient,SqlStatement.SELECT_USERDATA_BY_TIME,new JsonArray().add(start).add(end)).setHandler(result -> {
+            if (result.succeeded()){
+                List<JsonObject> jsonObjects=result.result();
+                JsonArray jsonArray=new JsonArray();
+                for (int i=0;i<jsonObjects.size();i++){
+                   String date=new SimpleDateFormat("yyyy-MM-dd").format(new Date(jsonObjects.get(i).getLong("date")));
+                    jsonObjects.get(i).put("date",date);
+                    jsonArray.add(jsonObjects.get(i));
+                }
+                context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code",20000).put("data",jsonArray)));
+            }else {
+                badRequest(context);
             }
         });
     }
@@ -817,7 +851,6 @@ public class HttpServerVerticle extends AbstractVerticle {
     private void yixinHandler(RoutingContext context) {
         String starttime = context.request().getParam("starttime");
         String endtime = context.request().getParam("endtime");
-        System.out.println("starttime:" + starttime + "    endtime:" + endtime);
         dataOperation = new DataOperation(vertx);
         getMatchingData().setHandler(matching -> {
             if (matching.succeeded()) {
@@ -826,7 +859,6 @@ public class HttpServerVerticle extends AbstractVerticle {
                     if (rs.succeeded()) {
                         List<AdData> adDataList = rs.result();
                         List<JsonArray> adlist = Transform.adDatatoJsonArrayList(adDataList);
-                        System.out.println(adlist);
                         List<JsonObject> jsonObjects = new ArrayList<>();
                         for (JsonArray jsonArray : adlist) {
                             JsonObject jsonObject = new JsonObject();
@@ -891,7 +923,6 @@ public class HttpServerVerticle extends AbstractVerticle {
         adlist.add(chapin);
         adlist.add(shipin);
         JsonObject jsonObject = new JsonObject().put("code", 20000).put("data", adlist);
-        System.out.println(jsonObject);
         context.response().setStatusCode(200).end(Json.encodePrettily(jsonObject));
     }
 
@@ -946,7 +977,6 @@ public class HttpServerVerticle extends AbstractVerticle {
         List<String> channellist = new ArrayList<>();
         List<String> adtypelist = new ArrayList<>();
         List<String> game_marklist = new ArrayList<>();
-
         Boolean sqllists = CacheList.AD_TYPE == null || CacheList.APP_NAME == null || CacheList.APP_MARK == null || CacheList.CHANNEL == null;
         if (!sqllists) {
             List<List<String>> constantlists = new ArrayList<>();
@@ -1085,17 +1115,22 @@ public class HttpServerVerticle extends AbstractVerticle {
      * @param context
      */
     private void updateChannel(RoutingContext context) {
-        String name = context.getBodyAsJson().getString("name");
-        String program_mark = context.getBodyAsJson().getString("program_mark");
-        String note = context.getBodyAsJson().getString("note");
+        String name="";
+        String program_mark="";
+        String note="";
         Integer id = -1;
         try {
-            id = Integer.valueOf(context.request().getParam("id"));
-        } catch (Exception e) {
-            badRequest(context);
-            return;
+            name = context.getBodyAsJson().getString("name");
+            program_mark = context.getBodyAsJson().getString("program_mark");
+            note = context.getBodyAsJson().getString("note");
+            id=Integer.valueOf(context.request().getParam("id"));
+        }catch (Exception e){
+            name = context.request().getParam("name");
+            program_mark = context.request().getParam("program_mark");
+            note = context.request().getParam("note");
+            id=Integer.valueOf(context.request().getParam("id"));
         }
-        if (name == null || program_mark == null || note == null || name.length() == 0 || program_mark.length() == 0 || note.length() == 0) {
+        if (name == null || program_mark == null || note == null || name.length() == 0 || program_mark.length() == 0 || note.length() == 0||id==-1) {
             badRequest(context);
             return;
         }
@@ -1190,18 +1225,25 @@ public class HttpServerVerticle extends AbstractVerticle {
      * @param context
      */
     private void updateApp(RoutingContext context) {
-        String name = context.getBodyAsJson().getString("name");
-        String system = context.getBodyAsJson().getString("system");
-        String icon = context.getBodyAsJson().getString("icon");
-        String introduce = context.getBodyAsJson().getString("introduce");
+        String name = "";
+        String system = "";
+        String icon = "";
+        String introduce = "";
         Integer id = -1;
         try {
             id = Integer.valueOf(context.request().getParam("id"));
+            name = context.getBodyAsJson().getString("name");
+            system = context.getBodyAsJson().getString("system");
+            icon = context.getBodyAsJson().getString("icon");
+            introduce = context.getBodyAsJson().getString("introduce");
         } catch (Exception e) {
-            badRequest(context);
-            return;
+            id = Integer.valueOf(context.request().getParam("id"));
+            name = context.request().getParam("name");
+            system =context.request().getParam("system");
+            icon = context.request().getParam("icon");
+            introduce = context.request().getParam("introduce");
         }
-        if (name == null || system == null || icon == null || introduce == null || name.length() == 0 || system.length() == 0 || icon.length() == 0 || introduce.length() == 0) {
+        if (name == null || system == null || icon == null || introduce == null || name.length() == 0 || system.length() == 0 || icon.length() == 0 || introduce.length() == 0||id==-1) {
             badRequest(context);
             return;
         }
@@ -1232,6 +1274,45 @@ public class HttpServerVerticle extends AbstractVerticle {
             if (conn.succeeded()) {
                 List<JsonObject> jsonObjects = conn.result();
                 JsonObject json = new JsonObject().put("code", 20000).put("data", jsonObjects);
+                CacheList.APP_NAME_JSON=jsonObjects;
+                context.response().setStatusCode(200).end(Json.encodePrettily(json));
+            } else {
+                logger.error("在数据库中查找数据时发生错误------->" + conn.cause());
+                serviceError(context, Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
+            }
+        });
+    }
+
+    /**
+     * 资源列表获取游戏
+     *
+     * @param context
+     */
+    private void findApp_perms(RoutingContext context) {
+        if (CacheList.APP_NAME_JSON!=null){
+            List<JsonObject> jsonObjects=CacheList.APP_NAME_JSON;
+            List<JsonObject> permList=new ArrayList<>();
+            for (int i=0;i<jsonObjects.size();i++){
+                JsonObject newJsonObject=new JsonObject();
+                newJsonObject.put("id",jsonObjects.get(i).getInteger("id"));
+                newJsonObject.put("label",jsonObjects.get(i).getString("name"));
+                permList.add(newJsonObject);
+            }
+            JsonObject json = new JsonObject().put("code", 20000).put("data", permList);
+            context.response().setStatusCode(200).end(Json.encodePrettily(json));
+            return;
+        }
+        advertisementService.query(jdbcClient,SqlStatement.SELECT_APP).setHandler(conn -> {
+            if (conn.succeeded()) {
+                List<JsonObject> jsonObjects = conn.result();
+                List<JsonObject> permList=new ArrayList<>();
+                for (int i=0;i<jsonObjects.size();i++){
+                    JsonObject newJsonObject=new JsonObject();
+                    newJsonObject.put("id",jsonObjects.get(i).getInteger("id"));
+                    newJsonObject.put("label",jsonObjects.get(i).getString("name"));
+                    permList.add(newJsonObject);
+                }
+                JsonObject json = new JsonObject().put("code", 20000).put("data", permList);
                 CacheList.APP_NAME_JSON=jsonObjects;
                 context.response().setStatusCode(200).end(Json.encodePrettily(json));
             } else {
@@ -1296,19 +1377,25 @@ public class HttpServerVerticle extends AbstractVerticle {
      * @param context
      */
     private void updateAdType(RoutingContext context) {
-        String name = context.getBodyAsJson().getString("name");
-        String program_mark = context.getBodyAsJson().getString("program_mark");
-        String note = context.getBodyAsJson().getString("note");
-        String introduce = context.getBodyAsJson().getString("introduce");
+        String name = "";
+        String program_mark = "";
+        String note = "";
+        String introduce = "";
         Integer id = -1;
         try {
+            name = context.getBodyAsJson().getString("name");
+            program_mark = context.getBodyAsJson().getString("program_mark");
+            note = context.getBodyAsJson().getString("note");
             id = Integer.valueOf(context.request().getParam("id"));
+            introduce = context.getBodyAsJson().getString("introduce");
         } catch (Exception e) {
-            badRequest(context);
-            return;
+            name = context.request().getParam("name");
+            program_mark = context.request().getParam("program_mark");
+            note = context.request().getParam("note");
+            id = Integer.valueOf(context.request().getParam("id"));
+            introduce = context.request().getParam("introduce");
         }
-        if (name == null || program_mark == null || note == null || introduce == null || name.length() == 0 || program_mark.length() == 0 || note.length() == 0 || introduce.length() == 0) {
-           // System.out.println("    name:" + name + "   program_mark：" + program_mark + "   note；" + note + "   introduce:" + introduce);
+        if (name == null || program_mark == null || note == null || introduce == null || name.length() == 0 || program_mark.length() == 0 || note.length() == 0 || introduce.length() == 0||id==-1) {
             badRequest(context);
             return;
         }
