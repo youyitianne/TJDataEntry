@@ -1,5 +1,5 @@
-2018-12-22T09:17:43,076 DEBUG com.mchange.v2.c3p0.impl.NewPooledConnection:207 - com.mchange.v2.c3p0.impl.NewPooledConnection@10f38db7 handling a throwable.
-com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 49,217,004 milliseconds ago.  The last packet sent successfully to the server was 49,217,004 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+2018-12-29T14:25:54,779 DEBUG com.mchange.v2.c3p0.impl.NewPooledConnection:207 - com.mchange.v2.c3p0.impl.NewPooledConnection@51e198a9 handling a throwable.
+com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 66,217,238 milliseconds ago.  The last packet sent successfully to the server was 66,217,239 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
 	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
@@ -15,7 +15,7 @@ com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successful
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_181]
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_181]
 	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 49,217,004 milliseconds ago.  The last packet sent successfully to the server was 49,217,004 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 66,217,238 milliseconds ago.  The last packet sent successfully to the server was 66,217,239 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
@@ -44,8 +44,8 @@ Caused by: java.net.SocketException: Software caused connection abort: socket wr
 	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	... 12 more
-2018-12-22T09:17:43,348 DEBUG com.mchange.v2.sql.SqlUtils:207 - Attempted to convert SQLException to SQLException. Leaving it alone. [SQLState: 08S01; errorCode: 0]
-com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 49,217,004 milliseconds ago.  The last packet sent successfully to the server was 49,217,004 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+2018-12-29T14:25:55,926 DEBUG com.mchange.v2.sql.SqlUtils:207 - Attempted to convert SQLException to SQLException. Leaving it alone. [SQLState: 08S01; errorCode: 0]
+com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 66,217,238 milliseconds ago.  The last packet sent successfully to the server was 66,217,239 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
 	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
@@ -61,7 +61,7 @@ com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successful
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_181]
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_181]
 	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 49,217,004 milliseconds ago.  The last packet sent successfully to the server was 49,217,004 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 66,217,238 milliseconds ago.  The last packet sent successfully to the server was 66,217,239 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
@@ -90,8 +90,8 @@ Caused by: java.net.SocketException: Software caused connection abort: socket wr
 	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	... 12 more
-2018-12-22T09:17:43,362 DEBUG com.mchange.v2.c3p0.impl.DefaultConnectionTester:207 - Testing a Connection in response to an Exception:
-com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 49,217,004 milliseconds ago.  The last packet sent successfully to the server was 49,217,004 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+2018-12-29T14:25:55,959 DEBUG com.mchange.v2.c3p0.impl.DefaultConnectionTester:207 - Testing a Connection in response to an Exception:
+com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 66,217,238 milliseconds ago.  The last packet sent successfully to the server was 66,217,239 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
 	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
@@ -107,7 +107,7 @@ com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successful
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_181]
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_181]
 	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 49,217,004 milliseconds ago.  The last packet sent successfully to the server was 49,217,004 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 66,217,238 milliseconds ago.  The last packet sent successfully to the server was 66,217,239 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
@@ -136,8 +136,8 @@ Caused by: java.net.SocketException: Software caused connection abort: socket wr
 	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	... 12 more
-2018-12-22T09:17:43,373 DEBUG com.mchange.v2.c3p0.impl.NewPooledConnection:207 - com.mchange.v2.c3p0.impl.NewPooledConnection@10f38db7 invalidated by Exception.
-com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 49,217,004 milliseconds ago.  The last packet sent successfully to the server was 49,217,004 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+2018-12-29T14:25:56,052 DEBUG com.mchange.v2.c3p0.impl.NewPooledConnection:207 - com.mchange.v2.c3p0.impl.NewPooledConnection@51e198a9 invalidated by Exception.
+com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 66,217,238 milliseconds ago.  The last packet sent successfully to the server was 66,217,239 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
 	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
@@ -153,7 +153,7 @@ com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successful
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_181]
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_181]
 	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 49,217,004 milliseconds ago.  The last packet sent successfully to the server was 49,217,004 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 66,217,238 milliseconds ago.  The last packet sent successfully to the server was 66,217,239 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
@@ -182,10 +182,198 @@ Caused by: java.net.SocketException: Software caused connection abort: socket wr
 	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	... 12 more
-2018-12-22T09:17:43,386 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool:204 - CONNECTION ERROR OCCURRED!
-2018-12-22T09:17:43,455 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - Resource com.mchange.v2.c3p0.impl.NewPooledConnection@10f38db7 marked broken by pool (com.mchange.v2.resourcepool.BasicResourcePool@770d65ae).
-2018-12-22T09:17:43,456 ERROR database.SdkDatabaseServiceImpl:25 - Database query error
-com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 49,217,004 milliseconds ago.  The last packet sent successfully to the server was 49,217,004 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+2018-12-29T14:25:56,059 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool:204 - CONNECTION ERROR OCCURRED!
+2018-12-29T14:25:56,203 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - Resource com.mchange.v2.c3p0.impl.NewPooledConnection@51e198a9 marked broken by pool (com.mchange.v2.resourcepool.BasicResourcePool@32579c8d).
+2018-12-29T14:25:56,245 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - Preparing to destroy resource: com.mchange.v2.c3p0.impl.NewPooledConnection@51e198a9
+2018-12-29T14:25:56,257 DEBUG com.mchange.v2.c3p0.impl.NewPooledConnection:207 - com.mchange.v2.c3p0.impl.NewPooledConnection@5d89186d handling a throwable.
+com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 66,395,103 milliseconds ago.  The last packet sent successfully to the server was 66,395,104 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.PreparedStatement.executeInternal(PreparedStatement.java:1826) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.PreparedStatement.execute(PreparedStatement.java:1153) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mchange.v2.c3p0.impl.NewProxyPreparedStatement.execute(NewProxyPreparedStatement.java:67) ~[c3p0-0.9.5.2.jar:0.9.5.2]
+	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:48) ~[vertx-jdbc-client-3.5.0.jar:?]
+	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:30) ~[vertx-jdbc-client-3.5.0.jar:?]
+	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$executeDirect$2(JDBCClientImpl.java:145) ~[vertx-jdbc-client-3.5.0.jar:?]
+	at io.vertx.core.impl.FutureImpl.tryComplete(FutureImpl.java:126) ~[vertx-core-3.5.0.jar:?]
+	at io.vertx.core.impl.FutureImpl.complete(FutureImpl.java:88) ~[vertx-core-3.5.0.jar:?]
+	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$getConnection$3(JDBCClientImpl.java:192) ~[vertx-jdbc-client-3.5.0.jar:?]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_181]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_181]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
+Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 66,395,103 milliseconds ago.  The last packet sent successfully to the server was 66,395,104 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423) ~[?:1.8.0_181]
+	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:54) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:93) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:133) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.core.exceptions.ExceptionFactory.createCommunicationsException(ExceptionFactory.java:149) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:561) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	... 12 more
+Caused by: java.net.SocketException: Software caused connection abort: socket write error
+	at java.net.SocketOutputStream.socketWrite0(Native Method) ~[?:1.8.0_181]
+	at java.net.SocketOutputStream.socketWrite(SocketOutputStream.java:111) ~[?:1.8.0_181]
+	at java.net.SocketOutputStream.write(SocketOutputStream.java:155) ~[?:1.8.0_181]
+	at java.io.BufferedOutputStream.flushBuffer(BufferedOutputStream.java:82) ~[?:1.8.0_181]
+	at java.io.BufferedOutputStream.flush(BufferedOutputStream.java:140) ~[?:1.8.0_181]
+	at com.mysql.cj.mysqla.io.SimplePacketSender.send(SimplePacketSender.java:50) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.TimeTrackingPacketSender.send(TimeTrackingPacketSender.java:43) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:552) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	... 12 more
+2018-12-29T14:25:56,251 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool:204 - Preparing to destroy PooledConnection: com.mchange.v2.c3p0.impl.NewPooledConnection@51e198a9
+2018-12-29T14:25:56,264 DEBUG com.mchange.v2.sql.SqlUtils:207 - Attempted to convert SQLException to SQLException. Leaving it alone. [SQLState: 08S01; errorCode: 0]
+com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 66,395,103 milliseconds ago.  The last packet sent successfully to the server was 66,395,104 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.PreparedStatement.executeInternal(PreparedStatement.java:1826) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.PreparedStatement.execute(PreparedStatement.java:1153) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mchange.v2.c3p0.impl.NewProxyPreparedStatement.execute(NewProxyPreparedStatement.java:67) ~[c3p0-0.9.5.2.jar:0.9.5.2]
+	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:48) ~[vertx-jdbc-client-3.5.0.jar:?]
+	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:30) ~[vertx-jdbc-client-3.5.0.jar:?]
+	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$executeDirect$2(JDBCClientImpl.java:145) ~[vertx-jdbc-client-3.5.0.jar:?]
+	at io.vertx.core.impl.FutureImpl.tryComplete(FutureImpl.java:126) ~[vertx-core-3.5.0.jar:?]
+	at io.vertx.core.impl.FutureImpl.complete(FutureImpl.java:88) ~[vertx-core-3.5.0.jar:?]
+	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$getConnection$3(JDBCClientImpl.java:192) ~[vertx-jdbc-client-3.5.0.jar:?]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_181]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_181]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
+Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 66,395,103 milliseconds ago.  The last packet sent successfully to the server was 66,395,104 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423) ~[?:1.8.0_181]
+	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:54) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:93) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:133) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.core.exceptions.ExceptionFactory.createCommunicationsException(ExceptionFactory.java:149) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:561) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	... 12 more
+Caused by: java.net.SocketException: Software caused connection abort: socket write error
+	at java.net.SocketOutputStream.socketWrite0(Native Method) ~[?:1.8.0_181]
+	at java.net.SocketOutputStream.socketWrite(SocketOutputStream.java:111) ~[?:1.8.0_181]
+	at java.net.SocketOutputStream.write(SocketOutputStream.java:155) ~[?:1.8.0_181]
+	at java.io.BufferedOutputStream.flushBuffer(BufferedOutputStream.java:82) ~[?:1.8.0_181]
+	at java.io.BufferedOutputStream.flush(BufferedOutputStream.java:140) ~[?:1.8.0_181]
+	at com.mysql.cj.mysqla.io.SimplePacketSender.send(SimplePacketSender.java:50) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.TimeTrackingPacketSender.send(TimeTrackingPacketSender.java:43) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:552) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	... 12 more
+2018-12-29T14:25:56,301 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool:204 - Successfully destroyed PooledConnection: com.mchange.v2.c3p0.impl.NewPooledConnection@51e198a9
+2018-12-29T14:25:56,302 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - Successfully destroyed resource: com.mchange.v2.c3p0.impl.NewPooledConnection@51e198a9
+2018-12-29T14:25:56,301 DEBUG com.mchange.v2.c3p0.impl.DefaultConnectionTester:207 - Testing a Connection in response to an Exception:
+com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 66,395,103 milliseconds ago.  The last packet sent successfully to the server was 66,395,104 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.PreparedStatement.executeInternal(PreparedStatement.java:1826) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.PreparedStatement.execute(PreparedStatement.java:1153) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mchange.v2.c3p0.impl.NewProxyPreparedStatement.execute(NewProxyPreparedStatement.java:67) ~[c3p0-0.9.5.2.jar:0.9.5.2]
+	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:48) ~[vertx-jdbc-client-3.5.0.jar:?]
+	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:30) ~[vertx-jdbc-client-3.5.0.jar:?]
+	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$executeDirect$2(JDBCClientImpl.java:145) ~[vertx-jdbc-client-3.5.0.jar:?]
+	at io.vertx.core.impl.FutureImpl.tryComplete(FutureImpl.java:126) ~[vertx-core-3.5.0.jar:?]
+	at io.vertx.core.impl.FutureImpl.complete(FutureImpl.java:88) ~[vertx-core-3.5.0.jar:?]
+	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$getConnection$3(JDBCClientImpl.java:192) ~[vertx-jdbc-client-3.5.0.jar:?]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_181]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_181]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
+Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 66,395,103 milliseconds ago.  The last packet sent successfully to the server was 66,395,104 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423) ~[?:1.8.0_181]
+	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:54) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:93) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:133) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.core.exceptions.ExceptionFactory.createCommunicationsException(ExceptionFactory.java:149) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:561) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	... 12 more
+Caused by: java.net.SocketException: Software caused connection abort: socket write error
+	at java.net.SocketOutputStream.socketWrite0(Native Method) ~[?:1.8.0_181]
+	at java.net.SocketOutputStream.socketWrite(SocketOutputStream.java:111) ~[?:1.8.0_181]
+	at java.net.SocketOutputStream.write(SocketOutputStream.java:155) ~[?:1.8.0_181]
+	at java.io.BufferedOutputStream.flushBuffer(BufferedOutputStream.java:82) ~[?:1.8.0_181]
+	at java.io.BufferedOutputStream.flush(BufferedOutputStream.java:140) ~[?:1.8.0_181]
+	at com.mysql.cj.mysqla.io.SimplePacketSender.send(SimplePacketSender.java:50) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.TimeTrackingPacketSender.send(TimeTrackingPacketSender.java:43) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:552) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	... 12 more
+2018-12-29T14:25:56,329 DEBUG com.mchange.v2.c3p0.impl.NewPooledConnection:207 - com.mchange.v2.c3p0.impl.NewPooledConnection@5d89186d invalidated by Exception.
+com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 66,395,103 milliseconds ago.  The last packet sent successfully to the server was 66,395,104 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.PreparedStatement.executeInternal(PreparedStatement.java:1826) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.PreparedStatement.execute(PreparedStatement.java:1153) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mchange.v2.c3p0.impl.NewProxyPreparedStatement.execute(NewProxyPreparedStatement.java:67) ~[c3p0-0.9.5.2.jar:0.9.5.2]
+	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:48) ~[vertx-jdbc-client-3.5.0.jar:?]
+	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:30) ~[vertx-jdbc-client-3.5.0.jar:?]
+	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$executeDirect$2(JDBCClientImpl.java:145) ~[vertx-jdbc-client-3.5.0.jar:?]
+	at io.vertx.core.impl.FutureImpl.tryComplete(FutureImpl.java:126) ~[vertx-core-3.5.0.jar:?]
+	at io.vertx.core.impl.FutureImpl.complete(FutureImpl.java:88) ~[vertx-core-3.5.0.jar:?]
+	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$getConnection$3(JDBCClientImpl.java:192) ~[vertx-jdbc-client-3.5.0.jar:?]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_181]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_181]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
+Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 66,395,103 milliseconds ago.  The last packet sent successfully to the server was 66,395,104 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423) ~[?:1.8.0_181]
+	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:54) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:93) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:133) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.core.exceptions.ExceptionFactory.createCommunicationsException(ExceptionFactory.java:149) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:561) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	... 12 more
+Caused by: java.net.SocketException: Software caused connection abort: socket write error
+	at java.net.SocketOutputStream.socketWrite0(Native Method) ~[?:1.8.0_181]
+	at java.net.SocketOutputStream.socketWrite(SocketOutputStream.java:111) ~[?:1.8.0_181]
+	at java.net.SocketOutputStream.write(SocketOutputStream.java:155) ~[?:1.8.0_181]
+	at java.io.BufferedOutputStream.flushBuffer(BufferedOutputStream.java:82) ~[?:1.8.0_181]
+	at java.io.BufferedOutputStream.flush(BufferedOutputStream.java:140) ~[?:1.8.0_181]
+	at com.mysql.cj.mysqla.io.SimplePacketSender.send(SimplePacketSender.java:50) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.TimeTrackingPacketSender.send(TimeTrackingPacketSender.java:43) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:552) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
+	... 12 more
+2018-12-29T14:25:56,221 ERROR database.SdkDatabaseServiceImpl:25 - Database query error
+com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 66,217,238 milliseconds ago.  The last packet sent successfully to the server was 66,217,239 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
 	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
@@ -201,7 +389,7 @@ com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successful
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) ~[?:1.8.0_181]
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) ~[?:1.8.0_181]
 	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 49,217,004 milliseconds ago.  The last packet sent successfully to the server was 49,217,004 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 66,217,238 milliseconds ago.  The last packet sent successfully to the server was 66,217,239 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
@@ -230,199 +418,14 @@ Caused by: java.net.SocketException: Software caused connection abort: socket wr
 	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	... 12 more
-2018-12-22T09:17:43,459 DEBUG com.mchange.v2.c3p0.impl.NewPooledConnection:207 - com.mchange.v2.c3p0.impl.NewPooledConnection@c59c8cf handling a throwable.
-com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 49,226,229 milliseconds ago.  The last packet sent successfully to the server was 49,226,229 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
-	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.PreparedStatement.executeInternal(PreparedStatement.java:1826) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.PreparedStatement.execute(PreparedStatement.java:1153) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mchange.v2.c3p0.impl.NewProxyPreparedStatement.execute(NewProxyPreparedStatement.java:67) ~[c3p0-0.9.5.2.jar:0.9.5.2]
-	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:48) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:30) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$executeDirect$2(JDBCClientImpl.java:145) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.core.impl.FutureImpl.tryComplete(FutureImpl.java:126) ~[vertx-core-3.5.0.jar:?]
-	at io.vertx.core.impl.FutureImpl.complete(FutureImpl.java:88) ~[vertx-core-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$getConnection$3(JDBCClientImpl.java:192) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_181]
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_181]
-	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 49,226,229 milliseconds ago.  The last packet sent successfully to the server was 49,226,229 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
-	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
-	at java.lang.reflect.Constructor.newInstance(Constructor.java:423) ~[?:1.8.0_181]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:54) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:93) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:133) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createCommunicationsException(ExceptionFactory.java:149) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:561) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	... 12 more
-Caused by: java.net.SocketException: Software caused connection abort: socket write error
-	at java.net.SocketOutputStream.socketWrite0(Native Method) ~[?:1.8.0_181]
-	at java.net.SocketOutputStream.socketWrite(SocketOutputStream.java:111) ~[?:1.8.0_181]
-	at java.net.SocketOutputStream.write(SocketOutputStream.java:155) ~[?:1.8.0_181]
-	at java.io.BufferedOutputStream.flushBuffer(BufferedOutputStream.java:82) ~[?:1.8.0_181]
-	at java.io.BufferedOutputStream.flush(BufferedOutputStream.java:140) ~[?:1.8.0_181]
-	at com.mysql.cj.mysqla.io.SimplePacketSender.send(SimplePacketSender.java:50) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.TimeTrackingPacketSender.send(TimeTrackingPacketSender.java:43) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:552) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	... 12 more
-2018-12-22T09:17:43,463 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - Preparing to destroy resource: com.mchange.v2.c3p0.impl.NewPooledConnection@10f38db7
-2018-12-22T09:17:43,467 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool:204 - Preparing to destroy PooledConnection: com.mchange.v2.c3p0.impl.NewPooledConnection@10f38db7
-2018-12-22T09:17:43,466 DEBUG com.mchange.v2.sql.SqlUtils:207 - Attempted to convert SQLException to SQLException. Leaving it alone. [SQLState: 08S01; errorCode: 0]
-com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 49,226,229 milliseconds ago.  The last packet sent successfully to the server was 49,226,229 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
-	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.PreparedStatement.executeInternal(PreparedStatement.java:1826) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.PreparedStatement.execute(PreparedStatement.java:1153) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mchange.v2.c3p0.impl.NewProxyPreparedStatement.execute(NewProxyPreparedStatement.java:67) ~[c3p0-0.9.5.2.jar:0.9.5.2]
-	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:48) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:30) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$executeDirect$2(JDBCClientImpl.java:145) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.core.impl.FutureImpl.tryComplete(FutureImpl.java:126) ~[vertx-core-3.5.0.jar:?]
-	at io.vertx.core.impl.FutureImpl.complete(FutureImpl.java:88) ~[vertx-core-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$getConnection$3(JDBCClientImpl.java:192) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_181]
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_181]
-	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 49,226,229 milliseconds ago.  The last packet sent successfully to the server was 49,226,229 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
-	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
-	at java.lang.reflect.Constructor.newInstance(Constructor.java:423) ~[?:1.8.0_181]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:54) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:93) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:133) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createCommunicationsException(ExceptionFactory.java:149) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:561) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	... 12 more
-Caused by: java.net.SocketException: Software caused connection abort: socket write error
-	at java.net.SocketOutputStream.socketWrite0(Native Method) ~[?:1.8.0_181]
-	at java.net.SocketOutputStream.socketWrite(SocketOutputStream.java:111) ~[?:1.8.0_181]
-	at java.net.SocketOutputStream.write(SocketOutputStream.java:155) ~[?:1.8.0_181]
-	at java.io.BufferedOutputStream.flushBuffer(BufferedOutputStream.java:82) ~[?:1.8.0_181]
-	at java.io.BufferedOutputStream.flush(BufferedOutputStream.java:140) ~[?:1.8.0_181]
-	at com.mysql.cj.mysqla.io.SimplePacketSender.send(SimplePacketSender.java:50) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.TimeTrackingPacketSender.send(TimeTrackingPacketSender.java:43) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:552) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	... 12 more
-2018-12-22T09:17:43,467 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool:204 - Successfully destroyed PooledConnection: com.mchange.v2.c3p0.impl.NewPooledConnection@10f38db7
-2018-12-22T09:17:43,467 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - Successfully destroyed resource: com.mchange.v2.c3p0.impl.NewPooledConnection@10f38db7
-2018-12-22T09:17:43,467 DEBUG com.mchange.v2.c3p0.impl.DefaultConnectionTester:207 - Testing a Connection in response to an Exception:
-com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 49,226,229 milliseconds ago.  The last packet sent successfully to the server was 49,226,229 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
-	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.PreparedStatement.executeInternal(PreparedStatement.java:1826) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.PreparedStatement.execute(PreparedStatement.java:1153) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mchange.v2.c3p0.impl.NewProxyPreparedStatement.execute(NewProxyPreparedStatement.java:67) ~[c3p0-0.9.5.2.jar:0.9.5.2]
-	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:48) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:30) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$executeDirect$2(JDBCClientImpl.java:145) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.core.impl.FutureImpl.tryComplete(FutureImpl.java:126) ~[vertx-core-3.5.0.jar:?]
-	at io.vertx.core.impl.FutureImpl.complete(FutureImpl.java:88) ~[vertx-core-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$getConnection$3(JDBCClientImpl.java:192) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_181]
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_181]
-	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 49,226,229 milliseconds ago.  The last packet sent successfully to the server was 49,226,229 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
-	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
-	at java.lang.reflect.Constructor.newInstance(Constructor.java:423) ~[?:1.8.0_181]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:54) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:93) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:133) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createCommunicationsException(ExceptionFactory.java:149) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:561) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	... 12 more
-Caused by: java.net.SocketException: Software caused connection abort: socket write error
-	at java.net.SocketOutputStream.socketWrite0(Native Method) ~[?:1.8.0_181]
-	at java.net.SocketOutputStream.socketWrite(SocketOutputStream.java:111) ~[?:1.8.0_181]
-	at java.net.SocketOutputStream.write(SocketOutputStream.java:155) ~[?:1.8.0_181]
-	at java.io.BufferedOutputStream.flushBuffer(BufferedOutputStream.java:82) ~[?:1.8.0_181]
-	at java.io.BufferedOutputStream.flush(BufferedOutputStream.java:140) ~[?:1.8.0_181]
-	at com.mysql.cj.mysqla.io.SimplePacketSender.send(SimplePacketSender.java:50) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.TimeTrackingPacketSender.send(TimeTrackingPacketSender.java:43) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:552) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	... 12 more
-2018-12-22T09:17:43,468 DEBUG com.mchange.v2.c3p0.impl.NewPooledConnection:207 - com.mchange.v2.c3p0.impl.NewPooledConnection@c59c8cf invalidated by Exception.
-com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 49,226,229 milliseconds ago.  The last packet sent successfully to the server was 49,226,229 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
-	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.PreparedStatement.executeInternal(PreparedStatement.java:1826) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.PreparedStatement.execute(PreparedStatement.java:1153) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mchange.v2.c3p0.impl.NewProxyPreparedStatement.execute(NewProxyPreparedStatement.java:67) ~[c3p0-0.9.5.2.jar:0.9.5.2]
-	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:48) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:30) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$executeDirect$2(JDBCClientImpl.java:145) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.core.impl.FutureImpl.tryComplete(FutureImpl.java:126) ~[vertx-core-3.5.0.jar:?]
-	at io.vertx.core.impl.FutureImpl.complete(FutureImpl.java:88) ~[vertx-core-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$getConnection$3(JDBCClientImpl.java:192) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_181]
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_181]
-	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 49,226,229 milliseconds ago.  The last packet sent successfully to the server was 49,226,229 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
-	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
-	at java.lang.reflect.Constructor.newInstance(Constructor.java:423) ~[?:1.8.0_181]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:54) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:93) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:133) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createCommunicationsException(ExceptionFactory.java:149) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:561) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	... 12 more
-Caused by: java.net.SocketException: Software caused connection abort: socket write error
-	at java.net.SocketOutputStream.socketWrite0(Native Method) ~[?:1.8.0_181]
-	at java.net.SocketOutputStream.socketWrite(SocketOutputStream.java:111) ~[?:1.8.0_181]
-	at java.net.SocketOutputStream.write(SocketOutputStream.java:155) ~[?:1.8.0_181]
-	at java.io.BufferedOutputStream.flushBuffer(BufferedOutputStream.java:82) ~[?:1.8.0_181]
-	at java.io.BufferedOutputStream.flush(BufferedOutputStream.java:140) ~[?:1.8.0_181]
-	at com.mysql.cj.mysqla.io.SimplePacketSender.send(SimplePacketSender.java:50) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.TimeTrackingPacketSender.send(TimeTrackingPacketSender.java:43) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:552) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	... 12 more
-2018-12-22T09:17:43,470 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool:204 - CONNECTION ERROR OCCURRED!
-2018-12-22T09:17:43,470 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - Resource com.mchange.v2.c3p0.impl.NewPooledConnection@c59c8cf marked broken by pool (com.mchange.v2.resourcepool.BasicResourcePool@770d65ae).
-2018-12-22T09:17:43,489 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - Preparing to destroy resource: com.mchange.v2.c3p0.impl.NewPooledConnection@c59c8cf
-2018-12-22T09:17:43,470 ERROR database.SdkDatabaseServiceImpl:25 - Database query error
-com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 49,226,229 milliseconds ago.  The last packet sent successfully to the server was 49,226,229 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+2018-12-29T14:25:56,371 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool:204 - CONNECTION ERROR OCCURRED!
+2018-12-29T14:25:56,371 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - Resource com.mchange.v2.c3p0.impl.NewPooledConnection@5d89186d marked broken by pool (com.mchange.v2.resourcepool.BasicResourcePool@32579c8d).
+2018-12-29T14:25:56,410 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - Preparing to destroy resource: com.mchange.v2.c3p0.impl.NewPooledConnection@5d89186d
+2018-12-29T14:25:56,459 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool:204 - Preparing to destroy PooledConnection: com.mchange.v2.c3p0.impl.NewPooledConnection@5d89186d
+2018-12-29T14:25:56,460 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool:204 - Successfully destroyed PooledConnection: com.mchange.v2.c3p0.impl.NewPooledConnection@5d89186d
+2018-12-29T14:25:56,460 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - Successfully destroyed resource: com.mchange.v2.c3p0.impl.NewPooledConnection@5d89186d
+2018-12-29T14:25:56,410 ERROR database.SdkDatabaseServiceImpl:25 - Database query error
+com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 66,395,103 milliseconds ago.  The last packet sent successfully to the server was 66,395,104 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
 	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
@@ -438,7 +441,7 @@ com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successful
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) ~[?:1.8.0_181]
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) ~[?:1.8.0_181]
 	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 49,226,229 milliseconds ago.  The last packet sent successfully to the server was 49,226,229 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 66,395,103 milliseconds ago.  The last packet sent successfully to the server was 66,395,104 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
@@ -467,11 +470,8 @@ Caused by: java.net.SocketException: Software caused connection abort: socket wr
 	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	... 12 more
-2018-12-22T09:17:43,511 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool:204 - Preparing to destroy PooledConnection: com.mchange.v2.c3p0.impl.NewPooledConnection@c59c8cf
-2018-12-22T09:17:43,511 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool:204 - Successfully destroyed PooledConnection: com.mchange.v2.c3p0.impl.NewPooledConnection@c59c8cf
-2018-12-22T09:17:43,511 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - Successfully destroyed resource: com.mchange.v2.c3p0.impl.NewPooledConnection@c59c8cf
-2018-12-22T09:17:43,532 DEBUG com.mchange.v2.c3p0.impl.NewPooledConnection:207 - com.mchange.v2.c3p0.impl.NewPooledConnection@5969d0b4 handling a throwable.
-com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 51,232,083 milliseconds ago.  The last packet sent successfully to the server was 51,232,083 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+2018-12-29T14:25:56,576 DEBUG com.mchange.v2.c3p0.impl.NewPooledConnection:207 - com.mchange.v2.c3p0.impl.NewPooledConnection@32353375 handling a throwable.
+com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 81,881,139 milliseconds ago.  The last packet sent successfully to the server was 81,881,140 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
 	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
@@ -487,7 +487,7 @@ com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successful
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_181]
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_181]
 	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 51,232,083 milliseconds ago.  The last packet sent successfully to the server was 51,232,083 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 81,881,139 milliseconds ago.  The last packet sent successfully to the server was 81,881,140 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
@@ -516,8 +516,8 @@ Caused by: java.net.SocketException: Software caused connection abort: socket wr
 	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	... 12 more
-2018-12-22T09:17:43,534 DEBUG com.mchange.v2.sql.SqlUtils:207 - Attempted to convert SQLException to SQLException. Leaving it alone. [SQLState: 08S01; errorCode: 0]
-com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 51,232,083 milliseconds ago.  The last packet sent successfully to the server was 51,232,083 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+2018-12-29T14:25:56,581 DEBUG com.mchange.v2.sql.SqlUtils:207 - Attempted to convert SQLException to SQLException. Leaving it alone. [SQLState: 08S01; errorCode: 0]
+com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 81,881,139 milliseconds ago.  The last packet sent successfully to the server was 81,881,140 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
 	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
@@ -533,7 +533,7 @@ com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successful
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_181]
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_181]
 	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 51,232,083 milliseconds ago.  The last packet sent successfully to the server was 51,232,083 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 81,881,139 milliseconds ago.  The last packet sent successfully to the server was 81,881,140 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
@@ -562,8 +562,8 @@ Caused by: java.net.SocketException: Software caused connection abort: socket wr
 	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	... 12 more
-2018-12-22T09:17:43,541 DEBUG com.mchange.v2.c3p0.impl.DefaultConnectionTester:207 - Testing a Connection in response to an Exception:
-com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 51,232,083 milliseconds ago.  The last packet sent successfully to the server was 51,232,083 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+2018-12-29T14:25:56,587 DEBUG com.mchange.v2.c3p0.impl.DefaultConnectionTester:207 - Testing a Connection in response to an Exception:
+com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 81,881,139 milliseconds ago.  The last packet sent successfully to the server was 81,881,140 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
 	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
@@ -579,7 +579,7 @@ com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successful
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_181]
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_181]
 	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 51,232,083 milliseconds ago.  The last packet sent successfully to the server was 51,232,083 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 81,881,139 milliseconds ago.  The last packet sent successfully to the server was 81,881,140 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
@@ -608,8 +608,8 @@ Caused by: java.net.SocketException: Software caused connection abort: socket wr
 	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	... 12 more
-2018-12-22T09:17:43,562 DEBUG com.mchange.v2.c3p0.impl.NewPooledConnection:207 - com.mchange.v2.c3p0.impl.NewPooledConnection@5969d0b4 invalidated by Exception.
-com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 51,232,083 milliseconds ago.  The last packet sent successfully to the server was 51,232,083 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+2018-12-29T14:25:56,600 DEBUG com.mchange.v2.c3p0.impl.NewPooledConnection:207 - com.mchange.v2.c3p0.impl.NewPooledConnection@32353375 invalidated by Exception.
+com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 81,881,139 milliseconds ago.  The last packet sent successfully to the server was 81,881,140 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
 	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
@@ -625,7 +625,7 @@ com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successful
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_181]
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_181]
 	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 51,232,083 milliseconds ago.  The last packet sent successfully to the server was 51,232,083 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 81,881,139 milliseconds ago.  The last packet sent successfully to the server was 81,881,140 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
@@ -654,56 +654,12 @@ Caused by: java.net.SocketException: Software caused connection abort: socket wr
 	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	... 12 more
-2018-12-22T09:17:43,564 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool:204 - CONNECTION ERROR OCCURRED!
-2018-12-22T09:17:43,564 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - Resource com.mchange.v2.c3p0.impl.NewPooledConnection@5969d0b4 marked broken by pool (com.mchange.v2.resourcepool.BasicResourcePool@770d65ae).
-2018-12-22T09:17:43,576 DEBUG com.mchange.v2.c3p0.impl.NewPooledConnection:207 - com.mchange.v2.c3p0.impl.NewPooledConnection@154d22a1 handling a throwable.
-com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 51,232,116 milliseconds ago.  The last packet sent successfully to the server was 51,232,117 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
-	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.PreparedStatement.executeInternal(PreparedStatement.java:1826) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.PreparedStatement.execute(PreparedStatement.java:1153) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mchange.v2.c3p0.impl.NewProxyPreparedStatement.execute(NewProxyPreparedStatement.java:67) ~[c3p0-0.9.5.2.jar:0.9.5.2]
-	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:48) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:30) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$executeDirect$2(JDBCClientImpl.java:145) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.core.impl.FutureImpl.tryComplete(FutureImpl.java:126) ~[vertx-core-3.5.0.jar:?]
-	at io.vertx.core.impl.FutureImpl.complete(FutureImpl.java:88) ~[vertx-core-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$getConnection$3(JDBCClientImpl.java:192) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_181]
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_181]
-	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 51,232,116 milliseconds ago.  The last packet sent successfully to the server was 51,232,117 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
-	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
-	at java.lang.reflect.Constructor.newInstance(Constructor.java:423) ~[?:1.8.0_181]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:54) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:93) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:133) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createCommunicationsException(ExceptionFactory.java:149) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:561) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	... 12 more
-Caused by: java.net.SocketException: Software caused connection abort: socket write error
-	at java.net.SocketOutputStream.socketWrite0(Native Method) ~[?:1.8.0_181]
-	at java.net.SocketOutputStream.socketWrite(SocketOutputStream.java:111) ~[?:1.8.0_181]
-	at java.net.SocketOutputStream.write(SocketOutputStream.java:155) ~[?:1.8.0_181]
-	at java.io.BufferedOutputStream.flushBuffer(BufferedOutputStream.java:82) ~[?:1.8.0_181]
-	at java.io.BufferedOutputStream.flush(BufferedOutputStream.java:140) ~[?:1.8.0_181]
-	at com.mysql.cj.mysqla.io.SimplePacketSender.send(SimplePacketSender.java:50) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.TimeTrackingPacketSender.send(TimeTrackingPacketSender.java:43) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:552) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	... 12 more
-2018-12-22T09:17:43,565 ERROR database.SdkDatabaseServiceImpl:25 - Database query error
-com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 51,232,083 milliseconds ago.  The last packet sent successfully to the server was 51,232,083 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+2018-12-29T14:25:56,633 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool:204 - CONNECTION ERROR OCCURRED!
+2018-12-29T14:25:56,633 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - Resource com.mchange.v2.c3p0.impl.NewPooledConnection@32353375 marked broken by pool (com.mchange.v2.resourcepool.BasicResourcePool@32579c8d).
+2018-12-29T14:25:56,634 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - acquire test -- pool size: 0; target_pool_size: 3; desired target? 1
+2018-12-29T14:25:56,634 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - awaitAvailable(): com.mchange.v2.c3p0.impl.NewPooledConnection@5d89186d
+2018-12-29T14:25:56,705 ERROR database.SdkDatabaseServiceImpl:25 - Database query error
+com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 81,881,139 milliseconds ago.  The last packet sent successfully to the server was 81,881,140 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
 	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
@@ -719,7 +675,7 @@ com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successful
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) ~[?:1.8.0_181]
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) ~[?:1.8.0_181]
 	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 51,232,083 milliseconds ago.  The last packet sent successfully to the server was 51,232,083 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 81,881,139 milliseconds ago.  The last packet sent successfully to the server was 81,881,140 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
@@ -748,221 +704,10 @@ Caused by: java.net.SocketException: Software caused connection abort: socket wr
 	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
 	... 12 more
-2018-12-22T09:17:43,578 DEBUG com.mchange.v2.sql.SqlUtils:207 - Attempted to convert SQLException to SQLException. Leaving it alone. [SQLState: 08S01; errorCode: 0]
-com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 51,232,116 milliseconds ago.  The last packet sent successfully to the server was 51,232,117 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
-	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.PreparedStatement.executeInternal(PreparedStatement.java:1826) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.PreparedStatement.execute(PreparedStatement.java:1153) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mchange.v2.c3p0.impl.NewProxyPreparedStatement.execute(NewProxyPreparedStatement.java:67) ~[c3p0-0.9.5.2.jar:0.9.5.2]
-	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:48) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:30) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$executeDirect$2(JDBCClientImpl.java:145) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.core.impl.FutureImpl.tryComplete(FutureImpl.java:126) ~[vertx-core-3.5.0.jar:?]
-	at io.vertx.core.impl.FutureImpl.complete(FutureImpl.java:88) ~[vertx-core-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$getConnection$3(JDBCClientImpl.java:192) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_181]
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_181]
-	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 51,232,116 milliseconds ago.  The last packet sent successfully to the server was 51,232,117 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
-	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
-	at java.lang.reflect.Constructor.newInstance(Constructor.java:423) ~[?:1.8.0_181]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:54) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:93) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:133) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createCommunicationsException(ExceptionFactory.java:149) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:561) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	... 12 more
-Caused by: java.net.SocketException: Software caused connection abort: socket write error
-	at java.net.SocketOutputStream.socketWrite0(Native Method) ~[?:1.8.0_181]
-	at java.net.SocketOutputStream.socketWrite(SocketOutputStream.java:111) ~[?:1.8.0_181]
-	at java.net.SocketOutputStream.write(SocketOutputStream.java:155) ~[?:1.8.0_181]
-	at java.io.BufferedOutputStream.flushBuffer(BufferedOutputStream.java:82) ~[?:1.8.0_181]
-	at java.io.BufferedOutputStream.flush(BufferedOutputStream.java:140) ~[?:1.8.0_181]
-	at com.mysql.cj.mysqla.io.SimplePacketSender.send(SimplePacketSender.java:50) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.TimeTrackingPacketSender.send(TimeTrackingPacketSender.java:43) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:552) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	... 12 more
-2018-12-22T09:17:43,579 ERROR http.SdkHttpVerticle:477 - SDK_PARAMTER_LIST 失败------》(RECIPIENT_FAILURE,-1) The last packet successfully received from the server was 51,232,083 milliseconds ago.  The last packet sent successfully to the server was 51,232,083 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
-2018-12-22T09:17:43,579 ERROR http.SdkHttpVerticle:480 - SDK_INFORMATION_LIST 失败------》(RECIPIENT_FAILURE,-1) The last packet successfully received from the server was 49,226,229 milliseconds ago.  The last packet sent successfully to the server was 49,226,229 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
-2018-12-22T09:17:43,579 DEBUG com.mchange.v2.c3p0.impl.DefaultConnectionTester:207 - Testing a Connection in response to an Exception:
-com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 51,232,116 milliseconds ago.  The last packet sent successfully to the server was 51,232,117 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
-	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.PreparedStatement.executeInternal(PreparedStatement.java:1826) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.PreparedStatement.execute(PreparedStatement.java:1153) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mchange.v2.c3p0.impl.NewProxyPreparedStatement.execute(NewProxyPreparedStatement.java:67) ~[c3p0-0.9.5.2.jar:0.9.5.2]
-	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:48) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:30) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$executeDirect$2(JDBCClientImpl.java:145) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.core.impl.FutureImpl.tryComplete(FutureImpl.java:126) ~[vertx-core-3.5.0.jar:?]
-	at io.vertx.core.impl.FutureImpl.complete(FutureImpl.java:88) ~[vertx-core-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$getConnection$3(JDBCClientImpl.java:192) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_181]
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_181]
-	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 51,232,116 milliseconds ago.  The last packet sent successfully to the server was 51,232,117 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
-	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
-	at java.lang.reflect.Constructor.newInstance(Constructor.java:423) ~[?:1.8.0_181]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:54) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:93) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:133) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createCommunicationsException(ExceptionFactory.java:149) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:561) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	... 12 more
-Caused by: java.net.SocketException: Software caused connection abort: socket write error
-	at java.net.SocketOutputStream.socketWrite0(Native Method) ~[?:1.8.0_181]
-	at java.net.SocketOutputStream.socketWrite(SocketOutputStream.java:111) ~[?:1.8.0_181]
-	at java.net.SocketOutputStream.write(SocketOutputStream.java:155) ~[?:1.8.0_181]
-	at java.io.BufferedOutputStream.flushBuffer(BufferedOutputStream.java:82) ~[?:1.8.0_181]
-	at java.io.BufferedOutputStream.flush(BufferedOutputStream.java:140) ~[?:1.8.0_181]
-	at com.mysql.cj.mysqla.io.SimplePacketSender.send(SimplePacketSender.java:50) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.TimeTrackingPacketSender.send(TimeTrackingPacketSender.java:43) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:552) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	... 12 more
-2018-12-22T09:17:43,581 DEBUG com.mchange.v2.c3p0.impl.NewPooledConnection:207 - com.mchange.v2.c3p0.impl.NewPooledConnection@154d22a1 invalidated by Exception.
-com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 51,232,116 milliseconds ago.  The last packet sent successfully to the server was 51,232,117 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
-	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.PreparedStatement.executeInternal(PreparedStatement.java:1826) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.PreparedStatement.execute(PreparedStatement.java:1153) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mchange.v2.c3p0.impl.NewProxyPreparedStatement.execute(NewProxyPreparedStatement.java:67) ~[c3p0-0.9.5.2.jar:0.9.5.2]
-	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:48) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:30) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$executeDirect$2(JDBCClientImpl.java:145) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.core.impl.FutureImpl.tryComplete(FutureImpl.java:126) ~[vertx-core-3.5.0.jar:?]
-	at io.vertx.core.impl.FutureImpl.complete(FutureImpl.java:88) ~[vertx-core-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$getConnection$3(JDBCClientImpl.java:192) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_181]
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_181]
-	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 51,232,116 milliseconds ago.  The last packet sent successfully to the server was 51,232,117 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
-	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
-	at java.lang.reflect.Constructor.newInstance(Constructor.java:423) ~[?:1.8.0_181]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:54) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:93) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:133) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createCommunicationsException(ExceptionFactory.java:149) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:561) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	... 12 more
-Caused by: java.net.SocketException: Software caused connection abort: socket write error
-	at java.net.SocketOutputStream.socketWrite0(Native Method) ~[?:1.8.0_181]
-	at java.net.SocketOutputStream.socketWrite(SocketOutputStream.java:111) ~[?:1.8.0_181]
-	at java.net.SocketOutputStream.write(SocketOutputStream.java:155) ~[?:1.8.0_181]
-	at java.io.BufferedOutputStream.flushBuffer(BufferedOutputStream.java:82) ~[?:1.8.0_181]
-	at java.io.BufferedOutputStream.flush(BufferedOutputStream.java:140) ~[?:1.8.0_181]
-	at com.mysql.cj.mysqla.io.SimplePacketSender.send(SimplePacketSender.java:50) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.TimeTrackingPacketSender.send(TimeTrackingPacketSender.java:43) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:552) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	... 12 more
-2018-12-22T09:17:43,588 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool:204 - CONNECTION ERROR OCCURRED!
-2018-12-22T09:17:43,588 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - Resource com.mchange.v2.c3p0.impl.NewPooledConnection@154d22a1 marked broken by pool (com.mchange.v2.resourcepool.BasicResourcePool@770d65ae).
-2018-12-22T09:17:43,589 ERROR database.SdkDatabaseServiceImpl:25 - Database query error
-com.mysql.cj.jdbc.exceptions.CommunicationsException: The last packet successfully received from the server was 51,232,116 milliseconds ago.  The last packet sent successfully to the server was 51,232,117 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
-	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:590) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:57) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1983) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.PreparedStatement.executeInternal(PreparedStatement.java:1826) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.PreparedStatement.execute(PreparedStatement.java:1153) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mchange.v2.c3p0.impl.NewProxyPreparedStatement.execute(NewProxyPreparedStatement.java:67) ~[c3p0-0.9.5.2.jar:0.9.5.2]
-	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:48) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.actions.JDBCQuery.execute(JDBCQuery.java:30) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$executeDirect$2(JDBCClientImpl.java:145) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.core.impl.FutureImpl.tryComplete(FutureImpl.java:126) ~[vertx-core-3.5.0.jar:?]
-	at io.vertx.core.impl.FutureImpl.complete(FutureImpl.java:88) ~[vertx-core-3.5.0.jar:?]
-	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$getConnection$3(JDBCClientImpl.java:192) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) ~[?:1.8.0_181]
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) ~[?:1.8.0_181]
-	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-Caused by: com.mysql.cj.core.exceptions.CJCommunicationsException: The last packet successfully received from the server was 51,232,116 milliseconds ago.  The last packet sent successfully to the server was 51,232,117 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_181]
-	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_181]
-	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_181]
-	at java.lang.reflect.Constructor.newInstance(Constructor.java:423) ~[?:1.8.0_181]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:54) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:93) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createException(ExceptionFactory.java:133) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.core.exceptions.ExceptionFactory.createCommunicationsException(ExceptionFactory.java:149) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:561) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	... 12 more
-Caused by: java.net.SocketException: Software caused connection abort: socket write error
-	at java.net.SocketOutputStream.socketWrite0(Native Method) ~[?:1.8.0_181]
-	at java.net.SocketOutputStream.socketWrite(SocketOutputStream.java:111) ~[?:1.8.0_181]
-	at java.net.SocketOutputStream.write(SocketOutputStream.java:155) ~[?:1.8.0_181]
-	at java.io.BufferedOutputStream.flushBuffer(BufferedOutputStream.java:82) ~[?:1.8.0_181]
-	at java.io.BufferedOutputStream.flush(BufferedOutputStream.java:140) ~[?:1.8.0_181]
-	at com.mysql.cj.mysqla.io.SimplePacketSender.send(SimplePacketSender.java:50) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.TimeTrackingPacketSender.send(TimeTrackingPacketSender.java:43) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.send(MysqlaProtocol.java:552) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sendCommand(MysqlaProtocol.java:644) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.io.MysqlaProtocol.sqlQueryDirect(MysqlaProtocol.java:950) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.mysqla.MysqlaSession.sqlQueryDirect(MysqlaSession.java:431) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	at com.mysql.cj.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:1978) ~[mysql-connector-java-6.0.5.jar:6.0.5]
-	... 12 more
-2018-12-22T09:17:43,594 ERROR http.SdkHttpVerticle:133 - sdk_info 查询失败
-io.vertx.serviceproxy.ServiceException: The last packet successfully received from the server was 51,232,116 milliseconds ago.  The last packet sent successfully to the server was 51,232,117 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
-	at database.SdkDatabaseServiceVertxProxyHandler.lambda$createListHandler$1(SdkDatabaseServiceVertxProxyHandler.java:174) ~[classes/:?]
-	at database.SdkDatabaseServiceImpl.lambda$listDatas$0(SdkDatabaseServiceImpl.java:26) ~[classes/:?]
-	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$null$0(JDBCClientImpl.java:141) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.core.impl.ContextImpl.lambda$wrapTask$2(ContextImpl.java:344) ~[vertx-core-3.5.0.jar:?]
-	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163) [netty-common-4.1.15.Final.jar:4.1.15.Final]
-	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:403) [netty-common-4.1.15.Final.jar:4.1.15.Final]
-	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:463) [netty-transport-4.1.15.Final.jar:4.1.15.Final]
-	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858) [netty-common-4.1.15.Final.jar:4.1.15.Final]
-	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-2018-12-22T09:17:43,596 ERROR http.SdkHttpVerticle:136 - sdk_list 查询失败
-io.vertx.serviceproxy.ServiceException: The last packet successfully received from the server was 51,232,116 milliseconds ago.  The last packet sent successfully to the server was 51,232,117 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
-	at database.SdkDatabaseServiceVertxProxyHandler.lambda$createListHandler$1(SdkDatabaseServiceVertxProxyHandler.java:174) ~[classes/:?]
-	at database.SdkDatabaseServiceImpl.lambda$listDatas$0(SdkDatabaseServiceImpl.java:26) ~[classes/:?]
-	at io.vertx.ext.jdbc.impl.JDBCClientImpl.lambda$null$0(JDBCClientImpl.java:141) ~[vertx-jdbc-client-3.5.0.jar:?]
-	at io.vertx.core.impl.ContextImpl.lambda$wrapTask$2(ContextImpl.java:344) ~[vertx-core-3.5.0.jar:?]
-	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163) [netty-common-4.1.15.Final.jar:4.1.15.Final]
-	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:403) [netty-common-4.1.15.Final.jar:4.1.15.Final]
-	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:463) [netty-transport-4.1.15.Final.jar:4.1.15.Final]
-	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858) [netty-common-4.1.15.Final.jar:4.1.15.Final]
-	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-2018-12-22T09:17:43,619 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - Preparing to destroy resource: com.mchange.v2.c3p0.impl.NewPooledConnection@5969d0b4
-2018-12-22T09:17:43,619 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool:204 - Preparing to destroy PooledConnection: com.mchange.v2.c3p0.impl.NewPooledConnection@5969d0b4
-2018-12-22T09:17:43,620 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool:204 - Successfully destroyed PooledConnection: com.mchange.v2.c3p0.impl.NewPooledConnection@5969d0b4
-2018-12-22T09:17:43,620 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - Successfully destroyed resource: com.mchange.v2.c3p0.impl.NewPooledConnection@5969d0b4
-2018-12-22T09:17:43,620 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - Preparing to destroy resource: com.mchange.v2.c3p0.impl.NewPooledConnection@154d22a1
-2018-12-22T09:17:43,620 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool:204 - Preparing to destroy PooledConnection: com.mchange.v2.c3p0.impl.NewPooledConnection@154d22a1
-2018-12-22T09:17:43,620 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool:204 - Successfully destroyed PooledConnection: com.mchange.v2.c3p0.impl.NewPooledConnection@154d22a1
-2018-12-22T09:17:43,620 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - Successfully destroyed resource: com.mchange.v2.c3p0.impl.NewPooledConnection@154d22a1
+2018-12-29T14:25:56,744 ERROR http.SdkHttpVerticle:518 - SDK_PARAMTER_LIST 失败------》(RECIPIENT_FAILURE,-1) The last packet successfully received from the server was 81,881,139 milliseconds ago.  The last packet sent successfully to the server was 81,881,140 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+2018-12-29T14:25:56,745 ERROR http.SdkHttpVerticle:521 - SDK_INFORMATION_LIST 失败------》(RECIPIENT_FAILURE,-1) The last packet successfully received from the server was 66,217,238 milliseconds ago.  The last packet sent successfully to the server was 66,217,239 milliseconds ago. is longer than the server configured value of 'wait_timeout'. You should consider either expiring and/or testing connection validity before use in your application, increasing the server configured values for client timeouts, or using the Connector/J connection property 'autoReconnect=true' to avoid this problem.
+2018-12-29T14:25:57,015 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - Preparing to destroy resource: com.mchange.v2.c3p0.impl.NewPooledConnection@32353375
+2018-12-29T14:25:57,015 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool:204 - Preparing to destroy PooledConnection: com.mchange.v2.c3p0.impl.NewPooledConnection@32353375
+2018-12-29T14:25:57,015 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool:204 - Successfully destroyed PooledConnection: com.mchange.v2.c3p0.impl.NewPooledConnection@32353375
+2018-12-29T14:25:57,015 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - Successfully destroyed resource: com.mchange.v2.c3p0.impl.NewPooledConnection@32353375
+2018-12-29T14:25:57,099 ERROR http.SdkHttpVerticle:162 - sdk_info 查询失败

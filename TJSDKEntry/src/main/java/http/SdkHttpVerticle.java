@@ -79,6 +79,10 @@ public class SdkHttpVerticle extends AbstractVerticle {
         });
     }
 
+    /**
+     * 获取已发布的配置表
+     * @param context
+     */
     private void projectconfigListPublishHandler(RoutingContext context) {
         list(sql.get(SqlConstants.PROJECT_CONFIG_PUBLISH_LIST),sql.get(SqlConstants.PROJECT_CONFIG_PARAMTER_LIST),context);
     }
@@ -96,6 +100,7 @@ public class SdkHttpVerticle extends AbstractVerticle {
                     List<JsonObject> sdk_list = result1.result();
                     JsonArray sdk_Template_Name_List=new JsonArray();
                     JsonArray sdk_Template_List=new JsonArray();
+                    JsonArray select_List=new JsonArray();
                     for (int i=0;i<sdk_info.size();i++){
                         if (sdk_info.get(i).getString("sdk_status").equals("0")){
                             continue;
@@ -110,11 +115,34 @@ public class SdkHttpVerticle extends AbstractVerticle {
                         while (it.hasNext()) {
                             JsonObject jsonObject=it.next();
                             JsonObject sdk_template=new JsonObject();
-                            if (jsonObject.getString("sdk_mark").equals(mark)){
+                            String sdk_type=jsonObject.getString("sdk_type");
+                            if (sdk_type.equals("1")){   //多选框
+                               JsonObject newjsonobject=new JsonObject();
+                                newjsonobject.put("param_name",jsonObject.getString("sdk_paramter_name"));
+                                newjsonobject.put("sdk_name",jsonObject.getString("sdk_mark"));
+                                String [] list=jsonObject.getString("sdk_paramter").split(";");
+                                JsonArray jsonArray=new JsonArray();
+                                String default_value="暂无";
+                                for (int x=0;x<list.length;x++){
+                                    if (x==0){
+                                        default_value=list[x];
+                                    }
+                                    JsonObject jsonObject1=new JsonObject().put("value",list[x]);
+                                    jsonArray.add(jsonObject1);
+                                }
+                                JsonObject newjsonobject1=new JsonObject();
+                                newjsonobject.put("value",default_value);
+                                newjsonobject.put("param",jsonArray);
+                                select_List.add(newjsonobject);
+                                it.remove();
+                                continue;
+                            }
+                            if (jsonObject.getString("sdk_mark").equals(mark)&&sdk_type.equals("0")){
                                 sdk_template.put("key",Long.toHexString(new Date().getTime()));
                                 sdk_template.put("param_name",mark+"-"+jsonObject.getString("sdk_paramter_name"));
                                 sdk_template.put("param","");
                                 sdk_template.put("note",jsonObject.getString("sdk_note"));
+                                sdk_template.put("sdk_type",sdk_type);
                                 sdkform.add(sdk_template);
                                 it.remove();
                             }
@@ -122,10 +150,12 @@ public class SdkHttpVerticle extends AbstractVerticle {
                         template.put("keyform",sdkform);
                         sdk_Template_List.add(template);
                     }
+
                     context.response().setStatusCode(200).end(Json.encodePrettily(
                             new JsonObject().put("code", 20000)
                                     .put("name_list",sdk_Template_Name_List)
                                     .put("list",sdk_Template_List)
+                                    .put("select_list",select_List)
                     ));
                 }else {
                     if (result.failed()){
@@ -156,9 +186,10 @@ public class SdkHttpVerticle extends AbstractVerticle {
         List<JsonArray> list = new ArrayList<>();
         for (int i = 0; i < domains.size(); i++) {
             String param_name = domains.getJsonObject(i).getString("sdk_paramter_name");
-            String param_note = domains.getJsonObject(i).getString("sdk_note");
+            String param = domains.getJsonObject(i).getString("sdk_paramter");
+            String type = domains.getJsonObject(i).getString("sdk_type");
             JsonArray jsonArray = new JsonArray();
-            jsonArray.add(mark).add(param_name).add(param_note);
+            jsonArray.add(mark).add(param_name).add(param).add(type);
             list.add(jsonArray);
         }
         dbService.query(sql.get(SqlConstants.SDK_INFO_INSERT), new JsonArray().add(name).add(version).add(mark).add(sdkstatus), result -> {
@@ -235,9 +266,10 @@ public class SdkHttpVerticle extends AbstractVerticle {
         List<JsonArray> list = new ArrayList<>();
         for (int i = 0; i < domains.size(); i++) {
             String param_name = domains.getJsonObject(i).getString("sdk_paramter_name");
-            String param_note = domains.getJsonObject(i).getString("sdk_note");
+            String param = domains.getJsonObject(i).getString("sdk_paramter");
+            String type = domains.getJsonObject(i).getString("sdk_type");
             JsonArray jsonArray = new JsonArray();
-            jsonArray.add(mark).add(param_name).add(param_note);
+            jsonArray.add(mark).add(param_name).add(param).add(type);
             list.add(jsonArray);
         }
         dbService.query(sql.get(SqlConstants.SDK_INFO_UPDATE),new JsonArray().add(name).add(version).add(mark).add(sdkstatus).add(id),result -> {
@@ -292,11 +324,13 @@ public class SdkHttpVerticle extends AbstractVerticle {
         String sdk_require = context.getBodyAsJson().getString("sdk_require");
         String note = context.getBodyAsJson().getString("note");
         JsonObject jsonObject = context.getBodyAsJson().getJsonObject("form");
-        JsonArray jsonArray = jsonObject.getJsonArray("domains");
-        for (int i = 0; i < jsonArray.size(); i++) {
-            String param_name = jsonArray.getJsonObject(i).getString("param_name");
-            String param_value = jsonArray.getJsonObject(i).getString("param");
-            String param_note = jsonArray.getJsonObject(i).getString("note");
+        JsonArray form = jsonObject.getJsonArray("domains");
+        JsonArray select = jsonObject.getJsonArray("select");
+        form=form.addAll(select);
+        for (int i = 0; i < form.size(); i++) {
+            String param_name = form.getJsonObject(i).getString("param_name");
+            String param_value = form.getJsonObject(i).getString("param");
+            String param_note = form.getJsonObject(i).getString("sdk_type");
             JsonArray array = new JsonArray();
             try {
                 array.add(timevalue)
@@ -376,7 +410,9 @@ public class SdkHttpVerticle extends AbstractVerticle {
         String note = context.getBodyAsJson().getString("note");
         String publish = context.getBodyAsJson().getString("publish");
         JsonObject jsonObject = context.getBodyAsJson().getJsonObject("form");
-        JsonArray jsonArray = jsonObject.getJsonArray("domains");
+        JsonArray form = jsonObject.getJsonArray("domains");
+        JsonArray select = jsonObject.getJsonArray("select");
+        form=form.addAll(select);
 //        System.out.println(timevalue);
 //        System.out.println(app_name);
 //        System.out.println(package_name);
@@ -392,10 +428,11 @@ public class SdkHttpVerticle extends AbstractVerticle {
 //        System.out.println(publish);
 //        System.out.println(jsonObject);
 
-        for (int i = 0; i < jsonArray.size(); i++) {
-            String param_name = jsonArray.getJsonObject(i).getString("param_name");
-            String param_value = jsonArray.getJsonObject(i).getString("param");
-            String param_note = jsonArray.getJsonObject(i).getString("note");
+
+        for (int i = 0; i < form.size(); i++) {
+            String param_name = form.getJsonObject(i).getString("param_name");
+            String param_value = form.getJsonObject(i).getString("param");
+            String param_note = form.getJsonObject(i).getString("sdk_type");
             JsonArray array = new JsonArray();
             try {
                 array.add(timevalue)
@@ -410,6 +447,7 @@ public class SdkHttpVerticle extends AbstractVerticle {
             }
             paramters.add(i, array);
         }
+
         try {
             sdk_information.add(timevalue).add(app_name).add(package_name).add(version_online_version).add(version_update_version)
                     .add(versioncode_online_version).add(versioncode_update_version).add(channel_mark).add(sdk_config)
@@ -454,7 +492,9 @@ public class SdkHttpVerticle extends AbstractVerticle {
                     for (int i = 0; i < sdk_information.size(); i++) {
                         Long longdate = sdk_information.get(i).getLong("date");
                         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS").format(new Date(longdate));
+                        String date1 = new SimpleDateFormat("yyyy年MM月dd HH:mm:ss").format(new Date(longdate));
                         sdk_information.get(i).put("date", date);
+                        sdk_information.get(i).put("date1", date1);
                         JsonArray jsonArray = new JsonArray();
                         Iterator<JsonObject> it = paramter.iterator();
                         while (it.hasNext()) {
@@ -462,6 +502,8 @@ public class SdkHttpVerticle extends AbstractVerticle {
                             if (jsonObject.getLong("date").equals(longdate)) {
                                 jsonObject.put("key", Long.toHexString(new Date().getTime()));
                                 jsonObject.put("mark",jsonObject.getString("param_name").split("-")[0]);
+                                String[] name=jsonObject.getString("param_name").split("-");
+                                jsonObject.put("param_name1",name[name.length-1]);
                                 jsonArray.add(jsonObject);
                                 it.remove();
                             }

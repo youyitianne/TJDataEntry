@@ -44,7 +44,7 @@ public class SdkDatabaseVerticle extends AbstractVerticle {
     }
 
     List<String> lists = Arrays.asList(
-            "CREATE TABLE if not exists  `project_config_info` (\n" +
+            "CREATE TABLE if not exists `project_config_info` (\n" +
                     "  `id` int(11) NOT NULL AUTO_INCREMENT,\n" +
                     "  `date` bigint(20) DEFAULT NULL,\n" +
                     "  `app_name` varchar(255) DEFAULT NULL,\n" +
@@ -58,18 +58,19 @@ public class SdkDatabaseVerticle extends AbstractVerticle {
                     "  `sdk_require` varchar(255) DEFAULT NULL,\n" +
                     "  `note` varchar(255) DEFAULT NULL,\n" +
                     "  `sdk_status` tinyint(4) DEFAULT NULL,\n" +
+                    "  `publish` tinyint(4) DEFAULT NULL,\n" +
                     "  PRIMARY KEY (`id`)\n" +
-                    ") ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;",
-            "CREATE TABLE if not exists  `project_config_list` (\n" +
+                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8;",
+            "CREATE TABLE if not exists `project_config_list` (\n" +
                     "  `id` int(11) NOT NULL AUTO_INCREMENT,\n" +
                     "  `date` bigint(20) DEFAULT NULL,\n" +
                     "  `app_name` varchar(255) DEFAULT NULL,\n" +
                     "  `channel_mark` varchar(255) DEFAULT NULL,\n" +
                     "  `param_name` varchar(255) DEFAULT NULL,\n" +
                     "  `param` varchar(255) DEFAULT NULL,\n" +
-                    "  `note` varchar(255) DEFAULT NULL,\n" +
+                    "  `sdk_type` varchar(255) DEFAULT NULL,\n" +
                     "  PRIMARY KEY (`id`)\n" +
-                    ") ENGINE=InnoDB AUTO_INCREMENT=260 DEFAULT CHARSET=utf8;"
+                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8;"
     );
 
 }
