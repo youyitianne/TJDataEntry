@@ -16,6 +16,7 @@ import io.vertx.ext.web.handler.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.Method;
+
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -23,12 +24,12 @@ public class SdkHttpVerticle extends AbstractVerticle {
     private Logger logger = LoggerFactory.getLogger(SdkHttpVerticle.class.getName());
     public static final String CONFIG_ACCOUNTDB_QUEUE = "accountdb.queue";
     private SdkDatabaseService dbService;
-    HashMap<SqlConstants, String> sql;
+    private HashMap<SqlConstants, String> sql;
     private Method method = new Method();
     private String sdkDbQueue;
 
     @Override
-    public void start(Future<Void> startFuture) throws Exception {
+    public void start(Future<Void> startFuture){
         sdkDbQueue = config().getString(CONFIG_ACCOUNTDB_QUEUE, "accountdb.queue");
         dbService = SdkDatabaseService.createProxy(vertx, CONFIG_ACCOUNTDB_QUEUE);
         Router router = Router.router(vertx);
@@ -57,11 +58,14 @@ public class SdkHttpVerticle extends AbstractVerticle {
         router.post("/api/projectconfig").handler(this::projectconfigCreateHandler);
         router.patch("/api/projectconfig/:id").handler(this::projectconfigUpdateHandler);
         router.get("/api/listtemplate").handler(this::listtemplateHandler);
-        router.get("/api/projectconfig_publish").handler(this::projectconfigListPublishHandler);
+
         //sdk
         router.get("/api/sdk").handler(this::sdkListHandler);
         router.post("/api/sdk").handler(this::sdkCreateHandler);
         router.patch("/api/sdk/:id").handler(this::sdkUpdateHandler);
+        //发布记录
+        router.get("/api/projectconfig_publish").handler(this::projectconfigListPublishHandler);
+        router.post("/api/publish_delete").handler(this::publishDeleteHandler);
 
         HashMap<ConfigConstants, String> conf = method.loadConfigQueries();
         sql = method.loadSqlQueries();
@@ -80,11 +84,41 @@ public class SdkHttpVerticle extends AbstractVerticle {
     }
 
     /**
+     * 删除已发布的配置表
+     *
+     * @param context
+     */
+    private void publishDeleteHandler(RoutingContext context) {
+        Integer id = context.getBodyAsJson().getInteger("id");
+        JsonArray form = context.getBodyAsJson().getJsonArray("paramter");
+        List<JsonArray> list_delete = new ArrayList<>();
+        for (int i = 0; i < form.size(); i++) {
+            JsonArray jsonArray = new JsonArray();
+            jsonArray.add(form.getJsonObject(i).getInteger("id"));
+            list_delete.add(jsonArray);
+        }
+        dbService.query(sql.get(SqlConstants.PROJECT_CONFIG_INFORMATION_DELETE), new JsonArray().add(id), rs -> {
+            if (rs.succeeded()) {
+                dbService.batch(sql.get(SqlConstants.PROJECT_CONFIG_LIST_DELETE_BYID), list_delete, rs1 -> {
+                    if (rs1.succeeded()) {
+                        context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
+                    } else {
+                        badRequest(context);
+                    }
+                });
+            } else {
+                badRequest(context);
+            }
+        });
+    }
+
+    /**
      * 获取已发布的配置表
+     *
      * @param context
      */
     private void projectconfigListPublishHandler(RoutingContext context) {
-        list(sql.get(SqlConstants.PROJECT_CONFIG_PUBLISH_LIST),sql.get(SqlConstants.PROJECT_CONFIG_PARAMTER_LIST),context);
+        list(sql.get(SqlConstants.PROJECT_CONFIG_PUBLISH_LIST), sql.get(SqlConstants.PROJECT_CONFIG_PARAMTER_LIST), context);
     }
 
     /**
@@ -93,75 +127,77 @@ public class SdkHttpVerticle extends AbstractVerticle {
      * @param context
      */
     private void listtemplateHandler(RoutingContext context) {
-        dbService.listDatas(sql.get(SqlConstants.SDK_INFO_LIST),result -> {
+        dbService.listDatas(sql.get(SqlConstants.SDK_INFO_LIST), result -> {
             dbService.listDatas(sql.get(SqlConstants.SDK_LIST_LIST), result1 -> {
-                if (result.succeeded()&&result1.succeeded()) {
+                if (result.succeeded() && result1.succeeded()) {
                     List<JsonObject> sdk_info = result.result();
                     List<JsonObject> sdk_list = result1.result();
-                    JsonArray sdk_Template_Name_List=new JsonArray();
-                    JsonArray sdk_Template_List=new JsonArray();
-                    JsonArray select_List=new JsonArray();
-                    for (int i=0;i<sdk_info.size();i++){
-                        if (sdk_info.get(i).getString("sdk_status").equals("0")){
+                    JsonArray sdk_Template_Name_List = new JsonArray();
+                    JsonArray sdk_Template_List = new JsonArray();
+                    JsonArray select_List = new JsonArray();
+                    for (int i = 0; i < sdk_info.size(); i++) {
+                        if (sdk_info.get(i).getString("sdk_status").equals("0")) {
                             continue;
                         }
-                        JsonObject template=new JsonObject();
-                        String mark=sdk_info.get(i).getString("sdk_mark");
-                        String name=sdk_info.get(i).getString("sdk_name");
-                        template.put("keymark",mark);
-                        sdk_Template_Name_List.add(mark);
-                        JsonArray sdkform=new JsonArray();
+                        JsonObject template = new JsonObject();
+                        String mark = sdk_info.get(i).getString("sdk_mark");
+                        String name = sdk_info.get(i).getString("sdk_name");
+                        template.put("keymark", mark);
+//                        sdk_Template_Name_List.add(mark);
+                        sdk_Template_Name_List.add(new JsonObject().put("mark", mark).put("name", name));
+                        JsonArray sdkform = new JsonArray();
                         Iterator<JsonObject> it = sdk_list.iterator();
                         while (it.hasNext()) {
-                            JsonObject jsonObject=it.next();
-                            JsonObject sdk_template=new JsonObject();
-                            String sdk_type=jsonObject.getString("sdk_type");
-                            if (sdk_type.equals("1")){   //多选框
-                               JsonObject newjsonobject=new JsonObject();
-                                newjsonobject.put("param_name",jsonObject.getString("sdk_paramter_name"));
-                                newjsonobject.put("sdk_name",jsonObject.getString("sdk_mark"));
-                                String [] list=jsonObject.getString("sdk_paramter").split(";");
-                                JsonArray jsonArray=new JsonArray();
-                                String default_value="暂无";
-                                for (int x=0;x<list.length;x++){
-                                    if (x==0){
-                                        default_value=list[x];
+                            JsonObject jsonObject = it.next();
+                            JsonObject sdk_template = new JsonObject();
+                            String sdk_type = jsonObject.getString("sdk_type");
+                            if (sdk_type.equals("1")) {   //多选框
+                                JsonObject newjsonobject = new JsonObject();
+                                newjsonobject.put("param_name", jsonObject.getString("sdk_paramter_name"));
+                                newjsonobject.put("sdk_name", jsonObject.getString("sdk_mark"));
+                                String[] list = jsonObject.getString("sdk_paramter").split(";");
+                                JsonArray jsonArray = new JsonArray();
+                                String default_value = "暂无";
+                                for (int x = 0; x < list.length; x++) {
+                                    if (x == 0) {
+                                        default_value = list[x];
                                     }
-                                    JsonObject jsonObject1=new JsonObject().put("value",list[x]);
+                                    JsonObject jsonObject1 = new JsonObject().put("value", list[x]);
                                     jsonArray.add(jsonObject1);
                                 }
-                                JsonObject newjsonobject1=new JsonObject();
-                                newjsonobject.put("value",default_value);
-                                newjsonobject.put("param",jsonArray);
+                                JsonObject newjsonobject1 = new JsonObject();
+                                newjsonobject.put("value", default_value);
+                                newjsonobject.put("param", jsonArray);
                                 select_List.add(newjsonobject);
                                 it.remove();
                                 continue;
                             }
-                            if (jsonObject.getString("sdk_mark").equals(mark)&&sdk_type.equals("0")){
-                                sdk_template.put("key",Long.toHexString(new Date().getTime()));
-                                sdk_template.put("param_name",mark+"-"+jsonObject.getString("sdk_paramter_name"));
-                                sdk_template.put("param","");
-                                sdk_template.put("note",jsonObject.getString("sdk_note"));
-                                sdk_template.put("sdk_type",sdk_type);
+                            if (jsonObject.getString("sdk_mark").equals(mark) && sdk_type.equals("0")) {
+                                sdk_template.put("key", Long.toHexString(new Date().getTime()));
+                                sdk_template.put("param_name", mark + "-" + jsonObject.getString("sdk_paramter_name"));
+                                sdk_template.put("param_name1", jsonObject.getString("sdk_paramter_name"));
+                                sdk_template.put("param", "");
+                                sdk_template.put("note", jsonObject.getString("sdk_note"));
+                                sdk_template.put("sdk_type", sdk_type);
                                 sdkform.add(sdk_template);
                                 it.remove();
                             }
                         }
-                        template.put("keyform",sdkform);
+                        template.put("keyform", sdkform);
                         sdk_Template_List.add(template);
                     }
 
                     context.response().setStatusCode(200).end(Json.encodePrettily(
                             new JsonObject().put("code", 20000)
-                                    .put("name_list",sdk_Template_Name_List)
-                                    .put("list",sdk_Template_List)
-                                    .put("select_list",select_List)
+                                    .put("name_list", sdk_Template_Name_List)
+                                    .put("list", sdk_Template_List)
+                                    .put("select_list", select_List)
                     ));
-                }else {
-                    if (result.failed()){
+                } else {
+                    if (result.failed()) {
                         logger.error("sdk_info 查询失败", result1.cause());
                     }
-                    if (result1.failed()){
+                    if (result1.failed()) {
                         logger.error("sdk_list 查询失败", result1.cause());
                     }
                     badRequest(context);
@@ -215,32 +251,32 @@ public class SdkHttpVerticle extends AbstractVerticle {
      * @param context
      */
     private void sdkListHandler(RoutingContext context) {
-        dbService.listDatas(sql.get(SqlConstants.SDK_INFO_LIST),result -> {
-            dbService.listDatas(sql.get(SqlConstants.SDK_LIST_LIST),result1 -> {
-                if (result.succeeded()&&result1.succeeded()){
+        dbService.listDatas(sql.get(SqlConstants.SDK_INFO_LIST), result -> {
+            dbService.listDatas(sql.get(SqlConstants.SDK_LIST_LIST), result1 -> {
+                if (result.succeeded() && result1.succeeded()) {
                     List<JsonObject> sdk_info = result.result();
                     List<JsonObject> sdk_list = result1.result();
-                    for (int i=0;i<sdk_info.size();i++){
-                        String mark=sdk_info.get(i).getString("sdk_mark");
-                        JsonArray jsonArray=new JsonArray();
+                    for (int i = 0; i < sdk_info.size(); i++) {
+                        String mark = sdk_info.get(i).getString("sdk_mark");
+                        JsonArray jsonArray = new JsonArray();
                         Iterator<JsonObject> it = sdk_list.iterator();
                         while (it.hasNext()) {
-                            JsonObject jsonObject=it.next();
-                            if (jsonObject.getString("sdk_mark").equals(mark)){
+                            JsonObject jsonObject = it.next();
+                            if (jsonObject.getString("sdk_mark").equals(mark)) {
                                 jsonObject.put("key", Long.toHexString(new Date().getTime()));
                                 jsonArray.add(jsonObject);
                                 it.remove();
                             }
                         }
-                        sdk_info.get(i).put("paramter",jsonArray);
+                        sdk_info.get(i).put("paramter", jsonArray);
                     }
                     Collections.reverse(sdk_info);
-                    context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data",sdk_info)));
-                }else {
-                    if (result.failed()){
+                    context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", sdk_info)));
+                } else {
+                    if (result.failed()) {
                         logger.error("sdk_info 查询失败", result1.cause());
                     }
-                    if (result1.failed()){
+                    if (result1.failed()) {
                         logger.error("sdk_list 查询失败", result1.cause());
                     }
                     badRequest(context);
@@ -272,12 +308,14 @@ public class SdkHttpVerticle extends AbstractVerticle {
             jsonArray.add(mark).add(param_name).add(param).add(type);
             list.add(jsonArray);
         }
-        dbService.query(sql.get(SqlConstants.SDK_INFO_UPDATE),new JsonArray().add(name).add(version).add(mark).add(sdkstatus).add(id),result -> {
-            dbService.query(sql.get(SqlConstants.SDK_LIST_DELETE),new JsonArray().add(mark),result1 -> {
+
+
+        dbService.query(sql.get(SqlConstants.SDK_INFO_UPDATE), new JsonArray().add(name).add(version).add(mark).add(sdkstatus).add(id), result -> {
+            dbService.query(sql.get(SqlConstants.SDK_LIST_DELETE), new JsonArray().add(mark), result1 -> {
                 dbService.batch(sql.get(SqlConstants.SDK_LIST_INSERT), list, result2 -> {
-                    if (result.succeeded()&&result1.succeeded()&&result2.succeeded()){
+                    if (result.succeeded() && result1.succeeded() && result2.succeeded()) {
                         context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
-                    }else {
+                    } else {
                         if (result.failed()) {
                             logger.error("sdk_info 更新失败", result.cause());
                         }
@@ -319,14 +357,11 @@ public class SdkHttpVerticle extends AbstractVerticle {
         String version_update_version = context.getBodyAsJson().getString("version_update_version");
         String versioncode_online_version = context.getBodyAsJson().getString("versioncode_online_version");
         String versioncode_update_version = context.getBodyAsJson().getString("versioncode_update_version");
-        String sdk_config = context.getBodyAsJson().getString("sdk_config");
         String sdkstatus = context.getBodyAsJson().getString("sdkstatus");
-        String sdk_require = context.getBodyAsJson().getString("sdk_require");
-        String note = context.getBodyAsJson().getString("note");
         JsonObject jsonObject = context.getBodyAsJson().getJsonObject("form");
         JsonArray form = jsonObject.getJsonArray("domains");
         JsonArray select = jsonObject.getJsonArray("select");
-        form=form.addAll(select);
+        form = form.addAll(select);
         for (int i = 0; i < form.size(); i++) {
             String param_name = form.getJsonObject(i).getString("param_name");
             String param_value = form.getJsonObject(i).getString("param");
@@ -345,36 +380,62 @@ public class SdkHttpVerticle extends AbstractVerticle {
             }
             paramters.add(i, array);
         }
+        JsonArray checked = context.getBodyAsJson().getJsonArray("checked");
+        StringBuilder checkbox = new StringBuilder();
+        if (checked.size() > 0) {
+            for (int i = 0; i < checked.size(); i++) {
+                checkbox.append(checked.getString(i));
+                if (i != checked.size() - 1) {
+                    checkbox.append(",");
+                }
+            }
+        } else {
+            checkbox.append("暂无");
+        }
+
+        JsonArray second_checked = context.getBodyAsJson().getJsonArray("second_checked");
+        StringBuilder second_checkbox = new StringBuilder();
+        if (second_checked.size() > 0) {
+            for (int i = 0; i < second_checked.size(); i++) {
+                second_checkbox.append(second_checked.getString(i));
+                if (i != second_checked.size() - 1) {
+                    second_checkbox.append(",");
+                }
+            }
+        } else {
+            second_checkbox.append("暂无");
+        }
         try {
             sdk_information.add(timevalue).add(app_name).add(package_name).add(version_online_version).add(version_update_version).add(versioncode_online_version).add(versioncode_update_version)
-                    .add(channel_mark).add(sdk_config).add(sdk_require).add(note).add(sdkstatus).add(id);
+                    .add(channel_mark).add(sdkstatus).add(checkbox).add(second_checkbox).add(id);
             sdk_paramter_delete.add(timevalue).add(app_name).add(channel_mark);
         } catch (Exception e) {
             logger.error(e.toString());
             badRequest(context);
         }
+
         dbService.query(sql.get(SqlConstants.PROJECT_CONFIG_INFORMATION_UPDATE), sdk_information, result -> {
             dbService.query(sql.get(SqlConstants.PROJECT_CONFIG_PARAMTER_DELETE), sdk_paramter_delete, result1 -> {
-                    if (result1.succeeded()){
-                        dbService.batch(sql.get(SqlConstants.PROJECT_CONFIG_PARAMTER_INSERT), paramters, result2 -> {
-                            if (result.succeeded() && result2.succeeded()) {
-                                context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
-                            } else {
-                                if (result.failed()) {
-                                    logger.error("SDK_INFORMATION_UPDATE 更新失败-------》" + result.cause().toString());
-                                }
-                                if (result2.failed()) {
-                                    logger.error("SDK_PARAMTER_INSERT 插入失败-------》" + result2.cause().toString());
-                                }
-                                badRequest(context);
+                if (result1.succeeded()) {
+                    dbService.batch(sql.get(SqlConstants.PROJECT_CONFIG_PARAMTER_INSERT), paramters, result2 -> {
+                        if (result.succeeded() && result2.succeeded()) {
+                            context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
+                        } else {
+                            if (result.failed()) {
+                                logger.error("SDK_INFORMATION_UPDATE 更新失败-------》" + result.cause().toString());
                             }
-                        });
-                    }else {
-                        if (result1.failed()) {
-                            logger.error("SDK_PARAMTER_DELETE 删除失败-------》" + result1.cause().toString());
+                            if (result2.failed()) {
+                                logger.error("SDK_PARAMTER_INSERT 插入失败-------》" + result2.cause().toString());
+                            }
+                            badRequest(context);
                         }
-                        badRequest(context);
+                    });
+                } else {
+                    if (result1.failed()) {
+                        logger.error("SDK_PARAMTER_DELETE 删除失败-------》" + result1.cause().toString());
                     }
+                    badRequest(context);
+                }
             });
         });
     }
@@ -385,7 +446,7 @@ public class SdkHttpVerticle extends AbstractVerticle {
      * @param context
      */
     private void projectconfigListHandler(RoutingContext context) {
-    list(sql.get(SqlConstants.PROJECT_CONFIG_INFORMATION_LIST),sql.get(SqlConstants.PROJECT_CONFIG_PARAMTER_LIST),context);
+        list(sql.get(SqlConstants.PROJECT_CONFIG_INFORMATION_LIST), sql.get(SqlConstants.PROJECT_CONFIG_PARAMTER_LIST), context);
     }
 
     /**
@@ -404,15 +465,10 @@ public class SdkHttpVerticle extends AbstractVerticle {
         String version_update_version = context.getBodyAsJson().getString("version_update_version");
         String versioncode_online_version = context.getBodyAsJson().getString("versioncode_online_version");
         String versioncode_update_version = context.getBodyAsJson().getString("versioncode_update_version");
-        String sdk_config = context.getBodyAsJson().getString("sdk_config");
         String sdkstatus = context.getBodyAsJson().getString("sdkstatus");
-        String sdk_require = context.getBodyAsJson().getString("sdk_require");
-        String note = context.getBodyAsJson().getString("note");
         String publish = context.getBodyAsJson().getString("publish");
         JsonObject jsonObject = context.getBodyAsJson().getJsonObject("form");
-        JsonArray form = jsonObject.getJsonArray("domains");
         JsonArray select = jsonObject.getJsonArray("select");
-        form=form.addAll(select);
 //        System.out.println(timevalue);
 //        System.out.println(app_name);
 //        System.out.println(package_name);
@@ -427,7 +483,11 @@ public class SdkHttpVerticle extends AbstractVerticle {
 //        System.out.println(note);
 //        System.out.println(publish);
 //        System.out.println(jsonObject);
-
+//        System.out.println(select);
+        JsonArray form = jsonObject.getJsonArray("domains");
+        if (select != null) {
+            form = form.addAll(select);
+        }
 
         for (int i = 0; i < form.size(); i++) {
             String param_name = form.getJsonObject(i).getString("param_name");
@@ -447,30 +507,81 @@ public class SdkHttpVerticle extends AbstractVerticle {
             }
             paramters.add(i, array);
         }
+        JsonArray checked = context.getBodyAsJson().getJsonArray("checked");
+        StringBuilder checkbox = new StringBuilder();
+        if (checked.size() > 0) {
+            for (int i = 0; i < checked.size(); i++) {
+                checkbox.append(checked.getString(i));
+                if (i != checked.size() - 1) {
+                    checkbox.append(",");
+                }
+            }
+        } else {
+            checkbox.append("暂无");
+        }
+        JsonArray second_checked = context.getBodyAsJson().getJsonArray("second_checked");
+        StringBuilder second_checkbox = new StringBuilder();
+        if (second_checked.size() > 0) {
+            for (int i = 0; i < second_checked.size(); i++) {
+                second_checkbox.append(second_checked.getString(i));
+                if (i != second_checked.size() - 1) {
+                    second_checkbox.append(",");
+                }
+            }
+        } else {
+            second_checkbox.append("暂无");
+        }
+
 
         try {
             sdk_information.add(timevalue).add(app_name).add(package_name).add(version_online_version).add(version_update_version)
-                    .add(versioncode_online_version).add(versioncode_update_version).add(channel_mark).add(sdk_config)
-                    .add(sdk_require).add(note).add(sdkstatus).add(publish);
+                    .add(versioncode_online_version).add(versioncode_update_version).add(channel_mark).add(sdkstatus).add(publish).add(checkbox).add(second_checkbox);
         } catch (Exception e) {
             logger.error(e.toString());
             badRequest(context);
         }
-        dbService.query(sql.get(SqlConstants.PROJECT_CONFIG_INFORMATION_INSERT), sdk_information, result -> {
-            dbService.batch(sql.get(SqlConstants.PROJECT_CONFIG_PARAMTER_INSERT), paramters, result1 -> {
-                if (result.succeeded() && result1.succeeded()) {
-                    context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
-                } else {
-                    if (result.failed()) {
-                        logger.error("sdk_information 插入失败", result1.cause());
+        if (publish.equals("1")) {
+            dbService.query(sql.get(SqlConstants.PROJECT_CONFIG_INFORMATION_INSERT), sdk_information, result -> {
+                dbService.batch(sql.get(SqlConstants.PROJECT_CONFIG_PARAMTER_INSERT), paramters, result1 -> {
+                    if (result.succeeded() && result1.succeeded()) {
+                        context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", "成功")));
+                    } else {
+                        if (result.failed()) {
+                            logger.error("sdk_information 插入失败", result1.cause());
+                        }
+                        if (result1.failed()) {
+                            logger.error("paramters 插入失败", result.cause());
+                        }
+                        badRequest(context);
                     }
-                    if (result1.failed()) {
-                        logger.error("paramters 插入失败", result.cause());
+                });
+            });
+        } else {
+            dbService.fetchDatas(sql.get(SqlConstants.PROJECT_CONFIG_INFORMATION_COUNT), new JsonArray().add(package_name).add(channel_mark), rs -> {
+                if (rs.succeeded()) {
+                    List<JsonObject> jsonObjects = rs.result();
+                    if (jsonObjects.get(0).getInteger("count(*)").equals(0)) {
+                        dbService.query(sql.get(SqlConstants.PROJECT_CONFIG_INFORMATION_INSERT), sdk_information, result -> {
+                            dbService.batch(sql.get(SqlConstants.PROJECT_CONFIG_PARAMTER_INSERT), paramters, result1 -> {
+                                if (result.succeeded() && result1.succeeded()) {
+                                    context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", "成功")));
+                                } else {
+                                    if (result.failed()) {
+                                        logger.error("sdk_information 插入失败", result1.cause());
+                                    }
+                                    if (result1.failed()) {
+                                        logger.error("paramters 插入失败", result.cause());
+                                    }
+                                    badRequest(context);
+                                }
+                            });
+                        });
+                    } else {
+                        context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", "失败")));
                     }
-                    badRequest(context);
                 }
             });
-        });
+        }
     }
 
     /**
@@ -483,7 +594,13 @@ public class SdkHttpVerticle extends AbstractVerticle {
         return;
     }
 
-    private void list(String sql,String sql2,RoutingContext context){
+    /**
+     * 从数据库获取项目配置表，拼接
+     * @param sql
+     * @param sql2
+     * @param context
+     */
+    private void list(String sql, String sql2, RoutingContext context) {
         dbService.listDatas(sql, result -> {
             dbService.listDatas(sql2, result1 -> {
                 if (result.succeeded() && result1.succeeded()) {
@@ -491,6 +608,8 @@ public class SdkHttpVerticle extends AbstractVerticle {
                     List<JsonObject> paramter = result1.result();
                     for (int i = 0; i < sdk_information.size(); i++) {
                         Long longdate = sdk_information.get(i).getLong("date");
+                        String app_name = sdk_information.get(i).getString("app_name");
+                        String channel_mark = sdk_information.get(i).getString("channel_mark");
                         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS").format(new Date(longdate));
                         String date1 = new SimpleDateFormat("yyyy年MM月dd HH:mm:ss").format(new Date(longdate));
                         sdk_information.get(i).put("date", date);
@@ -499,16 +618,48 @@ public class SdkHttpVerticle extends AbstractVerticle {
                         Iterator<JsonObject> it = paramter.iterator();
                         while (it.hasNext()) {
                             JsonObject jsonObject = it.next();
-                            if (jsonObject.getLong("date").equals(longdate)) {
+                            if (jsonObject.getLong("date").equals(longdate)
+                                    && jsonObject.getString("app_name").equals(app_name)
+                                    && jsonObject.getString("channel_mark").equals(channel_mark)) {
                                 jsonObject.put("key", Long.toHexString(new Date().getTime()));
-                                jsonObject.put("mark",jsonObject.getString("param_name").split("-")[0]);
-                                String[] name=jsonObject.getString("param_name").split("-");
-                                jsonObject.put("param_name1",name[name.length-1]);
+                                jsonObject.put("mark", jsonObject.getString("param_name").split("-")[0]);
+
+                                String[] name = jsonObject.getString("param_name").split("-");
+//                                jsonObject.put("param_name1", name[name.length - 1]);
+                                jsonObject.put("param_name1",jsonObject.getString("param_name").substring(name[0].length()+1));
+
                                 jsonArray.add(jsonObject);
                                 it.remove();
                             }
                         }
-                        sdk_information.get(i).put("paramter", jsonArray);
+                        //JsonArray重新排序
+                        JsonArray newjsonarray = new JsonArray();
+                        JsonArray list1 = jsonArray;
+                        for (int j = 0; j < list1.size(); j++) {
+                            Boolean flag=true;
+                            if (newjsonarray.size()==0){
+                                for (int x=0;x<newjsonarray.size();x++){
+                                    if (newjsonarray.getJsonObject(x).getString("param_name").equals(list1.getJsonObject(j).getString("param_name"))){
+                                        flag=false;
+                                    }
+                                }
+                            }
+                            if (flag){
+                                JsonObject listjsonobject=list1.getJsonObject(j);
+                                newjsonarray.add(listjsonobject);
+                                String name=listjsonobject.getString("param_name").split("-")[0];
+                                Iterator<Object> jsonarray = jsonArray.iterator();
+                                while (jsonarray.hasNext()) {
+                                    JsonObject jsonObject = JsonObject.mapFrom(jsonarray.next());
+                                    String name1=jsonObject.getString("param_name").split("-")[0];
+                                    if (name.equals(name1)&&!listjsonobject.getString("param_name").equals(jsonObject.getString("param_name"))){
+                                        newjsonarray.add(jsonObject);
+                                        jsonarray.remove();
+                                    }
+                                }
+                            }
+                        }
+                        sdk_information.get(i).put("paramter", newjsonarray);
                     }
                     Collections.reverse(sdk_information);
                     context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", sdk_information)));

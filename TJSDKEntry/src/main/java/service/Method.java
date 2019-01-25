@@ -56,6 +56,9 @@ public class Method {
         sqlQueries.put(SqlConstants.SDK_INFO_UPDATE, queriesProps.getProperty("sdk_info_update"));
         sqlQueries.put(SqlConstants.SDK_LIST_DELETE, queriesProps.getProperty("sdk_list_delete"));
         sqlQueries.put(SqlConstants.PROJECT_CONFIG_PUBLISH_LIST, queriesProps.getProperty("project_config_publish_list"));
+        sqlQueries.put(SqlConstants.PROJECT_CONFIG_INFORMATION_DELETE, queriesProps.getProperty("project_config_information_delete"));
+        sqlQueries.put(SqlConstants.PROJECT_CONFIG_LIST_DELETE_BYID, queriesProps.getProperty("project_config_list_delete_byid"));
+        sqlQueries.put(SqlConstants.PROJECT_CONFIG_INFORMATION_COUNT, queriesProps.getProperty("project_config_information_count"));
         return sqlQueries;
     }
 

@@ -16,6 +16,9 @@ public class ChannelVO {
     private List<AdDataVO> yixin;
     private Double yixin_income;
     private Double yixin_dauarpu;
+    private List<AdDataVO> toutiao;
+    private Double toutiao_income;
+    private Double toutiao_dauarpu;
     private Double channel_income_all;
     private Double chhannel_dauarpu_all;
 
@@ -36,13 +39,16 @@ public class ChannelVO {
                 Objects.equals(yixin, channelVO.yixin) &&
                 Objects.equals(yixin_income, channelVO.yixin_income) &&
                 Objects.equals(yixin_dauarpu, channelVO.yixin_dauarpu) &&
+                Objects.equals(toutiao, channelVO.toutiao) &&
+                Objects.equals(toutiao_income, channelVO.toutiao_income) &&
+                Objects.equals(toutiao_dauarpu, channelVO.toutiao_dauarpu) &&
                 Objects.equals(channel_income_all, channelVO.channel_income_all) &&
                 Objects.equals(chhannel_dauarpu_all, channelVO.chhannel_dauarpu_all);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(date, name, userVO, guang, guangdiantong_income, guangdiantong_dauarpu, qudao, qudao_income, qudao_dauarpu, yixin, yixin_income, yixin_dauarpu, channel_income_all, chhannel_dauarpu_all);
+        return Objects.hash(date, name, userVO, guang, guangdiantong_income, guangdiantong_dauarpu, qudao, qudao_income, qudao_dauarpu, yixin, yixin_income, yixin_dauarpu, toutiao, toutiao_income, toutiao_dauarpu, channel_income_all, chhannel_dauarpu_all);
     }
 
     @Override
@@ -60,6 +66,9 @@ public class ChannelVO {
                 ", yixin=" + yixin +
                 ", yixin_income=" + yixin_income +
                 ", yixin_dauarpu=" + yixin_dauarpu +
+                ", toutiao=" + toutiao +
+                ", toutiao_income=" + toutiao_income +
+                ", toutiao_dauarpu=" + toutiao_dauarpu +
                 ", channel_income_all=" + channel_income_all +
                 ", chhannel_dauarpu_all=" + chhannel_dauarpu_all +
                 '}';
@@ -159,6 +168,30 @@ public class ChannelVO {
 
     public void setYixin_dauarpu(Double yixin_dauarpu) {
         this.yixin_dauarpu = yixin_dauarpu;
+    }
+
+    public List<AdDataVO> getToutiao() {
+        return toutiao;
+    }
+
+    public void setToutiao(List<AdDataVO> toutiao) {
+        this.toutiao = toutiao;
+    }
+
+    public Double getToutiao_income() {
+        return toutiao_income;
+    }
+
+    public void setToutiao_income(Double toutiao_income) {
+        this.toutiao_income = toutiao_income;
+    }
+
+    public Double getToutiao_dauarpu() {
+        return toutiao_dauarpu;
+    }
+
+    public void setToutiao_dauarpu(Double toutiao_dauarpu) {
+        this.toutiao_dauarpu = toutiao_dauarpu;
     }
 
     public Double getChannel_income_all() {

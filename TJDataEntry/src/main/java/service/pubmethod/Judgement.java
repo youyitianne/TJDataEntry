@@ -60,6 +60,16 @@ public class Judgement {
     }
 
     /**
+     * 四舍五入保留3位
+     *
+     * @param d double
+     * @return double
+     */
+    public static double formatDouble3(double d) {
+        return (double) Math.round(d * 1000) / 1000;
+    }
+
+    /**
      *将小数转为百分比保留两位小数
      */
     public static String toPercent(double d) {
@@ -73,6 +83,25 @@ public class Judgement {
      */
     public static String matchName(String name,List<String> gamelist) {
         List names = gamelist;
+        for (int i = 0; i < names.size(); i++) {
+            String onename = String.valueOf(names.get(i));
+            if (name.contains(onename)) {
+                return onename;
+            }
+        }
+        return "未知";
+    }
+
+    /**
+     * 匹配游戏
+     * @param name
+     * @return
+     */
+    public static String meizumatchName(String name,List<String> gamelist) {
+        List names = gamelist;
+        if (name.contains("全屏")) {
+            return "开屏";
+        }
         for (int i = 0; i < names.size(); i++) {
             String onename = String.valueOf(names.get(i));
             if (name.contains(onename)) {
@@ -109,7 +138,13 @@ public class Judgement {
         for (int i = 0; i < types.size(); i++) {
             String onetype = String.valueOf(types.get(i)).toLowerCase();
             //
+            if (type.toLowerCase().contains("banner")){
+                return "横幅";
+            }
             if (type.toLowerCase().contains(onetype)) {
+                if (type.toLowerCase().contains("插屏视频")) {
+                    return "插屏视频";
+                }
                 return onetype;
             }
         }

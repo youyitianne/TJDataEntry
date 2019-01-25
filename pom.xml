@@ -13,6 +13,7 @@
         <module>DataUI</module>
         <module>TJAccountEntry</module>
         <module>TJSDKEntry</module>
+        <module>TJPayEntry</module>
     </modules>
 
 

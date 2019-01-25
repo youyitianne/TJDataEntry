@@ -17,6 +17,14 @@
         <processor name="io.vertx.codegen.CodeGenProcessor" />
         <module name="TJSDKEntry" />
       </profile>
+      <profile name="Annotation profile for TJPayEntry" enabled="true">
+        <sourceOutputDir name="src/main/generated" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <option name="outputDirectory" value="F:\workspace\TJServerKit\TJPayEntry/src/main" />
+        <processor name="io.vertx.codegen.CodeGenProcessor" />
+        <module name="TJPayEntry" />
+      </profile>
       <profile name="Annotation profile for TJServerKit" enabled="true">
         <sourceOutputDir name="src/main/generated" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -30,6 +38,7 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="TJAccountEntry" options="-AoutputDirectory=F:\workspace\TJServerKit\TJAccountEntry/src/main" />
+      <module name="TJPayEntry" options="-AoutputDirectory=F:\workspace\TJServerKit\TJPayEntry/src/main" />
       <module name="TJSDKEntry" options="-AoutputDirectory=F:\workspace\TJServerKit\TJSDKEntry/src/main" />
     </option>
   </component>

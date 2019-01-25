@@ -22,9 +22,22 @@ public class SqlStatement {
 
     public static String INSERT_USER="insert into advertisement.userdata (date,app_name,channel,dnu,dau,startup_time,single_use_time,retention,version) values (?,?,?,?,?,?,?,?,?)";
 
-    public static String SELECT_USERDATA = "select * from advertisement.userdata where date >= ? and date<= ? and app_name like  ? ";
+    public static String SELECT_USERDATA = "select * from advertisement.userdata where date >= ? and date<= ?";
 
-    public static String SELECT_ADDATA = "select * from advertisement.advertisingdata where date >= ? and date<= ? and  app_name like ? ";
+    public static String SELECT_ADDATA = "select * from advertisement.advertisingdata where date >= ? and date<= ?";
+
+    public static String SELECT_USERDATA1 = "select * from advertisement.userdata where date >= ? and date<= ? and app_name = ?";
+
+    public static String SELECT_ADDATA1 = "select * from advertisement.advertisingdata where date >= ? and date<= ? and app_name = ?";
+
+    public static String SELECT_USERDATA_arpu = "SELECT `userdata`.`date`,`userdata`.`app_name`,`userdata`.`channel`,`userdata`.`dau` FROM `advertisement`.`userdata` where date >= ? and date<= ? and app_name like  ? ";
+
+    public static String SELECT_ADDATA_arpu = "SELECT `advertisingdata`.`date`, `advertisingdata`.`channel`,`advertisingdata`.`app_name`,`advertisingdata`.`earned`,`advertisingdata`.`platform` FROM `advertisement`.`advertisingdata` where date >= ? and date<= ? and  app_name like ? ";
+
+    public static String SELECT_USERDATA_arpu_withoutname = "SELECT `userdata`.`date`,`userdata`.`app_name`,`userdata`.`channel`,`userdata`.`dau` FROM `advertisement`.`userdata` where date >= ? and date<= ?";
+
+    public static String SELECT_ADDATA_arpu_withoutname = "SELECT `advertisingdata`.`date`, `advertisingdata`.`channel`,`advertisingdata`.`app_name`,`advertisingdata`.`earned`,`advertisingdata`.`platform` FROM `advertisement`.`advertisingdata` where date >= ? and date<= ?";
+
 
     public static String SELECT_CHANNEL = "SELECT * FROM advertisement.channel;";
 
@@ -84,4 +97,26 @@ public class SqlStatement {
 
     public static String SELECT_USERDATA_BY_TIME=" SELECT `userdata`.`id`,`userdata`.`date`,`userdata`.`app_name`,`userdata`.`channel`,`userdata`.`dnu`,`userdata`.`dau`,`userdata`.`startup_time`,`userdata`.`single_use_time`,\n" +
             " `userdata`.`retention`,`userdata`.`version` FROM  `advertisement`.`userdata` where date >= ? and date <= ?;";
+    public static String SELECT_APPDATA_BY_TIME="SELECT *" +
+            "FROM `advertisement`.`advertisingdata`\n" +
+            "where date >= ? and date <= ?;";
+    public static String SELECT_MONDATA=" SELECT sum(`userdata`.`dau`) sumdau,sum(`userdata`.`dnu`) sumdnu FROM  `advertisement`.`userdata` where date >= ? and date < ?;";
+
+
+
+    public static String INSERT_PROJECT="INSERT INTO `advertisement`.`project`(`project_name`,`preheat`,`schedule`,`compete_good`,`version_plan`,`note`)VALUES(?,?,?,?,?,?);";
+
+    public static String REPEAT_PROJECT="SELECT count(*) FROM advertisement.project where project_name= ? ;";
+
+    public static String INSERT_PROJECT_LIST="INSERT INTO `advertisement`.`project_list`(`project_name`,`app_name`,`channel`)VALUES(?,?,?);";
+
+    public static String SELECT_PROJECT="SELECT * FROM advertisement.project;";
+
+    public static String SELECT_PROJECT_LIST="SELECT * FROM advertisement.project_list;";
+
+    public static String DELETE_PROJECT_LIST="DELETE FROM `advertisement`.`project_list` WHERE project_name= ? ;";
+
+    public static String UPDATE_PROJECT="UPDATE `advertisement`.`project` SET `project_name` = ?,`preheat` = ?,`schedule` = ?,`compete_good` = ?,`version_plan` = ?,`note` = ? WHERE `id` = ?;";
+
+    public static String DELETE_PROJECT="DELETE FROM `advertisement`.`project` WHERE id = ?;";
 }

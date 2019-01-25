@@ -68,25 +68,50 @@ public class AccountDatabaseVerticle extends AbstractVerticle {
     }
 
     List<String> lists = Arrays.asList(
-            "CREATE TABLE if not exists `tjaccount`.`user` (\n" +
+            "CREATE TABLE  if not exists `tjaccount`.`roles_perms` (\n" +
                     "  `id` int(11) NOT NULL AUTO_INCREMENT,\n" +
-                    "  `username` varchar(45) DEFAULT NULL,\n" +
+                    "  `role` varchar(255) DEFAULT NULL,\n" +
+                    "  `perm` varchar(255) DEFAULT NULL,\n" +
+                    "  `note` varchar(45) DEFAULT NULL,\n" +
+                    "  PRIMARY KEY (`id`)\n" +
+                    ") ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;",
+            "CREATE TABLE  if not exists `tjaccount`.`user` (\n" +
+                    "  `id` int(11) NOT NULL AUTO_INCREMENT,\n" +
+                    "  `username` varchar(255) DEFAULT NULL,\n" +
+                    "  `psd` varchar(45) DEFAULT NULL,\n" +
+                    "  `department` varchar(45) DEFAULT NULL,\n" +
+                    "  `position` varchar(45) DEFAULT NULL,\n" +
+                    "  `note` varchar(45) DEFAULT NULL,\n" +
                     "  `password` varchar(255) DEFAULT NULL,\n" +
                     "  `password_salt` varchar(255) DEFAULT NULL,\n" +
-                    "  PRIMARY KEY (`id`)\n" +
-                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8;",
-            "CREATE TABLE if not exists `tjaccount`.`user_roles` (\n" +
+                    "  PRIMARY KEY (`id`),\n" +
+                    "  UNIQUE KEY `username_UNIQUE` (`username`)\n" +
+                    ") ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;",
+            "CREATE TABLE if not exists `tjaccount`.`user_resource` (\n" +
                     "  `id` int(11) NOT NULL AUTO_INCREMENT,\n" +
                     "  `username` varchar(45) DEFAULT NULL,\n" +
-                    "  `role_varchar` varchar(45) DEFAULT NULL,\n" +
+                    "  `username_mark` int(11) DEFAULT NULL,\n" +
+                    "  `resource_mark` int(11) DEFAULT NULL,\n" +
+                    "  `resource_name` varchar(45) DEFAULT NULL,\n" +
                     "  PRIMARY KEY (`id`)\n" +
-                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8;",
-            "CREATE TABLE if not exists `tjaccount`.`roles_perms` (\n" +
+                    ") ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;",
+            "CREATE TABLE if not exists `tjaccount`.`user_roles` (\n" +
                     "  `id` int(11) NOT NULL AUTO_INCREMENT,\n" +
-                    "  `role` varchar(45) DEFAULT NULL,\n" +
-                    "  `perm` varchar(45) DEFAULT NULL,\n" +
+                    "  `username` varchar(255) DEFAULT NULL,\n" +
+                    "  `username_mark` varchar(45) DEFAULT NULL,\n" +
+                    "  `role_name` varchar(45) DEFAULT NULL,\n" +
+                    "  `role` varchar(255) DEFAULT NULL,\n" +
+                    "  `role_describe` varchar(45) DEFAULT NULL,\n" +
+                    "  `note` varchar(45) DEFAULT NULL,\n" +
                     "  PRIMARY KEY (`id`)\n" +
-                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+                    ") ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8;",
+            "CREATE TABLE if not exists `tjaccount`.`userperms` (\n" +
+                    "  `id` int(11) NOT NULL AUTO_INCREMENT,\n" +
+                    "  `username` varchar(45) DEFAULT NULL,\n" +
+                    "  `username_mark` varchar(45) DEFAULT NULL,\n" +
+                    "  `permission` varchar(45) DEFAULT NULL,\n" +
+                    "  PRIMARY KEY (`id`)\n" +
+                    ") ENGINE=InnoDB AUTO_INCREMENT=341 DEFAULT CHARSET=utf8;"
     );
 
     private HashMap<ConfigConstants, String> loadSqlQueries() {
