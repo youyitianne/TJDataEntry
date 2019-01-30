@@ -200,7 +200,14 @@ public class test {
                 return;
             }
         }
+    }
 
+
+    @Test
+    public void test21(){
+        ExcelRead excelRead=new ExcelRead();
+        List list=excelRead.readGuang("file-uploads/4399.csv","gbk");
+        System.out.println(list.toString());
     }
 
 }

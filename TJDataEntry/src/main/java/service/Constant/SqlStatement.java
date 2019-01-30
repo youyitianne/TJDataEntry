@@ -59,7 +59,7 @@ public class SqlStatement {
             "(`name`,\n" +
             "`system`,\n" +
             "`icon`,\n" +
-            "`introduce`)\n" +
+            "`project`)\n" +
             "VALUES( ?,? ,?,?);";
 
     public static String UPDATE_APP = "UPDATE `advertisement`.`appname`\n" +
@@ -67,7 +67,7 @@ public class SqlStatement {
             "`name` = ?,\n" +
             "`system` = ?,\n" +
             "`icon` = ?,\n" +
-            "`introduce` = ? \n" +
+            "`project` = ? \n" +
             "WHERE `id` = ?;";
 
     public static String SELEECT_ADTYPE="SELECT * FROM advertisement.advertisingtype;\n";
@@ -108,7 +108,7 @@ public class SqlStatement {
 
     public static String REPEAT_PROJECT="SELECT count(*) FROM advertisement.project where project_name= ? ;";
 
-    public static String INSERT_PROJECT_LIST="INSERT INTO `advertisement`.`project_list`(`project_name`,`app_name`,`channel`)VALUES(?,?,?);";
+    public static String INSERT_PROJECT_LIST="INSERT INTO `advertisement`.`project_list`(`project_name`,`package_name`,`channel`)VALUES(?,?,?);";
 
     public static String SELECT_PROJECT="SELECT * FROM advertisement.project;";
 

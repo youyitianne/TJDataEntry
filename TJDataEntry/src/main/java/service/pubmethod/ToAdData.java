@@ -101,28 +101,27 @@ public class ToAdData {
         Integer time = Transform.transForMilliSecondByTim(date, "yyyy-MM-dd");
         adData.setDate(time);
         String advertisement = String.valueOf(list.get(2));
-        System.out.println(advertisement);
         adData.setAppName(Judgement.matchName(advertisement, matchinglist.get(0)));
-        adData.setAdType(Judgement.matchType(advertisement, matchinglist.get(2)));
+        adData.setAdType(Judgement.matchType(String.valueOf(list.get(3)), matchinglist.get(2)));
         adData.setChannel("4399");
         adData.setNote(advertisement);
         adData.setSdk_name("4399");
-        String pvs = String.valueOf(list.get(3));
+        String pvs = String.valueOf(list.get(4));
         pvs = pvs.replace(",", "");
         int pv = Integer.valueOf(pvs);
         adData.setImpression(pv);
-        String clicks = String.valueOf(list.get(4));
+        String clicks = String.valueOf(list.get(5));
         clicks = clicks.replace(",", "");
         int click = Integer.valueOf(clicks);
         adData.setClick(click);
-        String earneds = String.valueOf(list.get(5));
+        String earneds = String.valueOf(list.get(6));
         earneds = earneds.replace(",", "");
         Double earned = Double.valueOf(earneds);
         adData.setEarned(earned);
-        adData.setEcpm(Double.valueOf(String.valueOf(list.get(6))));
+        adData.setEcpm(Double.valueOf(String.valueOf(list.get(7))));
         String clickRate = "0";
         try {
-            clickRate = String.valueOf(list.get(7)).substring(0, String.valueOf(list.get(7)).indexOf("%"));
+            clickRate = String.valueOf(list.get(8)).substring(0, String.valueOf(list.get(8)).indexOf("%"));
         } catch (Exception e) {
             clickRate = "0";
         }

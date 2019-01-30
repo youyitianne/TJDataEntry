@@ -104,6 +104,7 @@ public class HttpServerVerticle extends AbstractVerticle {
         router.delete("/channel/:id").handler(this::delChannel);
         //app相关
         router.get("/app").handler(this::findApp);
+        router.get("/projectList").handler(this::findProjectListHandler);
         router.post("/app").handler(this::addApp);
         router.patch("/app/:id").handler(this::updateApp);
         router.delete("/app/:id").handler(this::delApp);
@@ -1153,7 +1154,6 @@ public class HttpServerVerticle extends AbstractVerticle {
                                         outerlist.add(innerlist);
                                     }
                                     excelWrite.writeall(TemplateFile.DOWNLOAD_FILE_PATH + filename, 0, 0, 2, outerlist, name);
-
                                 handler1.complete(Future.succeededFuture());
                             }, handler2 -> {
                                 if (handler2.succeeded()) {
@@ -1653,12 +1653,12 @@ public class HttpServerVerticle extends AbstractVerticle {
         String name = context.request().getParam("name");
         String system = context.request().getParam("system");
         String icon = context.request().getParam("icon");
-        String introduce = context.request().getParam("introduce");
-        if (name == null || system == null || icon == null || introduce == null || name.length() == 0 || system.length() == 0 || icon.length() == 0 || introduce.length() == 0) {
+        String project = context.request().getParam("project");
+        if (name == null || system == null || icon == null || project == null || name.length() == 0 || system.length() == 0 || icon.length() == 0 || project.length() == 0) {
             badRequest(context);
             return;
         }
-        advertisementService.update(jdbcClient, SqlStatement.INSERT_APP, new JsonArray().add(name).add(system).add(icon).add(introduce)).setHandler(rs -> {
+        advertisementService.update(jdbcClient, SqlStatement.INSERT_APP, new JsonArray().add(name).add(system).add(icon).add(project)).setHandler(rs -> {
             if (rs.succeeded()) {
                 CacheOpertion.removeCacheLists();
                 context.response().setStatusCode(201).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
@@ -1702,26 +1702,27 @@ public class HttpServerVerticle extends AbstractVerticle {
         String name = "";
         String system = "";
         String icon = "";
-        String introduce = "";
+        String project = "";
         Integer id = -1;
         try {
             id = Integer.valueOf(context.request().getParam("id"));
             name = context.getBodyAsJson().getString("name");
             system = context.getBodyAsJson().getString("system");
             icon = context.getBodyAsJson().getString("icon");
-            introduce = context.getBodyAsJson().getString("introduce");
+            project = context.getBodyAsJson().getString("project");
         } catch (Exception e) {
+
             id = Integer.valueOf(context.request().getParam("id"));
             name = context.request().getParam("name");
             system = context.request().getParam("system");
             icon = context.request().getParam("icon");
-            introduce = context.request().getParam("introduce");
+            project = context.request().getParam("project");
         }
-        if (name == null || system == null || icon == null || introduce == null || name.length() == 0 || system.length() == 0 || icon.length() == 0 || introduce.length() == 0 || id == -1) {
+        if (name == null || system == null || icon == null || project == null || name.length() == 0 || system.length() == 0 || icon.length() == 0 || project.length() == 0 || id == -1) {
             badRequest(context);
             return;
         }
-        advertisementService.update(jdbcClient, SqlStatement.UPDATE_APP, new JsonArray().add(name).add(system).add(icon).add(introduce).add(id)).setHandler(rs -> {
+        advertisementService.update(jdbcClient, SqlStatement.UPDATE_APP, new JsonArray().add(name).add(system).add(icon).add(project).add(id)).setHandler(rs -> {
             if (rs.succeeded()) {
                 CacheOpertion.removeCacheLists();
                 context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
@@ -1756,6 +1757,44 @@ public class HttpServerVerticle extends AbstractVerticle {
             }
         });
     }
+
+    /**
+     * API获取游戏
+     *
+     * @param context
+     */
+    private void findProjectListHandler(RoutingContext context) {
+        advertisementService.query(jdbcClient, SqlStatement.SELECT_APP).setHandler(conn -> {
+            if (conn.succeeded()) {
+                List<JsonObject> jsonObjects = conn.result();
+                List<JsonObject> list=new ArrayList<>();
+                for (int i=0;i<jsonObjects.size();i++){
+                    Boolean flag=true;
+                    for (int j=0;j<list.size();j++){
+                        if (list.get(j).getString("project_name").equals(jsonObjects.get(i).getString("project"))){
+                            flag=false;
+                            list.get(j).getJsonArray("applist").add(new JsonObject().put("app_name",jsonObjects.get(i).getString("name")));
+                            break;
+                        }
+                    }
+                    if (flag){
+                        JsonObject jsonObject1=new JsonObject().put("project_name",jsonObjects.get(i).getString("project"));
+                        JsonArray inner=new JsonArray();
+                        JsonObject jsonObject2=new JsonObject().put("app_name",jsonObjects.get(i).getString("name"));
+                        inner.add(jsonObject2);
+                        jsonObject1.put("applist",inner);
+                        list.add(jsonObject1);
+                    }
+                }
+                JsonObject json = new JsonObject().put("code", 20000).put("data", list);
+                context.response().putHeader("Content-Type","application/javascript; charset=UTF-8").setStatusCode(200).end(Json.encodePrettily(json));
+            } else {
+                logger.error("在数据库中查找数据时发生错误------->" + conn.cause());
+                serviceError(context, Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
+            }
+        });
+    }
+
 
     /**
      * 资源列表获取游戏
@@ -1926,7 +1965,7 @@ public class HttpServerVerticle extends AbstractVerticle {
         for (int i = 0; i < applist.size(); i++) {
             JsonArray jsonArray = new JsonArray();
             JsonObject jsonObject = applist.getJsonObject(i);
-            jsonArray.add(project_name).add(jsonObject.getString("app_name")).add(jsonObject.getString("channel"));
+            jsonArray.add(project_name).add(jsonObject.getString("package_name")).add(jsonObject.getString("channel"));
             jsonArrays.add(jsonArray);
         }
 //        System.out.println(project_name);
@@ -1974,8 +2013,6 @@ public class HttpServerVerticle extends AbstractVerticle {
     private void delProject(RoutingContext context) {
         String id = context.request().getParam("id");
         String project_name = context.getBodyAsJson().getString("project_name");
-//        System.out.println(project_name);
-//        System.out.println(id);
         advertisementService.update(jdbcClient, SqlStatement.DELETE_PROJECT_LIST, new JsonArray().add(project_name)).setHandler(result1 -> {
             advertisementService.update(jdbcClient, SqlStatement.DELETE_PROJECT, new JsonArray().add(id)).setHandler(result2 -> {
                 if (result1.succeeded()&&result2.succeeded()){
@@ -2010,7 +2047,7 @@ public class HttpServerVerticle extends AbstractVerticle {
         for (int i = 0; i < applist.size(); i++) {
             JsonArray jsonArray = new JsonArray();
             JsonObject jsonObject = applist.getJsonObject(i);
-            jsonArray.add(project_name).add(jsonObject.getString("app_name")).add(jsonObject.getString("channel"));
+            jsonArray.add(project_name).add(jsonObject.getString("package_name")).add(jsonObject.getString("channel"));
             jsonArrays.add(jsonArray);
         }
 //        System.out.println(id);
@@ -2067,7 +2104,7 @@ public class HttpServerVerticle extends AbstractVerticle {
                         }
                         project.get(i).put("applist", jsonObjects);
                     }
-                    context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", project)));
+                    context.response().putHeader("Content-Type","application/javascript; charset=UTF-8").setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", project)));
                 } else {
                     if (result1.failed()) {
                         logger.error("查询数据库时发生错误------->" + result1.cause());
