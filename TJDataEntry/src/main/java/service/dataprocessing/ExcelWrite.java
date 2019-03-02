@@ -17,12 +17,13 @@ public class ExcelWrite {
     private Logger logger = LoggerFactory.getLogger(ExcelWrite.class.getName());
 
     /**
-     * list 写入excel
-     *
-     * @param filePath
+     * 将list写入excel
+     * @param filePath 文件路径
+     * @param n 工作表
      * @param x
      * @param y
      * @param value
+     * @param name
      */
     public void writeall(String filePath,Integer n, int x, int y, List<List> value,String name) {
         try {
@@ -94,6 +95,43 @@ public class ExcelWrite {
                     }
                     style=newcell.getCellStyle();
                     cell.setCellStyle(style);
+                }
+            }
+            os = new FileOutputStream(filePath);
+            wb.write(os);
+            if (os != null) {
+                os.close();
+            }
+        } catch (Exception e) {
+            logger.error("内容写入错误", e);
+        }
+    }
+
+    /**
+     * list 写入excel
+     *
+     * @param filePath
+     * @param x
+     * @param y
+     * @param value
+     */
+    public void writeall3(String filePath,Integer n, int x, int y, List<List> value) {
+        try {
+// 创建Excel的工作书册 Workbook,对应到一个excel文档
+            HSSFWorkbook wb = new HSSFWorkbook(new FileInputStream(filePath));
+            HSSFSheet sheet = wb.getSheetAt(n);
+            HSSFCell cell = null;
+            HSSFCellStyle style = wb.createCellStyle();
+            FileOutputStream os = null;
+            for (int i = 0; i < value.size(); i++) {
+                List stringList=value.get(i);
+                for (int j=0;j<stringList.size();j++) {
+                    cell = setcell(sheet, x + j, y+i, String.valueOf(stringList.get(j)));
+                    //样式设置
+                    HSSFRow row = sheet.getRow(x + j);
+                    if (row == null) {
+                        row = sheet.createRow(x + j);
+                    }
                 }
             }
             os = new FileOutputStream(filePath);

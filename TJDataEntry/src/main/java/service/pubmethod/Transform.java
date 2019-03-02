@@ -175,6 +175,8 @@ public class Transform {
         return sb.toString();
     }
 
+
+
     /**
      * List<AdData>转List<JsonArray>
      *
@@ -212,6 +214,9 @@ public class Transform {
     public static List<JsonArray> userDatatoUserJsonArrayList(List<UserData> userDataList) {
         List<JsonArray> jsonArrays = new ArrayList<>();
         for (int i = 0; i < userDataList.size(); i++) {
+            if ("未知".equals(userDataList.get(i).getAppName())){
+                continue;
+            }
             JsonArray jsonArray = new JsonArray();
             jsonArray.add(userDataList.get(i).getDate());
             jsonArray.add(userDataList.get(i).getAppName());
@@ -337,7 +342,6 @@ public class Transform {
 //            System.out.println(num.get(i) + 1 - i+","+ sheet.getLastRowNum()+","+i);
 //            sheet.shiftRows(num.get(i)- i+1, sheet.getLastRowNum()-i, -1);
         }
-
         //sheet.shiftRows(1, 4, -1);//删除第一行到第四行，然后使下方单元格上移
         FileOutputStream os = new FileOutputStream(path);
         workbook.write(os);
@@ -345,6 +349,11 @@ public class Transform {
         os.close();
     }
 
+    /**
+     *
+     * @param path
+     * @throws Exception
+     */
     public static void deleteRow(String path) throws Exception {
         FileInputStream is = new FileInputStream(path);
         HSSFWorkbook workbook = new HSSFWorkbook(is);
@@ -384,6 +393,11 @@ public class Transform {
     }
 
 
+    /**
+     * 检查行是否为空
+     * @param row
+     * @return
+     */
     public static boolean isRowEmpty(HSSFRow row) {
         for (int c = row.getFirstCellNum(); c < row.getLastCellNum(); c++) {
             HSSFCell cell = row.getCell(c);

@@ -37,6 +37,10 @@ public class InitConf {
         return sqlQueries;
     }
 
+    /**
+     * 获取渠道对应的平台名（数据库中里没存）
+     * @return
+     */
     public static List<JsonObject> getPlatform(){
         List<JsonObject> list=new ArrayList<>();
         JsonObject jsonObject=new JsonObject();
@@ -96,6 +100,13 @@ public class InitConf {
         return list;
     }
 
+    /**
+     *
+     * @param userlist
+     * @param adlist
+     * @param longdates
+     * @return
+     */
     public static List<List<ArpuData>> getAllArpuData(List<JsonObject> userlist,List<JsonObject> adlist,List<Long> longdates){
         List<JsonObject> condition=InitConf.getPlatform();
         List<List<ArpuData>> outerlist=new ArrayList<>();
@@ -166,6 +177,14 @@ public class InitConf {
         return outerlist;
     }
 
+    /**
+     * 获取所有的arpu数据
+     * @param userlist 用户数据
+     * @param adlist    广告数据
+     * @param longdates    时间list
+     * @param name      应用名list
+     * @return
+     */
     public static List<List<ArpuData>> getAllArpuData1(List<JsonObject> userlist,List<JsonObject> adlist,List<Long> longdates,List name){
         List<JsonObject> condition=InitConf.getPlatform();
         List<List<ArpuData>> outerlist=new ArrayList<>();

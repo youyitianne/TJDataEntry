@@ -82,7 +82,6 @@ public class AdvertisementService {
                 SQLConnection conn = result.result();
                 conn.batchWithParams(sql, values, rs -> {
                     if (rs.succeeded()) {
-
                         conn.close();
                         future.complete(true);
                     } else {
@@ -95,12 +94,12 @@ public class AdvertisementService {
     }
 
     /**
-     * 查找表内重复数据
+     * 查找表内重复数据得到id，再用sql删除，
      * 只保留id最大的
      *
-     * @param sel
-     * @param del
-     * @return
+     * @param sel 查询语句
+     * @param del 删除语句
+     * @return  Boolean
      */
     public Future<Boolean> removeRepeat(JDBCClient client,String sel, String del) {
         Future<Boolean> future = Future.future();

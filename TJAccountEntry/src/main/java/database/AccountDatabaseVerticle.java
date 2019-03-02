@@ -48,23 +48,6 @@ public class AccountDatabaseVerticle extends AbstractVerticle {
             }
         }
         );
-
-//        jdbcClient.getConnection(conn -> {
-//            if (conn.succeeded()) {
-//                SQLConnection connection = conn.result();
-//                connection.batch(user,rs->{
-//                   if (rs.succeeded()){
-//                       connection.close();
-//                       logger.info("database start success");
-//                       startFuture.complete();
-//                   }else {
-//                       logger.error("database start failed ",rs.cause());
-//                       startFuture.fail(rs.cause());
-//                   }
-//                });
-//            } else {
-//            }
-//        });
     }
 
     List<String> lists = Arrays.asList(

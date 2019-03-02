@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>上传文件(压缩文件)</title>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<style type="text/css">
+    .red {
+        color: darkred;
+    }
+
+    .green {
+        color: darkcyan;
+    }
+
+    #opera {
+        margin-right: 400px;
+        margin-top: 20px;
+    }
+
+    #show {
+        float: right;
+        margin-left: 50px;
+    }
+</style>
+<body>
+<div style="border: 1px black  solid;width: 500px">
+    <h3>获取数据</h3>
+    <form id="form" enctype="multipart/form-data">
+        请选择要上传的文件:<input id="formfile" type="file" name="formfile"/>
+    </form>
+    <button id="formfilebutton">确定上传</button>
+    <h3>获取移信数据</h3>
+    请选择开始时间：<select id="starttime" name="starttime"></select><br>
+    请选择结束时间：<select id="endtime" name="endtime"></select><br>
+    <button id="yixin">获取</button>
+    <span id="yixinget"></span><br/>
+
+<div style="border: 1px black  solid;width: 500px">
+    <h2>下载</h2>
+    请选择开始时间：<select id="startdownloadtime" name="startdownloadtime"></select><br>
+    请选择结束时间：<select id="enddownloadtime" name="enddownloadtime"></select><br>
+    请选择游戏名：<select id="downloadname" name="downloadname"></select><br>
+    <button id="download">下载</button>
+    <span id="downloadtips"></span><br/>
+    <button id="getdata">获取数据</button>
+</div>
+
+</div>
+</body>
+<script type="text/javascript">
+    $("#formfilebutton").click(function () {
+        var formData = new FormData($('#form')[0]);
+        $.ajax({
+            type: 'post',
+            url: "http://192.168.1.144:8081/fileupload",
+            data: formData,
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            success: function (obj) {
+                var data=obj;
+                alert(obj.data)
+            },
+            error: function (obj) {
+               alert(obj.data)
+            }
+        })
+    });
+
+
+    $("#guangdiantongupload").click(function () {
+        if (typeof(document.getElementById("guangdiantongfile").files[0]) == "undefined") {
+            $("#guangdiantonguploadstips").html("<a class=\"red\">请选择合适的文件~</a>");
+            return;
+        }
+        var name = document.getElementById("guangdiantongfile").files[0].name;
+        var msg = "上传文件为" + name + "？";
+        if (confirm(msg) !== true) {
+            return
+        }
+        var postfix = document.getElementById("guangdiantongfile").files[0].name.substring(document.getElementById("guangdiantongfile").files[0].name.lastIndexOf("\.") + 1);
+        if (postfix.match("csv") || postfix.match("xls") || postfix.match("xlsx")) {
+            var formData = new FormData($('#guangdiantonguploadForm')[0]);
+            formData.append("uploadqudao", $("#guangdiantongloadqudao").val());
+            formData.append("uploadtime", $("#guangdiantonguploadtime").val());
+            formData.append("uploadtype", $("#guangdiantongtype").val());
+            formData.append("uploadname", $("#guangdiantonguploadname").val());
+            //192.168.1.173
+            $.ajax({
+                type: 'post',
+                url: "http://192.168.1.144:8081/guangdiantong",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (obj) {
+                    $("#guangdiantonguploadstips").html("<a class=\"green\"></a>")
+                    alert("上传成功~")
+                },
+                error: function (obj) {
+                    $("#guangdiantonguploadstips").html("<a class=\"red\">请选择合适的文件~</a>")
+                }
+            })
+        } else {
+            $("#guangdiantonguploadstips").html("<a class=\"red\">请选择合适的文件~</a>")
+        }
+    });
+
+
+    $("#jichuupload").click(function () {
+        if (typeof(document.getElementById("jichufile").files[0]) == "undefined") {
+            $("#jichuuploadstips").html("<a class=\"red\">请选择合适的文件~</a>");
+            return;
+        }
+        var name = document.getElementById("jichufile").files[0].name;
+        var msg = "上传文件为" + name + "？";
+        if (confirm(msg) !== true) {
+            return
+        }
+        var postfix = document.getElementById("jichufile").files[0].name.substring(document.getElementById("jichufile").files[0].name.lastIndexOf("\.") + 1);
+        if (postfix.match("csv") || postfix.match("xls") || postfix.match("xlsx")) {
+            var formData = new FormData($('#jichuuploadForm')[0]);
+            formData.append("uploadqudao", $("#jichuuploadqudao").val());
+            formData.append("uploadtime", $("#jichuuploadtime").val());
+            formData.append("uploadtype", $("#daytype").val());
+            formData.append("uploadname", $("#jichuuploadname").val());
+            $.ajax({
+                type: 'post',
+                url: "http://192.168.1.144:8081/user",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (obj) {
+                    $("#jichuuploadstips").html("<a class=\"green\"></a>")
+                    alert("上传成功~")
+                },
+                error: function (obj) {
+                    $("#jichuuploadstips").html("<a class=\"red\">请选择合适的文件~</a>")
+                }
+            })
+        } else {
+            $("#jichuuploadstips").html("<a class=\"red\">请选择合适的文件~</a>")
+        }
+    });
+
+    $(document).ready(function () {
+        getdate()
+        getinfo()
+    });
+
+    function getinfo() {
+        $.ajax({
+            url: "http://192.168.1.144:8081/name",
+            type: "get",
+            dataType: "json",
+            success: function (obj) {
+                var ganame = obj.gamename.split(",");
+                var gname = "<option value=\"0\">请选择游戏名</option>";
+                for (var i = 0; i < ganame.length; i++) {
+                    gname = gname + "<option value=\"" + ganame[i] + "\">" + ganame[i] + "</option>";
+                }
+                $("#downloadname").html(gname);
+            }
+        });
+    }
+
+    function getdate() {
+        Date.prototype.Format = function (fmt) {
+            var o = {
+                "M+": this.getMonth() + 1,//月份
+                "d+": this.getDate(),//日
+                "H+": this.getHours(),//小时
+                "m+": this.getMinutes(),//分
+                "s+": this.getSeconds(),//秒
+                "q+": Math.floor((this.getMonth() + 3) / 3),//季度
+                "S+": this.getMilliseconds()//毫毛
+            };
+            if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+            for (var k in o)
+                if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            return fmt;
+        };
+        var lastMonth = [];
+        for (var i = 0; i < 90; i++) {
+            lastMonth.unshift(new Date(new Date().setDate(new Date().getDate() - i)).Format("yyyy-MM-dd").toString());
+        }
+        var date = "<option value=\"0\">请选择时间——</option>";
+        for (var i = 89; i >= 0; i--) {
+            date = date + "<option value=\"" + lastMonth[i] + "\">" + lastMonth[i] + "</option>";
+        }
+        $("#starttime").html(date);
+        $("#endtime").html(date);
+        $("#uploadtime").html(date)
+        $("#startdownloadtime").html(date)
+        $("#enddownloadtime").html(date)
+    }
+
+    $("#upload").click(function () {
+        if (typeof(document.getElementById("file").files[0]) == "undefined") {
+            $("#uploadstips").html("<a class=\"red\">请选择合适的文件~</a>");
+            return;
+        }
+        if ($("#uploadqudao").val() == "0" || $("#uploadtime").val() == "0" || $("#uploadtype").val() == "0" || $("#uploadname").val() == "0") {
+            $("#uploadstips").html("<a class=\"red\">请选择合适的文件~</a>");
+            return;
+        }
+        var ffname = document.getElementById("file").files[0].name;
+        var qudao = $("#uploadqudao").val();
+        var time = $("#uploadtime").val();
+        var type = $("#uploadtype").val();
+        var name = $("#uploadname").val();
+        var typename = $("#uploadtype").find("option:selected").text();
+        var msg = "上传文件:" + ffname + "？\n" + "广告渠道：" + qudao + "\n" + "广告时间:" + time + "\n" + "广告类型:" + typename + "\n";
+        if (confirm(msg) !== true) {
+            return
+        }
+        var postfix = document.getElementById("file").files[0].name.substring(document.getElementById("file").files[0].name.lastIndexOf("\.") + 1);
+        if (postfix.match("csv") || postfix.match("xls") || postfix.match("xlsx")) {
+            var formData = new FormData($('#uploadForm')[0]);
+            formData.append("uploadqudao", qudao);
+            formData.append("date", time);
+            formData.append("type", type);
+            formData.append("uploadname", name);
+            alert(time + "            " + type);
+            $.ajax({
+                type: 'post',
+                url: "http://192.168.1.144:8081/channel",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (obj) {
+                    $("#uploadstips").html("<a class=\"green\"></a>")
+                    alert("上传成功~")
+                },
+                error: function (obj) {
+                    $("#uploadstips").html("<a class=\"red\">请选择合适的文件~</a>")
+                }
+            })
+        } else {
+            $("#uploadstips").html("<a class=\"red\">请选择合适的文件~</a>")
+        }
+    });
+
+    $("#yixin").click(function () {
+        if ($("#starttime").val() == "0" || $("#endtime").val() == "0") {
+            $("#yixinget").html("<a class=\"red\">请选择时间~</a>")
+            return;
+        }
+        var msg = "开始时间:" + $("#starttime").val() + "\n" + "结束时间：" + $("#endtime").val();
+        if (confirm(msg) !== true) {
+            return
+        }
+        var formData = new FormData();
+        formData.append("starttime", $("#starttime").val());
+        formData.append("endtime", $("#endtime").val());
+        $.ajax({
+            type: 'post',
+            url: "http://192.168.1.144:8081/yixin",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (obj) {
+                $("#yixinget").html("<a class=\"green\"></a>")
+                alert("获取成功~")
+            },
+            error: function (obj) {
+                $("#yixinget").html("<a class=\"red\">获取失败~</a>")
+            }
+        })
+    });
+
+    $("#download").click(function () {
+        if ($("#startdownloadtime").val() == "0" || $("#enddownloadtime").val() == "0" || $("#downloadname").val() == "0") {
+            $("#downloadtips").html("<a class=\"red\">请选择时间或游戏名~</a>")
+            return;
+        }
+        var msg = "开始时间:" + $("#startdownloadtime").val() + "\n" + "结束时间：" + $("#enddownloadtime").val() + "\n" + "游戏：" + $("#downloadname").val();
+        if (confirm(msg) !== true) {
+            return
+        }
+        var starttime = $("#startdownloadtime").val();
+        var endtime = $("#enddownloadtime").val();
+        var name = $("#downloadname").val();
+        window.location.href = "http://192.168.1.144:8081/file/" + starttime + "_" + endtime + "_" + name;
+        $("#downloadtips").html("<a class=\"red\"></a>")
+    });
+
+    $("#getdata").click(function () {
+        if ($("#startdownloadtime").val() == "0" || $("#enddownloadtime").val() == "0" || $("#downloadname").val() == "0") {
+            $("#downloadtips").html("<a class=\"red\">请选择时间或游戏名~</a>")
+            return;
+        }
+        var msg = "开始时间:" + $("#startdownloadtime").val() + "\n" + "结束时间：" + $("#enddownloadtime").val() + "\n" + "游戏：" + $("#downloadname").val();
+        if (confirm(msg) !== true) {
+            return
+        }
+        var starttime = $("#startdownloadtime").val();
+        var endtime = $("#enddownloadtime").val();
+        var name = $("#downloadname").val();
+        $.ajax({
+            type: 'get',
+            url: "http://192.168.1.144:8081/data/" + starttime + "_" + endtime + "_" + name,
+            success: function (obj) {
+                alert('成功：' + obj.toString())
+            },
+            error: function (obj) {
+                alert('失败:' + obj.data)
+            }
+        })
+    });
+</script>
+</html>

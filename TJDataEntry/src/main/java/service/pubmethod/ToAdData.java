@@ -10,10 +10,11 @@ import java.util.regex.Pattern;
 
 public class ToAdData {
     /**
-     * 广点通转addata
      *
-     * @param list
-     * @return
+     * @param list 从excel表内读取的一行数据
+     * @param matchinglist  对比数据
+     * @return AdDataObject
+     * 从list中获取AdDataObject中所需数据，检查是否存在于matchinglist中，不存在则标记未知
      */
     public static AdData guangdiantongToAdData(List list, List<List<String>> matchinglist) {
         String old = list.toString();
@@ -72,10 +73,11 @@ public class ToAdData {
     }
 
     /**
-     * 4399转addata
      *
-     * @param list
-     * @return
+     * @param list 从excel表内读取的一行数据
+     * @param matchinglist  对比数据
+     * @return AdDataObject
+     * 从list中获取AdDataObject中所需数据，检查是否存在于matchinglist中，不存在则标记未知
      */
     public static AdData fourthreeToAdData(List list, List<List<String>> matchinglist) {
         String old = list.toString();
@@ -139,10 +141,12 @@ public class ToAdData {
     }
 
     /**
-     * oppo转addata
      *
-     * @param list
-     * @return
+     * @param list 从excel表内读取的一行数据
+     * @param date 时间 excel表内没有记录时间
+     * @param matchinglist  对比数据
+     * @return AdDataObject
+     * 从list中获取AdDataObject中所需数据，检查是否存在于matchinglist中，不存在则标记未知
      */
     public static AdData oppoToAdData(List list, String date, List<List<String>> matchinglist) {
         AdData adData = new AdData();
@@ -164,10 +168,11 @@ public class ToAdData {
     }
 
     /**
-     * 小米转addata
      *
-     * @param list
-     * @return
+     * @param list 从excel表内读取的一行数据
+     * @param matchinglist  对比数据
+     * @return AdDataObject
+     * 从list中获取AdDataObject中所需数据，检查是否存在于matchinglist中，不存在则标记未知
      */
     public static AdData xiaomiToAdData(List list, List<List<String>> matchinglist) {
         AdData adData = new AdData();
@@ -189,10 +194,11 @@ public class ToAdData {
     }
 
     /**
-     * 头条转addata
      *
-     * @param list
-     * @return
+     * @param list 从excel表内读取的一行数据
+     * @param matchinglist  对比数据
+     * @return AdDataObject
+     * 从list中获取AdDataObject中所需数据，检查是否存在于matchinglist中，不存在则标记未知
      */
     public static AdData toutiaoToAdData(List list, List<List<String>> matchinglist) {
         AdData adData = new AdData();
@@ -239,10 +245,12 @@ public class ToAdData {
     }
 
     /**
-     * vivo转addata
      *
-     * @param list
-     * @return
+     * @param list 从excel表内读取的一行数据
+     * @param matchinglist  对比数据
+     * @param date 时间 excel表内不包含时间
+     * @return AdDataObject
+     * 从list中获取AdDataObject中所需数据，检查是否存在于matchinglist中，不存在则标记未知
      */
     public static AdData vivoToAdData(List list, String date, List<List<String>> matchinglist) {
         AdData adData = new AdData();
@@ -264,17 +272,15 @@ public class ToAdData {
 
 
     /**
-     * meizu转addata
      *
-     * @param list
-     * @return
+     * @param list 从excel表内读取的一行数据
+     * @param matchinglist  对比数据
+     * @param year 年份  原表内数据没有记录年份
+     * @return AdDataObject
+     * 从list中获取AdDataObject中所需数据，检查是否存在于matchinglist中，不存在则标记未知
      */
     public static AdData meizuToAdData(List list, List<List<String>> matchinglist, Integer year) {
         AdData adData = new AdData();
-//        String[] type=adType.split("-");
-//        adData.setAppName(type[0]);
-//        adData.setAdType(type[1]);
-//        adData.setNote(adType);
         adData.setAppName(Judgement.matchName(String.valueOf(list.get(1)), matchinglist.get(0)));
         adData.setAdType(Judgement.meizumatchName(String.valueOf(list.get(2)), matchinglist.get(2)));
         adData.setNote(String.valueOf(list.get(1)) + "-" + String.valueOf(list.get(2)));
@@ -294,55 +300,55 @@ public class ToAdData {
         }
         adData.setChannel("meizu");
         adData.setPlatform("魅族");
-
-
-//        if (Judgement.matchName(String.valueOf(list.get(1)), matchinglist.get(0)).equals("拥挤城市")){
-//            System.out.println(adData);
-//        }
-
-
         return adData;
-
-
-//        AdData adData = new AdData();
-//        String[] type=adType.split("-");
-//        adData.setAppName(type[0]);
-//        adData.setAdType(type[1]);
-//        adData.setNote(adType);
-//        adData.setSdk_name("魅族");
-//        adData.setDate(Transform.transForMilliSecondByTim(String.valueOf(list.get(0)).trim(), "yyyy-MM-dd"));
-//        adData.setImpression(Integer.valueOf(String.valueOf(list.get(1)).substring(0,String.valueOf(list.get(1)).indexOf("."))));
-//        adData.setClick(Integer.valueOf(String.valueOf(list.get(2)).substring(0,String.valueOf(list.get(2)).indexOf("."))));
-//        String clickRate=String.valueOf(list.get(3));
-//        clickRate=clickRate.substring(0,clickRate.indexOf("%"));
-//        adData.setClickRate(Judgement.formatDouble4(Double.valueOf(clickRate)/100));
-//        adData.setEcpm(Judgement.formatDouble4(Double.valueOf(String.valueOf(list.get(5)))));
-//        String income=String.valueOf(list.get(6));
-//        if (income.indexOf("￥")!=-1){
-//            adData.setEarned(Judgement.formatDouble2(Double.valueOf(income.substring(income.indexOf("￥")+1))));
-//        }else {
-//            adData.setEarned(Judgement.formatDouble2(Double.valueOf(income)));
-//        }
-//        adData.setChannel("meizu");
-//        adData.setPlatform("魅族");
-//        return adData;
     }
 
     /**
-     * 奇虎转addata
      *
-     * @param list
-     * @param matchinglist
-     * @return
+     * @param list 从excel表内读取的一行数据
+     * @param matchinglist  对比数据
+     * @param year 年份  原表内数据没有记录年份
+     * @return AdDataObject
+     * 从list中获取AdDataObject中所需数据，检查是否存在于matchinglist中，不存在则标记未知
+     */
+    public static AdData jinliToAdData(List list, List<List<String>> matchinglist, Integer year) {
+        AdData adData = new AdData();
+        adData.setAppName(Judgement.matchName(String.valueOf(list.get(1)), matchinglist.get(0)));
+        adData.setAdType(Judgement.meizumatchName(String.valueOf(list.get(2)), matchinglist.get(2)));
+        adData.setNote(String.valueOf(list.get(1)) + "-" + String.valueOf(list.get(2)));
+        adData.setSdk_name("金立");
+        adData.setDate(Transform.transForMilliSecondByTim(year + String.valueOf(list.get(0)).trim(), "yyyyMM月dd日"));
+        adData.setImpression(Integer.valueOf(String.valueOf(list.get(4)).substring(0, String.valueOf(list.get(4)).indexOf("."))));
+        adData.setClick(Integer.valueOf(String.valueOf(list.get(5)).substring(0, String.valueOf(list.get(5)).indexOf("."))));
+        String clickRate = String.valueOf(list.get(6));
+        clickRate = clickRate.substring(0, clickRate.indexOf("%"));
+        adData.setClickRate(Judgement.formatDouble4(Double.valueOf(clickRate) / 100));
+        adData.setEcpm(Judgement.formatDouble4(Double.valueOf(String.valueOf(list.get(8)))));
+        String income = String.valueOf(list.get(7));
+        if (income.indexOf("￥") != -1) {
+            adData.setEarned(Judgement.formatDouble2(Double.valueOf(income.substring(income.indexOf("￥") + 1))));
+        } else {
+            adData.setEarned(Judgement.formatDouble2(Double.valueOf(income)));
+        }
+        adData.setChannel("jinli");
+        adData.setPlatform("金立");
+        return adData;
+    }
+
+    /**
+     *
+     * @param list 从excel表内读取的一行数据
+     * @param matchinglist  对比数据
+     * @return AdDataObject
+     * 从list中获取AdDataObject中所需数据，检查是否存在于matchinglist中，不存在则标记未知
      */
     public static AdData qihooToAdData(List list, List<List<String>> matchinglist) {
         AdData adData = new AdData();
         adData.setDate(Transform.transForMilliSecondByTim(String.valueOf(list.get(0)), "yyyy-MM-dd"));
-        adData.setNote(String.valueOf(list.get(3)));
+        adData.setNote(String.valueOf(list.get(1))+"-qihoo-"+String.valueOf(list.get(2)));
         adData.setSdk_name("qihoo");
         adData.setAppName(Judgement.matchName(String.valueOf(list.get(1)), matchinglist.get(0)));
         adData.setAdType(Judgement.matchName(String.valueOf(list.get(2)), matchinglist.get(2)));
-        //    adData.setAdType(adtype);
         adData.setImpression(Integer.valueOf(String.valueOf(list.get(3)).trim()));
         adData.setClick(Integer.valueOf(String.valueOf(list.get(4)).trim()));
         String sclickrate = String.valueOf(list.get(5));
@@ -362,12 +368,11 @@ public class ToAdData {
     }
 
     /**
-     * 三星数据转addata
      *
-     * @param list
-     * @param name
-     * @param adtype
-     * @return
+     * @param list 从excel表内读取的一行数据
+     * @param name  应用名
+     * @param adtype 广告类型
+     * @return AdDataObject
      */
     public static AdData samsungToAdData(List list, String name, String adtype) {
         list = Judgement.removeSeparator(list);
@@ -390,11 +395,11 @@ public class ToAdData {
     }
 
     /**
-     * 九游数据转addata
      *
-     * @param list
-     * @param matchinglist
-     * @return
+     * @param list 从excel表内读取的一行数据
+     * @param matchinglist  对比数据
+     * @return AdDataObject
+     * 从list中获取AdDataObject中所需数据，检查是否存在于matchinglist中，不存在则标记未知
      */
     public static AdData jiuyouToAdData(List list, List<List<String>> matchinglist) {
         AdData adData = new AdData();
@@ -425,11 +430,11 @@ public class ToAdData {
     }
 
     /**
-     * 九游数据转addata
      *
-     * @param list
-     * @param matchinglist
-     * @return
+     * @param list 从excel表内读取的一行数据
+     * @param matchinglist  对比数据
+     * @return AdDataObject
+     * 从list中获取AdDataObject中所需数据，检查是否存在于matchinglist中，不存在则标记未知
      */
     public static AdData newjiuyouToAdData(List list, List<List<String>> matchinglist) {
         AdData adData = new AdData();
@@ -453,12 +458,11 @@ public class ToAdData {
     }
 
     /**
-     * 联想数据转addata
      *
-     * @param list
-     * @param name
-     * @param adtype
-     * @return
+     * @param list 从excel表内读取的一行数据
+     * @param matchinglist  对比数据
+     * @return AdDataObject
+     * 从list中获取AdDataObject中所需数据，检查是否存在于matchinglist中，不存在则标记未知
      */
     public static AdData lenovoToAdData(List list, String name, String adtype) {
         AdData adData = new AdData();

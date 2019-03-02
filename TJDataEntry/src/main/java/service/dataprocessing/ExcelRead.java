@@ -16,6 +16,13 @@ import java.util.List;
 public class ExcelRead {
     private Logger logger= LoggerFactory.getLogger(ExcelRead.class.getName());
 
+    /**
+     * 根据路径读取excel   .xlsx
+     * @param path excel所在路径
+     * @return
+     * 返回双层list ，
+     * 按行读取
+     */
     public List<List> readExcel(String path){
         FileInputStream fiStream=null;
         Workbook wb=null;
@@ -73,8 +80,8 @@ public class ExcelRead {
     }
 
     /**
-     * 读取上传的用户信息表
-     * @param path
+     * 按行读取excel .csv
+     * @param path 文件路径
      * @return
      */
     public List<List> readUser(String path) {
@@ -122,8 +129,9 @@ public class ExcelRead {
     }
 
     /**
-     * 读取excel表广点通数据
-     * @param path
+     * 按行读取excel
+     * @param path 文件路径
+     * @param charset 字符集
      * @return
      */
     public List<List> readGuang(String path,String charset){

@@ -35,15 +35,6 @@ public class DataOperation {
      * @return <List<UserData>
      */
     public Future<List<UserData>> userDataOpertion(String path, String name, String channel) {
-        if ("m4399".equals("4399")) {
-            channel = "";
-        }
-        if ("xiaomi".equals("小米")) {
-            channel = "";
-        }
-        if ("meizu".equals("魅族")) {
-            channel = "";
-        }
         String finalchannel = channel;
         Future<List<UserData>> future = io.vertx.core.Future.future();
         vertx.executeBlocking(future1 -> {
@@ -106,15 +97,6 @@ public class DataOperation {
      * @return <List<UserData>
      */
     public Future<List<UserData>> newUserDataOpertion(String path, String name, String channel) {
-        if ("m4399".equals("4399")) {
-            channel = "";
-        }
-        if ("xiaomi".equals("小米")) {
-            channel = "";
-        }
-        if ("meizu".equals("魅族")) {
-            channel = "";
-        }
         String finalchannel = channel;
         Future<List<UserData>> future = io.vertx.core.Future.future();
         vertx.executeBlocking(future1 -> {
@@ -173,10 +155,9 @@ public class DataOperation {
      * 移信数据API获取转AdData
      * 根据开始时间和结束时间获取移信数据
      * 存入数据库
-     *
      * @param starttime 开始时间
      * @param endtime   截止日期
-     * @return Future<Boolean>
+     * @return Boolean
      */
     public Future<List<AdData>> FindYixin(String starttime, String endtime, List<List<String>> matchinglist) {
         Future<List<AdData>> future = Future.future();
@@ -212,12 +193,11 @@ public class DataOperation {
 
     /**
      * 移信json数据转换成AdData
-     *
      * @param str
+     * @param matchinglist
      * @return
      */
     public List<AdData> changeyixin(String str, List<List<String>> matchinglist) {
-
         JsonArray data = new JsonArray(str);
         List<AdData> adDataList = new ArrayList<>();
         for (int i = 0; i < data.size(); i++) {
@@ -282,7 +262,6 @@ public class DataOperation {
                 double clickrate;
                 if (Judgement.IsNumber(click_rate)) {
                     clickrate = Judgement.formatDouble4(Double.valueOf(click_rate) / 100);
-
                 } else {
                     clickrate = 0.0;
                 }
@@ -298,7 +277,7 @@ public class DataOperation {
      * 广点通数据转换成AdData
      *
      * @param path 文件路径
-     * @return Future<List       <       AdData>>
+     * @return Future<List<AdData>>
      */
     public Future<List<AdData>> guangdiantongOperation(String path, List<List<String>> matchinglist) {
         Future<List<AdData>> future = Future.future();
@@ -329,10 +308,10 @@ public class DataOperation {
     }
 
     /**
-     * 4399数据转换成AdData
      *
      * @param path 文件路径
-     * @return Future<List       <       AdData>>
+     * @param matchinglist 验证信息
+     * @return  AdDataList
      */
     public Future<List<AdData>> fourthreeOperation(String path, List<List<String>> matchinglist) {
         Future<List<AdData>> future = Future.future();
@@ -363,10 +342,11 @@ public class DataOperation {
     }
 
     /**
-     * oppo数据转换成addata
      *
-     * @param path
-     * @return
+     * @param path 文件路径
+     * @param date 时间
+     * @param matchinglist 验证信息
+     * @return  AdDataList
      */
     public Future<List<AdData>> oppoOperation(String path, String date, List<List<String>> matchinglist) {
         Future<List<AdData>> future = Future.future();
@@ -397,9 +377,10 @@ public class DataOperation {
     }
 
     /**
-     * 小米数据转addata
      *
-     * @return
+     * @param path 文件路径
+     * @param matchinglist 验证信息
+     * @return  AdDataList
      */
     public Future<List<AdData>> xiaomiOperation(String path, List<List<String>> matchinglist) {
         Future<List<AdData>> future = Future.future();
@@ -429,14 +410,16 @@ public class DataOperation {
     }
 
     /**
-     * 头条数据转addata
      *
-     * @return
+     * @param path 文件路径
+     * @param matchinglist 验证信息
+     * @return  AdDataList
      */
     public Future<List<AdData>> toutiaoOperation(String path, List<List<String>> matchinglist) {
         Future<List<AdData>> future = Future.future();
         vertx.executeBlocking(future1 -> {
             List<AdData> adDataList = new ArrayList<>();
+
             List list = excelRead.readExcel(path);
             if (list == null || list.isEmpty()) {
                 future.fail("读取失败");
@@ -462,9 +445,11 @@ public class DataOperation {
 
 
     /**
-     * vivo数据转addata
      *
-     * @return
+     * @param path 文件路径
+     * @param date 日期
+     * @param matchinglist 验证信息
+     * @return  AdDataList
      */
     public Future<List<AdData>> vivoOperation(String path, String date, List<List<String>> matchinglist) {
         Future<List<AdData>> future = Future.future();
@@ -495,9 +480,12 @@ public class DataOperation {
     }
 
     /**
-     * 魅族数据转addata
+     *  魅族处理
      *
-     * @return
+     * @param path 文件路径
+     * @param year 年份
+     * @param matchinglist 验证信息
+     * @return  AdDataList
      */
     public Future<List<AdData>> meizuOperation(String path, List<List<String>> matchinglist, Integer year) {
         Future<List<AdData>> future = Future.future();
@@ -531,10 +519,49 @@ public class DataOperation {
     }
 
     /**
-     * 360数据转addata
+     *  金立处理
      *
-     * @param path
-     * @return
+     * @param path 文件路径
+     * @param year 年份
+     * @param matchinglist 验证信息
+     * @return  AdDataList
+     */
+    public Future<List<AdData>> jinliOperation(String path, List<List<String>> matchinglist, Integer year) {
+        Future<List<AdData>> future = Future.future();
+        vertx.executeBlocking(future1 -> {
+            List<AdData> adDataList = new ArrayList<>();
+            List list = excelRead.readExcel(path);
+            if (list == null || list.isEmpty()) {
+                future.fail("读取失败");
+                logger.error("读取失败");
+            } else {
+                for (int i = 0; i < list.size(); i++) {
+                    List array = (ArrayList) list.get(i);
+                    if (i == list.size() - 2 || i == list.size() - 1) {
+                        continue;
+                    }
+                    AdData adData = ToAdData.jinliToAdData(array, matchinglist, year);
+                    adDataList.add(adData);
+                }
+            }
+            future1.complete(adDataList);
+        }, asyncResult -> {
+            if (asyncResult.succeeded()) {
+                List<AdData> list = (List<AdData>) asyncResult.result();
+                future.complete(list);
+            } else {
+                logger.error("读取失败", asyncResult.cause());
+                future.fail(asyncResult.cause());
+            }
+        });
+        return future;
+    }
+
+    /**
+     *
+     * @param path 文件路径
+     * @param matchinglist 验证信息
+     * @return  AdDataList
      */
     public Future<List<AdData>> qihooOperation(String path, List<List<String>> matchinglist) {
         Future<List<AdData>> future = Future.future();
@@ -567,9 +594,9 @@ public class DataOperation {
     /**
      * 三星转addata
      *
-     * @param path
-     * @param adType
-     * @param name
+     * @param path 文件路径
+     * @param adType  广告形式
+     * @param name  应用名
      * @return
      */
     public Future<List<AdData>> samsungOperation(String path, String adType, String name) {
@@ -606,9 +633,9 @@ public class DataOperation {
     /**
      * 联想转addata
      *
-     * @param path
-     * @param adType
-     * @param name
+     * @param path 文件路径
+     * @param adType    广告形式
+     * @param name  应用名
      * @return
      */
     public Future<List<AdData>> lenovoOperation(String path, String adType, String name) {
@@ -642,8 +669,8 @@ public class DataOperation {
     /**
      * 九游转addata
      *
-     * @param path
-     * @param matchinglist
+     * @param path  文件名
+     * @param matchinglist 验证信息
      * @return
      */
     public Future<List<AdData>> jiuyouOperation(String path, List<List<String>> matchinglist) {
@@ -676,10 +703,10 @@ public class DataOperation {
 
 
     /**
-     * 九游转addata
+     * 新九游转addata
      *
-     * @param path
-     * @param matchinglist
+     * @param path 文件路径
+     * @param matchinglist   验证信息
      * @return
      */
     public Future<List<AdData>> newjiuyouOperation(String path, List<List<String>> matchinglist) {
@@ -838,6 +865,16 @@ public class DataOperation {
         return list;
     }
 
+    /**
+     * 类型转换<br>
+     *
+     * @param userList 用户数据
+     * @param adList    广告数据
+     * @param longdates
+     * @param name
+     * @param names
+     * @return
+     */
     public List<TotalVO> listToTotalVO2(List<JsonObject> userList, List<JsonObject> adList, List<Long> longdates, String name, List names) {
         List<TotalVO> list = new ArrayList<>();
         for (int j = 0; j < longdates.size(); j++) {
@@ -935,6 +972,7 @@ public class DataOperation {
      * @param userList user表数据
      * @param channel  渠道
      * @param oneday   时间戳
+     * @param names
      * @return UserVO
      */
     public UserVO userJsonToUserVO1(List<JsonObject> userList, String channel, Long oneday,List names) {
@@ -1288,6 +1326,7 @@ public class DataOperation {
      * 获取一个游戏一天的一个渠道的数据
      *
      * @param name     游戏名
+     * @param names
      * @param oneday   时间戳
      * @param channel  渠道
      * @param userList user表的Jsonobject

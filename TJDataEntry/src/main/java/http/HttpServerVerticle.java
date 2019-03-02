@@ -3,6 +3,7 @@ package http;
 import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import database.AdvertisementService;
 import database.ConfigConstants;
+import database.RepeatSql;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.file.FileSystem;
@@ -23,23 +24,27 @@ import org.slf4j.LoggerFactory;
 import service.Constant.CacheList;
 import service.Constant.SqlStatement;
 import service.Constant.TemplateFile;
-import service.dataprocessing.DataOperation;
-import service.dataprocessing.ExcelRead;
-import service.dataprocessing.ExcelWrite;
+import service.dataprocessing.*;
 import service.entity.AdData;
 import service.entity.ArpuData;
 import service.entity.TotalVO;
+import service.entity.dailyAdtype.DailyAdtype;
 import service.pubmethod.CacheOpertion;
 import service.pubmethod.InitConf;
 import service.pubmethod.Judgement;
 import service.pubmethod.Transform;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class HttpServerVerticle extends AbstractVerticle {
-    private Logger logger = null;
+    private Logger logger = LoggerFactory.getLogger(HttpServerVerticle.class.getName());
     private DataOperation dataOperation = null;
     private AdvertisementService advertisementService = new AdvertisementService();
     private ExcelWrite excelWrite = new ExcelWrite();
@@ -58,7 +63,6 @@ public class HttpServerVerticle extends AbstractVerticle {
                 .put("user", conf.get(ConfigConstants.DATABASE_USER))
                 .put("password", conf.get(ConfigConstants.DATABASE_PASSWORD));
         jdbcClient = JDBCClient.createShared(vertx, config);
-        logger = LoggerFactory.getLogger(HttpServerVerticle.class.getName());
         router.route().handler(BodyHandler.create().setUploadsDirectory("TJDataEntry" + File.separator + "file-uploads"));
         //跨域请求
         Set<String> allowHeaders = new HashSet<>();
@@ -81,11 +85,27 @@ public class HttpServerVerticle extends AbstractVerticle {
                 .allowedHeaders(allowHeaders));
 //        //静态资源处理
 //        router.route("/static/*").handler(StaticHandler.create());
-
+        //查询重复数据
+        router.get("/repeat/get").handler(this::getrepeatHandler);
+        //默认删除重复方法
+        router.get("/delRepeatDefault").handler(this::delrepeatDefaultHandler);
+        //手动删除重复
+        router.post("/delRepeat").handler(this::delrepeatHandler);
         //文件上传
         router.post("/fileupload").handler(this::uploadHandler);
+        //api获取友盟数据
+        router.post("/umeng").handler(this::umengHandler);
+        router.post("/umengretention").handler(this::umengRetentionHandler);
+        router.get("/umengapp").handler(this::umengAppHandler);
+        router.get("/umengchannels/:appkey").handler(this::umengChannelHandler);
         //文件下载
+        //产品日常总收益表（随动）
+        router.post("/daily").handler(this::DownloadDailyARPUFileHandler);
+        //广告形式细分
+        router.post("/dailyadtype").handler(this::DownloadDailyAdtypeHandler);
+        //展次表 只有横 开 插 视
         router.post("/file").handler(this::DownloadFileHandler);
+        //arpu表
         router.post("/arpufile/*").handler(this::DownloadARPUFileHandler);
         //api获取广告数据
         router.get("/data/*").handler(this::FindDatasHandler);
@@ -136,8 +156,203 @@ public class HttpServerVerticle extends AbstractVerticle {
         });
     }
 
+    private void delrepeatHandler(RoutingContext context) {
+        JsonArray jsonArray=context.getBodyAsJson().getJsonArray("data");
+        List<JsonArray> list=new ArrayList<>();
+        for (int i=0;i<jsonArray.size();i++){
+            logger.info("del--------->"+jsonArray.getJsonObject(i).toString());
+            JsonObject jsonObject=jsonArray.getJsonObject(i);
+            JsonArray jsonArray1=new JsonArray();
+            jsonArray1.add(jsonObject.getInteger("id"));
+            list.add(jsonArray1);
+        }
+        advertisementService.batchWithParams(jdbcClient,RepeatSql.DEL_ADLIST_ONE,list).setHandler(res->{
+            if (res.succeeded()){
+                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000)));
+            }else {
+                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20001)));
+            }
+        });
+
+    }
+
     /**
-     * 根据时间查询所有数据
+     * 获取重复数据
+     * @param context
+     */
+    private void getrepeatHandler(RoutingContext context) {
+        advertisementService.query(jdbcClient, RepeatSql.GET_AD_REPEAT_show).setHandler(result -> {
+            if (result.succeeded()) {
+                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", result.result())));
+            } else {
+                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20001)));
+            }
+        });
+    }
+
+    /**
+     *  广告数据二次去重
+     * @param context
+     */
+    private void delrepeatDefaultHandler(RoutingContext context) {
+        advertisementService.removeRepeat(jdbcClient, RepeatSql.GET_AD_REPEAT, RepeatSql.DEL_ADLIST).setHandler(res -> {
+            if (res.succeeded()) {
+                advertisementService.removeRepeat(jdbcClient, RepeatSql.GET_USER_REPEAT1, RepeatSql.DEL_USERDATA).setHandler(res1 -> {
+                    if (res1.succeeded()) {
+                        context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000)));
+                    } else {
+                        context.response().end(Json.encodePrettily(new JsonObject().put("code", 20001)));
+                    }
+                });
+            } else {
+                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20001)));
+            }
+        });
+
+//        advertisementService.query(jdbcClient, RepeatSql.repeatsql1).setHandler(result -> {
+//            if (result.succeeded()) {
+//                List<JsonObject> list = result.result();
+//                if (list.size() > 0) {
+//                    StringBuilder stringBuilder=new StringBuilder();
+//                    for (int i=0;i<list.size();i++){
+//                        Integer id=list.get(i).getInteger("id");
+//                        if (i==0){
+//                            stringBuilder.append("(");
+//                        }
+//                        stringBuilder.append(id);
+//                        if (i==list.size()-1){
+//                            stringBuilder.append(")");
+//                        }else {
+//                            stringBuilder.append(",");
+//                        }
+//                    }
+//                    System.out.println( RepeatSql.delAdList+stringBuilder);
+//                    context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000)));
+//                    advertisementService.removeRepeat(jdbcClient, RepeatSql.delAdList+stringBuilder).setHandler(res -> {
+//                        if (res.succeeded()) {
+//                            context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", result.result())));
+//                        } else {
+//                            context.response().end(Json.encodePrettily(new JsonObject().put("code", 20001)));
+//                        }
+//                    });
+//                }
+//            } else {
+//                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20001)));
+//            }
+//        });
+    }
+
+    /**
+     * 处理获取友盟数据
+     *
+     * @param context
+     */
+    private void umengHandler(RoutingContext context) {
+        String starttime = context.getBodyAsJson().getString("start");
+        String endtime = context.getBodyAsJson().getString("end");
+        String name = context.getBodyAsJson().getString("name");
+        String appkey = context.getBodyAsJson().getString("appkey");
+        // context.response().end(Json.encodePrettily(new JsonObject().put("code",20000)));
+        List list = Transform.getBetweenDate(starttime, endtime);
+        UmengHandler umengHandler = new UmengHandler();
+        vertx.executeBlocking(hander1 -> {
+            JsonObject jsonObject = umengHandler.getUmeng(list, name, appkey);
+            if (jsonObject.getString("state").equals("success")) {
+                hander1.complete(jsonObject);
+            } else {
+                hander1.fail(jsonObject.getString("data"));
+            }
+        }, hander2 -> {
+            if (hander2.succeeded()) {
+                logger.info("获取成功");
+                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", hander2.result())));
+            } else {
+                logger.error("获取失败", hander2.cause());
+                String result = hander2.cause().toString();
+                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20001).put("data", result.substring(result.indexOf(":") + 1))));
+            }
+        });
+    }
+
+    /**
+     * 处理获取友盟留存
+     *
+     * @param context
+     */
+    private void umengRetentionHandler(RoutingContext context) {
+        String starttime = context.getBodyAsJson().getString("start");
+        String endtime = context.getBodyAsJson().getString("end");
+        String name = context.getBodyAsJson().getString("name");
+        String appkey = context.getBodyAsJson().getString("appkey");
+        String channel = context.getBodyAsJson().getString("channel");
+        UmengHandler umengHandler = new UmengHandler();
+        vertx.executeBlocking(hander1 -> {
+            JsonObject jsonObject = umengHandler.getUmengRetention(starttime, endtime, appkey, name, channel);
+            if (jsonObject.getString("state").equals("success")) {
+                hander1.complete(jsonObject);
+            } else {
+                hander1.fail(jsonObject.getString("data"));
+            }
+        }, hander2 -> {
+            if (hander2.succeeded()) {
+                logger.info("获取成功");
+                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", hander2.result())));
+            } else {
+                logger.error("获取失败", hander2.cause());
+                String result = hander2.cause().toString();
+                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20001).put("data", result.substring(result.indexOf(":") + 1))));
+            }
+        });
+    }
+
+    /**
+     * 处理获取友盟apps
+     *
+     * @param context
+     */
+    private void umengAppHandler(RoutingContext context) {
+        UmengHandler umengHandler = new UmengHandler();
+        vertx.executeBlocking(hander1 -> {
+            JsonObject jsonObject = umengHandler.getUmengApp();
+            if (jsonObject.getString("state").equals("success")) {
+                hander1.complete(jsonObject);
+            } else {
+                hander1.fail(jsonObject.getString("data"));
+            }
+        }, hander2 -> {
+            if (hander2.succeeded()) {
+                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", hander2.result())));
+            } else {
+                String result = hander2.cause().toString();
+                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20001).put("data", result.substring(result.indexOf(":") + 1))));
+            }
+        });
+    }
+
+    private void umengChannelHandler(RoutingContext context) {
+        String appkey = context.request().getParam("appkey");
+        UmengHandler umengHandler = new UmengHandler();
+        vertx.executeBlocking(hander1 -> {
+            JsonObject jsonObject = umengHandler.getUmengChannel(appkey);
+            if (jsonObject.getString("state").equals("success")) {
+                hander1.complete(jsonObject);
+            } else {
+                hander1.fail(jsonObject.getString("data"));
+            }
+        }, hander2 -> {
+            if (hander2.succeeded()) {
+                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", hander2.result())));
+            } else {
+                String result = hander2.cause().toString();
+                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20001).put("data", result.substring(result.indexOf(":") + 1))));
+            }
+        });
+
+    }
+
+
+    /**
+     * 根据时间查询所有用户数据和广告数据
      *
      * @param context
      */
@@ -145,6 +360,7 @@ public class HttpServerVerticle extends AbstractVerticle {
         String starttime = context.request().getParam("starttime");
         String endtime = context.request().getParam("endtime");
         Integer num = starttime.split("-").length - 1;
+        //num==2按日查询
         if (num == 2) {
             String statis_time = starttime.replace(starttime.split("-")[2], "01");
             Long start = 0L;
@@ -160,8 +376,11 @@ public class HttpServerVerticle extends AbstractVerticle {
             Long finalstart = start;
             Long finalend = end;
             Long startss = statis;
+            //根据时间查询用户数据
             advertisementService.findDatasWithParams(jdbcClient, SqlStatement.SELECT_USERDATA_BY_TIME, new JsonArray().add(start).add(end)).setHandler(result1 -> {
+                //根据时间查询广告数据
                 advertisementService.findDatasWithParams(jdbcClient, SqlStatement.SELECT_APPDATA_BY_TIME, new JsonArray().add(finalstart).add(finalend)).setHandler(result -> {
+                    //根据查询开始时间到月初这段时间的dau （统计mau）
                     advertisementService.findDatasWithParams(jdbcClient, SqlStatement.SELECT_MONDATA, new JsonArray().add(startss).add(finalstart)).setHandler(result2 -> {
                         if (result.succeeded() && result1.succeeded() && result2.succeeded()) {
                             List<JsonObject> userObjects = result1.result();
@@ -199,6 +418,7 @@ public class HttpServerVerticle extends AbstractVerticle {
                     });
                 });
             });
+            //按月查询
         } else if (num == 1) {
             starttime = starttime + "-01";
             endtime = Transform.getLastDay(endtime);
@@ -245,6 +465,7 @@ public class HttpServerVerticle extends AbstractVerticle {
                     }
                 });
             });
+            //按年查询
         } else if (num == 0) {
             starttime = starttime + "-01-01";
             endtime = Transform.getLastDay(endtime + "-12");
@@ -298,6 +519,7 @@ public class HttpServerVerticle extends AbstractVerticle {
 
     /**
      * 文件上传路由
+     * 根据上传文件的文件名，将请求分发给不同的处理器
      */
     private void uploadHandler(RoutingContext context) {
         Set<FileUpload> fileUploads = context.fileUploads();
@@ -321,6 +543,9 @@ public class HttpServerVerticle extends AbstractVerticle {
                 break;
             case "友盟1":
                 this.uploadNewUserDataHandler(context);
+                break;
+            case "友盟3":
+                this.uploadUmengHandler(context);
                 break;
             case "oppo":
                 this.uploadChannelAdDataHandler(context, 1);
@@ -361,6 +586,9 @@ public class HttpServerVerticle extends AbstractVerticle {
             case "头条":
                 this.uploadToutiaoHandler(context);
                 break;
+            case "金立":
+                this.uploadJinliHandler(context);
+                break;
             default:
                 logger.error("上传文件格式有问题---》" + filename);
                 serviceError(context, filename + "     请检查上传文件的格式");
@@ -369,7 +597,55 @@ public class HttpServerVerticle extends AbstractVerticle {
     }
 
     /**
-     * 头条数据上传
+     * 金立数据上传
+     *
+     * @param context
+     */
+    private void uploadJinliHandler(RoutingContext context) {
+        Set<FileUpload> fileUploads = context.fileUploads();
+        String filename = "";
+        String uploadfilename = "";
+        for (FileUpload f : fileUploads) {
+            filename = f.fileName();
+            uploadfilename = f.uploadedFileName();
+        }
+        String finalname = filename;
+        fileClassification(uploadfilename, filename).setHandler(rs -> {
+            if (rs.succeeded()) {
+                String newpath = rs.result();
+                getMatchingData().setHandler(matching -> {
+                    if (matching.succeeded()) {
+                        List<List<String>> lists = matching.result();
+                        Integer years = 0;
+                        try {
+                            String name = finalname.split("_")[1];
+                            years = Integer.valueOf(name);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            serviceError(context, Json.encodePrettily(new JsonObject().put("data", "金立命名格式出错，示例：金立_2019_xxxxxxxxxxxx")));
+                            return;
+                        }
+                        dataOperation.jinliOperation(newpath, lists, years).setHandler(result -> {
+                            if (result.succeeded()) {
+                                List<AdData> adDataList = result.result();
+                                List<JsonArray> adlist = Transform.adDatatoJsonArrayList(adDataList);
+                                adResponse(context, adlist, finalname);
+                            } else {
+                                logger.error("金立数据读取失败------->" + result.cause().toString());
+                                serviceError(context, Json.encodePrettily(new JsonObject().put("data", "金立数据读取失败")));
+                            }
+                        });
+                    } else {
+                        logger.error("匹配数据读取失败------->" + matching.cause().toString());
+                        serviceError(context, Json.encodePrettily(new JsonObject().put("data", "匹配读取失败")));
+                    }
+                });
+            }
+        });
+    }
+
+    /**
+     * 头条数据上传处理
      *
      * @param context
      */
@@ -408,7 +684,7 @@ public class HttpServerVerticle extends AbstractVerticle {
     }
 
     /**
-     * 用户数据处理
+     * 用户数据处理 友盟
      *
      * @param context
      */
@@ -469,7 +745,7 @@ public class HttpServerVerticle extends AbstractVerticle {
     }
 
     /**
-     * 用户数据处理
+     * 用户数据处理 友盟1
      *
      * @param context
      */
@@ -933,6 +1209,77 @@ public class HttpServerVerticle extends AbstractVerticle {
     }
 
     /**
+     * 友盟数据处理 友盟3
+     *
+     * @param context
+     */
+    private void uploadUmengHandler(RoutingContext context) {
+        ExcelRead excelRead = new ExcelRead();
+        Set<FileUpload> fileUploads = context.fileUploads();
+        String filename = "";
+        String uploadfilename = "";
+        for (FileUpload f : fileUploads) {
+            filename = f.fileName();
+            uploadfilename = f.uploadedFileName();
+        }
+        String finnalfilename = filename;
+        //(date,app_name,channel,dnu,dau,startup_time,single_use_time,retention,version)
+        fileClassification(uploadfilename, filename).setHandler(rs -> {
+            if (rs.succeeded()) {
+                String newpath = rs.result();
+                List<List> list = excelRead.readExcel(newpath);
+                List<JsonArray> jsonArrayList = new ArrayList<>();
+                for (int i = 0; i < list.size(); i++) {
+                    List innerlist = list.get(i);
+                    JsonArray jsonArray = new JsonArray();
+                    for (int j = 0; j < innerlist.size(); j++) {
+                        if (j == 0) {
+                            jsonArray.add(Transform.transForMilliSecondByTim(String.valueOf(innerlist.get(j)), "yyyy-MM-dd"));
+                        } else if (j == 5) {
+                            if ((innerlist.get(j) + "").indexOf(".") != -1) {
+                                String launch = (innerlist.get(j) + "").substring(0, (innerlist.get(j) + "").indexOf("."));
+                                logger.debug(innerlist.get(j) + "");
+                                Pattern pattern = Pattern.compile("[0-9]*");
+                                Matcher isNum = pattern.matcher(launch);
+                                if (isNum.matches()) {
+                                    jsonArray.add(launch);
+                                } else {
+                                    jsonArray.add(0);
+                                }
+                            } else {
+                                jsonArray.add(0);
+                            }
+
+
+                        } else {
+                            jsonArray.add(innerlist.get(j));
+                        }
+                    }
+                    jsonArrayList.add(jsonArray);
+                }
+                advertisementService.batchWithParams(jdbcClient, SqlStatement.INSERT_USER, jsonArrayList).setHandler(result -> {
+                    if (result.succeeded()) {
+                        advertisementService.removeRepeat(jdbcClient, SqlStatement.REPEAT_ID_USER, SqlStatement.DEL_ID_USER).setHandler(result1 -> {
+                            if (result1.succeeded()) {
+                                operationSuccess(context, new JsonObject().put("data", finnalfilename + "     数据已成功上传，并未发现异常~"));
+                            } else {
+                                logger.error("用户数据去重失败------->" + result1.cause());
+                                serviceError(context, Json.encodePrettily(new JsonObject().put("data", "用户数据去重失败")));
+                            }
+                        });
+                    } else {
+                        logger.error("用户数据插入失败------->" + result.cause());
+                        serviceError(context, Json.encodePrettily(new JsonObject().put("data", "用户数据插入失败")));
+                    }
+                });
+            } else {
+                logger.error("文件路径出错------->" + rs.cause().toString());
+                serviceError(context, Json.encodePrettily(new JsonObject().put("data", "文件路径出错")));
+            }
+        });
+    }
+
+    /**
      * 在广告数据插入数据库前筛选处理
      *
      * @param context       RoutingContext
@@ -947,7 +1294,6 @@ public class HttpServerVerticle extends AbstractVerticle {
         } else {
             message = filename + "    第" + list1 + "行数据发现异常，请检查上传文件~";
         }
-
         advertisementService.batchWithParams(jdbcClient, SqlStatement.INSERT_ADVERTISEMENT, jsonArrayList).setHandler(result -> {
             if (result.succeeded()) {
                 advertisementService.removeRepeat(jdbcClient, SqlStatement.REPEAT_ID_ADVERTISEMENT, SqlStatement.DEL_ID_ADVERTISEMENT).setHandler(result2 -> {
@@ -975,10 +1321,10 @@ public class HttpServerVerticle extends AbstractVerticle {
     private void DownloadFileHandler(RoutingContext context) {
         FileSystem fileSystem = vertx.fileSystem();
         JsonObject name = context.getBodyAsJson().getJsonObject("name");
-        String project_name=name.getString("project_name");
-        JsonArray list=name.getJsonArray("applist");
-        List applist=new ArrayList();
-        for (int i=0;i<list.size();i++){
+        String project_name = name.getString("project_name");
+        JsonArray list = name.getJsonArray("applist");
+        List applist = new ArrayList();
+        for (int i = 0; i < list.size(); i++) {
             applist.add(list.getJsonObject(i).getString("app_name"));
         }
         String endtime = context.getBodyAsJson().getString("end");
@@ -994,7 +1340,7 @@ public class HttpServerVerticle extends AbstractVerticle {
         Integer longstarttime = Transform.transForMilliSecondByTim(starttime, "yyyy-MM-dd");
         Integer longendtime = Transform.transForMilliSecondByTim(endtime, "yyyy-MM-dd");
         List<String> dates = datess;
-        String filename = starttime + "_" + endtime +"project_name" +"_.xls";
+        String filename = starttime + "_" + endtime + "project_name" + "_.xls";
         if (new File(TemplateFile.DOWNLOAD_FILE_PATH + filename).exists()) {
             fileSystem.deleteBlocking(TemplateFile.DOWNLOAD_FILE_PATH + filename);
         }
@@ -1021,7 +1367,7 @@ public class HttpServerVerticle extends AbstractVerticle {
                             vertx.executeBlocking(handler1 -> {
                                 //                            List<TotalVO> list1 = dataOperation.listToTotalVO(userlist, adlist, longdates, name);  //修改总表添加新渠道  DataOperation  859行
                                 //                            List<List> listList = dataOperation.listToTotalVOToList(list1);
-                                List<TotalVO> list1 = dataOperation.listToTotalVO2(userlist, adlist, longdates, project_name,applist);  //修改总表添加新渠道  DataOperation  859行
+                                List<TotalVO> list1 = dataOperation.listToTotalVO2(userlist, adlist, longdates, project_name, applist);  //修改总表添加新渠道  DataOperation  859行
                                 List<List> listList = dataOperation.listToTotalVOToList1(list1);
                                 excelWrite.writeall2(TemplateFile.DOWNLOAD_FILE_PATH + filename, 0, 0, 3, listList, project_name);
                                 try {
@@ -1069,17 +1415,17 @@ public class HttpServerVerticle extends AbstractVerticle {
         JsonObject applist;
         String name;//to do
         try {
-            applist=context.getBodyAsJson().getJsonObject("name");
+            applist = context.getBodyAsJson().getJsonObject("name");
             starttime = context.request().getParam("start");
             endtime = context.request().getParam("end");
         } catch (Exception E) {
             context.response().setStatusCode(404).end();
             return;
         }
-        List app_name=new ArrayList();
-        name=applist.getString("project_name");
-        JsonArray apps=applist.getJsonArray("applist");
-        for (int i=0;i<apps.size();i++){
+        List app_name = new ArrayList();
+        name = applist.getString("project_name");
+        JsonArray apps = applist.getJsonArray("applist");
+        for (int i = 0; i < apps.size(); i++) {
             app_name.add(apps.getJsonObject(i).getString("app_name"));
         }
         FileSystem fileSystem = vertx.fileSystem();
@@ -1113,47 +1459,57 @@ public class HttpServerVerticle extends AbstractVerticle {
                 }
                 longdates.add(i, (long) datetime);
             }
-            advertisementService.findDatasWithParams(jdbcClient, SqlStatement.SELECT_USERDATA_arpu_withoutname, new JsonArray().add(longstarttime).add(longendtime)).setHandler(userListAsyncResult -> {
+            JsonArray appNameList = applist.getJsonArray("applist");
+            JsonArray jsonArray = new JsonArray();
+            jsonArray.add(longstarttime).add(longendtime);
+            for (int i = 0; i < 10; i++) {
+                if (i < appNameList.size()) {
+                    jsonArray.add(appNameList.getJsonObject(i).getString("app_name"));
+                } else {
+                    jsonArray.add("");
+                }
+            }
+            advertisementService.findDatasWithParams(jdbcClient, SqlStatement.SELECT_USERDATA_arpu_withname, jsonArray).setHandler(userListAsyncResult -> {
                 if (userListAsyncResult.succeeded()) {
-                    advertisementService.findDatasWithParams(jdbcClient, SqlStatement.SELECT_ADDATA_arpu_withoutname, new JsonArray().add(longstarttime).add(longendtime)).setHandler(adListAsyncResult -> {
+                    advertisementService.findDatasWithParams(jdbcClient, SqlStatement.SELECT_ADDATA_arpu_withname, jsonArray).setHandler(adListAsyncResult -> {
                         if (adListAsyncResult.succeeded()) {
                             List<JsonObject> userlist = userListAsyncResult.result();
                             List<JsonObject> adlist = adListAsyncResult.result();
                             vertx.executeBlocking(handler1 -> {
-                                    List<List<ArpuData>> arpuData_lists = InitConf.getAllArpuData1(userlist, adlist, longdates, app_name);
-                                    List<List> outerlist = new ArrayList<>();
-                                    for (int i = 0; i < arpuData_lists.size(); i++) {
-                                        List<String> innerlist = new ArrayList<>();
-                                        List<ArpuData> arpu_list = arpuData_lists.get(i);
-                                        Double total_earned = 0.0;
-                                        Double total_user = 0.0;
-                                        Double total_arpu = 0.0;
-                                        for (int j = 0; j < arpu_list.size(); j++) {
-                                            ArpuData arpuData = arpu_list.get(j);
-                                            if (j == 0) {
-                                                innerlist.add(datesss.get(i) + "");
-                                                innerlist.add(total_earned.toString());
-                                                innerlist.add(total_user.toString());
-                                                innerlist.add(total_arpu.toString());
-                                            }
-                                            innerlist.add(Judgement.formatDouble2(arpuData.getToutiao_earned()) + "");
-                                            innerlist.add(Judgement.formatDouble2(arpuData.getChannel_earned()) + "");
-                                            innerlist.add(Judgement.formatDouble2(arpuData.getGdt_earned()) + "");
-                                            innerlist.add(Judgement.formatDouble2(arpuData.getAll_earned()) + "");
-                                            innerlist.add(arpuData.getActive_user() + "");
-                                            innerlist.add(Judgement.formatDouble3(arpuData.getToutiao_arpu()) + "");
-                                            innerlist.add(Judgement.formatDouble3(arpuData.getChannel_arpu()) + "");
-                                            innerlist.add(Judgement.formatDouble3(arpuData.getGdt_arpu()) + "");
-                                            innerlist.add(Judgement.formatDouble3(arpuData.getAll_arpu()) + "");
-                                            total_earned = total_earned + arpuData.getAll_earned();
-                                            total_user = total_user + arpuData.getActive_user();
+                                List<List<ArpuData>> arpuData_lists = InitConf.getAllArpuData1(userlist, adlist, longdates, app_name);
+                                List<List> outerlist = new ArrayList<>();
+                                for (int i = 0; i < arpuData_lists.size(); i++) {
+                                    List<String> innerlist = new ArrayList<>();
+                                    List<ArpuData> arpu_list = arpuData_lists.get(i);
+                                    Double total_earned = 0.0;
+                                    Double total_user = 0.0;
+                                    Double total_arpu = 0.0;
+                                    for (int j = 0; j < arpu_list.size(); j++) {
+                                        ArpuData arpuData = arpu_list.get(j);
+                                        if (j == 0) {
+                                            innerlist.add(datesss.get(i) + "");
+                                            innerlist.add(total_earned.toString());
+                                            innerlist.add(total_user.toString());
+                                            innerlist.add(total_arpu.toString());
                                         }
-                                        innerlist.set(1, Judgement.formatDouble2(total_earned) + "");
-                                        innerlist.set(2, Judgement.formatDouble2(total_user) + "");
-                                        innerlist.set(3, Judgement.NonScientificNotation(Judgement.formatDouble2(total_earned / total_user) + ""));
-                                        outerlist.add(innerlist);
+                                        innerlist.add(Judgement.formatDouble2(arpuData.getToutiao_earned()) + "");
+                                        innerlist.add(Judgement.formatDouble2(arpuData.getChannel_earned()) + "");
+                                        innerlist.add(Judgement.formatDouble2(arpuData.getGdt_earned()) + "");
+                                        innerlist.add(Judgement.formatDouble2(arpuData.getAll_earned()) + "");
+                                        innerlist.add(arpuData.getActive_user() + "");
+                                        innerlist.add(Judgement.formatDouble3(arpuData.getToutiao_arpu()) + "");
+                                        innerlist.add(Judgement.formatDouble3(arpuData.getChannel_arpu()) + "");
+                                        innerlist.add(Judgement.formatDouble3(arpuData.getGdt_arpu()) + "");
+                                        innerlist.add(Judgement.formatDouble3(arpuData.getAll_arpu()) + "");
+                                        total_earned = total_earned + arpuData.getAll_earned();
+                                        total_user = total_user + arpuData.getActive_user();
                                     }
-                                    excelWrite.writeall(TemplateFile.DOWNLOAD_FILE_PATH + filename, 0, 0, 2, outerlist, name);
+                                    innerlist.set(1, Judgement.formatDouble2(total_earned) + "");
+                                    innerlist.set(2, Judgement.formatDouble2(total_user) + "");
+                                    innerlist.set(3, Judgement.NonScientificNotation(Judgement.formatDouble2(total_earned / total_user) + ""));
+                                    outerlist.add(innerlist);
+                                }
+                                excelWrite.writeall(TemplateFile.DOWNLOAD_FILE_PATH + filename, 0, 0, 2, outerlist, name);
                                 handler1.complete(Future.succeededFuture());
                             }, handler2 -> {
                                 if (handler2.succeeded()) {
@@ -1174,9 +1530,306 @@ public class HttpServerVerticle extends AbstractVerticle {
                     userListAsyncResult.cause();
                 }
             });
+        });
+    }
+
+    /**
+     * 处理每日产品总收益
+     *
+     * @param context
+     */
+    private void DownloadDailyARPUFileHandler(RoutingContext context) {
+        String starttime;
+        String endtime;
+        JsonArray applist;
+        try {
+            applist = context.getBodyAsJson().getJsonArray("list");
+            starttime = context.getBodyAsJson().getString("start");
+            endtime = context.getBodyAsJson().getString("end");
+        } catch (Exception E) {
+            logger.debug("1");
+            context.response().setStatusCode(500).end();
+            return;
+        }
+        System.out.println(starttime);
+        System.out.println(endtime);
+        System.out.println(applist);
+        FileSystem fileSystem = vertx.fileSystem();
+        List<String> datess = new ArrayList<>();
+        try {
+            datess = Transform.getBetweenDate(starttime, endtime);
+        } catch (Exception e) {
+            logger.debug("2");
+            serviceError(context, Json.encodePrettily(new JsonObject().put("data", "请选择正确的时间段")));
+            return;
+        }
+        List<String> datesss = datess;
+        Integer longstarttime = Transform.transForMilliSecondByTim(starttime, "yyyy-MM-dd");
+        Integer longendtime = Transform.transForMilliSecondByTim(endtime, "yyyy-MM-dd");
+        System.out.println(datesss);
+        System.out.println(longstarttime);
+        System.out.println(longendtime);
+        List<String> dateFormatList = datess;
+        List<Integer> dateList = new ArrayList<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            for (int i = 0; i < dateFormatList.size(); i++) {
+                dateList.add((int) (sdf.parse(dateFormatList.get(i)).getTime() / 1000));
+            }
+        } catch (Exception e) {
+            serviceError(context, Json.encodePrettily(new JsonObject().put("data", "请选择正确的时间段")));
+            return;
+        }
+        System.out.println(dateList);
+        List<String> dates = datess;
+        //确定生成文件名，已存在则删除
+        String filename = starttime + "_" + endtime + "_daily.xls";
+        if (new File(TemplateFile.DOWNLOAD_FILE_PATH + filename).exists()) {
+            fileSystem.deleteBlocking(TemplateFile.DOWNLOAD_FILE_PATH + filename);
+        }
+        //查看存放文件目录，不存在则生成
+        if (!new File(TemplateFile.DOWNLOAD_FILE_PATH).exists()) {
+            new File(TemplateFile.DOWNLOAD_FILE_PATH).mkdirs();
+        }
+        fileSystem.copy(TemplateFile.TEMPLATE_Daily_FILE_PATH, TemplateFile.DOWNLOAD_FILE_PATH + filename, rs -> {
+            logger.debug("新文件地址：" + TemplateFile.TEMPLATE_Daily_FILE_PATH + filename);
+            StringBuilder builder = new StringBuilder();
+            List<Long> longdates = new ArrayList<>();
+            for (int i = 0; i < dates.size(); i++) {
+                Integer datetime = Transform.transForMilliSecondByTim(dates.get(i), "yyyy-MM-dd");
+                builder.append(datetime);
+                if (i != dates.size() - 1) {
+                    builder.append(",");
+                }
+                longdates.add(i, (long) datetime);
+            }
+            advertisementService.findDatasWithParams(jdbcClient, SqlStatement.SELECT_USERDATA_APP_withoutname, new JsonArray().add(longstarttime).add(longendtime)).setHandler(userListAsyncResult -> {
+                if (userListAsyncResult.succeeded()) {
+                    advertisementService.findDatasWithParams(jdbcClient, SqlStatement.SELECT_ADDATA_APP_withoutname, new JsonArray().add(longstarttime).add(longendtime)).setHandler(adListAsyncResult -> {
+                        if (adListAsyncResult.succeeded()) {
+                            JsonObject nameJsonObject = new JsonObject();
+                            JsonObject jsonObject1 = new JsonObject();
+                            vertx.executeBlocking(handler1 -> {
+                                for (int i = 0; i < applist.size(); i++) {
+                                    JsonObject jsonObject = applist.getJsonObject(i);
+                                    String project = jsonObject.getString("project_name");
+                                    jsonObject1.put(project, 0);
+                                    JsonArray jsonArray = jsonObject.getJsonArray("applist");
+                                    for (int j = 0; j < jsonArray.size(); j++) {
+                                        jsonArray.getJsonObject(j).getString("app_name");
+                                        nameJsonObject.put(jsonArray.getJsonObject(j).getString("app_name"), project);
+                                    }
+                                }
+                                JsonObject jsonObject_user = new JsonObject();
+                                JsonObject jsonObject_ad = new JsonObject();
+                                for (int i = 0; i < dateList.size(); i++) {
+                                    JsonObject jsonObject3 = new JsonObject();
+                                    jsonObject3 = jsonObject3.mergeIn(jsonObject1);
+                                    jsonObject_user.put(dateList.get(i) + "", jsonObject3);
+                                    JsonObject jsonObject4 = new JsonObject();
+                                    jsonObject4 = jsonObject4.mergeIn(jsonObject1);
+                                    jsonObject_ad.put(dateList.get(i) + "", jsonObject4);
+                                }
+                                List<JsonObject> userlist = userListAsyncResult.result();
+                                List<JsonObject> adlist = adListAsyncResult.result();
+                                logger.debug(userlist.size() + "");
+                                logger.debug(adlist.size() + "");
+                                List<JsonObject> userdata = DailyEarnedHandler.countUserdata(userlist, nameJsonObject);
+                                List<JsonObject> addata = DailyEarnedHandler.countAddata(adlist, nameJsonObject);
+                                for (int i = 0; i < userdata.size(); i++) {
+                                    String date = userdata.get(i).getInteger("date") + "";
+                                    String project = userdata.get(i).getString("project");
+                                    Integer dau = userdata.get(i).getInteger("dau");
+                                    Integer orginal = jsonObject_user.getJsonObject(date).getInteger(project);
+                                    jsonObject_user.getJsonObject(date).put(project, orginal + dau);
+                                }
+                                for (int i = 0; i < addata.size(); i++) {
+                                    String date = addata.get(i).getInteger("date") + "";
+                                    String project = addata.get(i).getString("project");
+                                    Double earned = addata.get(i).getDouble("earned");
+                                    Double orginal = jsonObject_ad.getJsonObject(date).getDouble(project);
+                                    jsonObject_ad.getJsonObject(date).put(project, orginal + earned);
+                                }
+//                            logger.debug(jsonObject_user+"");
+//                            logger.debug(jsonObject_ad+"");
+                                logger.debug(userdata.size() + "");
+                                logger.debug(addata.size() + "");
+                                List<List> outerList_earned = new ArrayList<>();
+                                List<List> outerList_arpu = new ArrayList<>();
+                                List<List> outerList_dau = new ArrayList<>();
+                                for (int i = 0; i < dateList.size(); i++) {
+                                    List<String> innerList_earned = new ArrayList<>();
+                                    List<String> innerList_arpu = new ArrayList<>();
+                                    List<String> innerList_dau = new ArrayList<>();
+                                    if (i == 0) {
+                                        List<String> innerList1 = new ArrayList<>();
+                                        innerList1.add("日期");
+                                        for (int j = 0; j < applist.size(); j++) {
+                                            innerList1.add(applist.getJsonObject(j).getString("project_name"));
+                                        }
+                                        outerList_earned.add(innerList1);
+                                        outerList_arpu.add(innerList1);
+                                        outerList_dau.add(innerList1);
+                                    }
+                                    String date = dateList.get(i) + "";
+                                    innerList_earned.add(dateFormatList.get(i) + "");
+                                    innerList_arpu.add(dateFormatList.get(i) + "");
+                                    innerList_dau.add(dateFormatList.get(i) + "");
+                                    for (int j = 0; j < applist.size(); j++) {
+                                        String project = applist.getJsonObject(j).getString("project_name");
+                                        String earned = jsonObject_ad.getJsonObject(date).getDouble(project) + "";
+                                        String dau = jsonObject_user.getJsonObject(date).getInteger(project) + "";
+                                        innerList_earned.add(Judgement.formatDouble2(Double.valueOf(earned)) + "");
+                                        innerList_dau.add(dau);
+                                        innerList_arpu.add(Integer.valueOf(dau) == 0 ? 0 + "" : Judgement.formatDouble3(Double.valueOf(earned) / Integer.valueOf(dau)) + "");
+                                    }
+                                    outerList_dau.add(innerList_dau);
+                                    outerList_earned.add(innerList_earned);
+                                    outerList_arpu.add(innerList_arpu);
+                                }
+                                excelWrite.writeall3(TemplateFile.DOWNLOAD_FILE_PATH + filename, 0, 0, 0, outerList_earned);
+                                excelWrite.writeall3(TemplateFile.DOWNLOAD_FILE_PATH + filename, 1, 0, 0, outerList_arpu);
+                                excelWrite.writeall3(TemplateFile.DOWNLOAD_FILE_PATH + filename, 2, 0, 0, outerList_dau);
+                                handler1.complete();
+                            }, handler2 -> {
+                                if (handler2.succeeded()) {
+                                    context.response().putHeader("Content-Disposition", "filename=aaa.xls").
+                                            putHeader("Content-Type", "application/octet-stream;charset=UTF-8").
+                                            sendFile(TemplateFile.DOWNLOAD_FILE_PATH + filename);
+                                } else {
+                                    serviceError(context, handler2.cause().toString());
+                                }
+                            });
+                        } else {
+                            adListAsyncResult.cause();
+                        }
+                    });
+                } else {
+                    userListAsyncResult.cause();
+                }
+            });
 
         });
+    }
 
+    /**
+     * 处理广告形式细分
+     *
+     * @param context
+     */
+    private void DownloadDailyAdtypeHandler(RoutingContext context) {
+        String starttime;
+        String endtime;
+        JsonObject project;
+        try {
+            project = context.getBodyAsJson().getJsonObject("list");
+            starttime = context.getBodyAsJson().getString("start");
+            endtime = context.getBodyAsJson().getString("end");
+        } catch (Exception E) {
+            context.response().setStatusCode(500).end();
+            logger.warn(E.toString());
+            return;
+        }
+        logger.info(starttime);
+        logger.info(endtime);
+        logger.info(project.toString());
+        FileSystem fileSystem = vertx.fileSystem();
+        List<String> datess = new ArrayList<>();
+        try {
+            datess = Transform.getBetweenDate(starttime, endtime);
+        } catch (Exception e) {
+            serviceError(context, Json.encodePrettily(new JsonObject().put("data", "请选择正确的时间段")));
+            return;
+        }
+        List<String> dateFormatList = datess;
+        List<Integer> dateList = new ArrayList<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            for (int i = 0; i < dateFormatList.size(); i++) {
+                dateList.add((int) (sdf.parse(dateFormatList.get(i)).getTime() / 1000));
+            }
+        } catch (Exception e) {
+            serviceError(context, Json.encodePrettily(new JsonObject().put("data", "请选择正确的时间段")));
+            return;
+        }
+        Integer longstarttime = Transform.transForMilliSecondByTim(starttime, "yyyy-MM-dd");
+        Integer longendtime = Transform.transForMilliSecondByTim(endtime, "yyyy-MM-dd");
+        logger.info(dateList.toString());
+        logger.info(dateFormatList.toString());
+        logger.info(longstarttime.toString());
+        logger.info(longendtime.toString());
+        List<String> dates = datess;
+        //确定生成文件名，已存在则删除
+        String filename = starttime + "_" + endtime + "_dail_" + project.getString("project_name") + ".xls";
+        if (new File(TemplateFile.DOWNLOAD_FILE_PATH + filename).exists()) {
+            fileSystem.deleteBlocking(TemplateFile.DOWNLOAD_FILE_PATH + filename);
+        }
+        //查看存放文件目录，不存在则生成
+        if (!new File(TemplateFile.DOWNLOAD_FILE_PATH).exists()) {
+            new File(TemplateFile.DOWNLOAD_FILE_PATH).mkdirs();
+        }
+        fileSystem.copy(TemplateFile.TEMPLATE_Daily_ADTYPE_FILE_PATH, TemplateFile.DOWNLOAD_FILE_PATH + filename, rs -> {
+            logger.debug("新文件地址：" + TemplateFile.DOWNLOAD_FILE_PATH + filename);
+            StringBuilder builder = new StringBuilder();
+            List<Long> longdates = new ArrayList<>();
+            for (int i = 0; i < dates.size(); i++) {
+                Integer datetime = Transform.transForMilliSecondByTim(dates.get(i), "yyyy-MM-dd");
+                builder.append(datetime);
+                if (i != dates.size() - 1) {
+                    builder.append(",");
+                }
+                longdates.add(i, (long) datetime);
+            }
+            JsonArray appNameList = project.getJsonArray("applist");
+            JsonArray jsonArray = new JsonArray();
+            jsonArray.add(longstarttime).add(longendtime);
+            for (int i = 0; i < 10; i++) {
+                if (i < appNameList.size()) {
+                    jsonArray.add(appNameList.getJsonObject(i).getString("app_name"));
+                } else {
+                    jsonArray.add("");
+                }
+            }
+            logger.info(jsonArray.toString());
+            advertisementService.findDatasWithParams(jdbcClient, SqlStatement.SELECT_USERDATA_arpu_withname, jsonArray).setHandler(userListAsyncResult -> {
+                if (userListAsyncResult.succeeded()) {
+                    advertisementService.findDatasWithParams(jdbcClient, SqlStatement.SELECT_ADDATA_arpu_withname, jsonArray).setHandler(adListAsyncResult -> {
+                        if (adListAsyncResult.succeeded()) {
+                            List<JsonObject> userList = userListAsyncResult.result();
+                            List<JsonObject> adlist = adListAsyncResult.result();
+                            vertx.executeBlocking(handler1 -> {
+                                logger.info(userList.toString());
+                                logger.info(adlist.toString());
+                                logger.info(String.valueOf(userList.size()));
+                                logger.info(String.valueOf(adlist.size()));
+                                List<List<DailyAdtype>> dailyAdtypes = DailyAdtypeHandler.dailyAdtypeList(project, userList, adlist, dateList);     //添加额外渠道
+                                List<List> dailyAdtypelist = DailyAdtypeHandler.toList(dailyAdtypes, dateFormatList);
+                                logger.info(dailyAdtypes.toString());
+                                logger.info(String.valueOf(dailyAdtypes.size()));
+                                String projectName = project.getString("project_name");
+                                excelWrite.writeall2(TemplateFile.DOWNLOAD_FILE_PATH + filename, 0, 0, 3, dailyAdtypelist, projectName);
+                                handler1.complete(Future.succeededFuture());
+                            }, handler2 -> {
+                                if (handler2.succeeded()) {
+                                    logger.info(TemplateFile.DOWNLOAD_FILE_PATH + filename);
+                                    context.response().
+                                            putHeader("Content-Disposition", "filename=aaa.xls").
+                                            putHeader("Content-Type", "application/octet-stream;charset=UTF-8").
+                                            sendFile(TemplateFile.DOWNLOAD_FILE_PATH + filename);
+                                } else {
+                                    logger.warn(handler2.cause().toString());
+                                    serviceError(context, handler2.cause().toString());
+                                }
+                            });
+                        } else {
+                            adListAsyncResult.cause();
+                        }
+                    });
+                } else {
+                    userListAsyncResult.cause();
+                }
+            });
+        });
     }
 
     /**
@@ -1365,46 +2018,11 @@ public class HttpServerVerticle extends AbstractVerticle {
     }
 
     /**
-     * api广告数据获取请求
+     * 将上传文件从文件缓存目录移动到固定目录
      *
-     * @param context
-     */
-    private void TestHandler(RoutingContext context) {
-        List date = new ArrayList();
-        date.add("2018-11-1");
-        date.add("2018-11-2");
-        date.add("2018-11-3");
-        List henfu = new ArrayList();
-        henfu.add("300");
-        henfu.add("600");
-        henfu.add("800");
-        List kaipin = new ArrayList();
-        kaipin.add("200");
-        kaipin.add("400");
-        kaipin.add("800");
-        List chapin = new ArrayList();
-        chapin.add("100");
-        chapin.add("400");
-        chapin.add("300");
-        List shipin = new ArrayList();
-        shipin.add("900");
-        shipin.add("200");
-        shipin.add("700");
-        List adlist = new ArrayList();
-        adlist.add(date);
-        adlist.add(henfu);
-        adlist.add(kaipin);
-        adlist.add(chapin);
-        adlist.add(shipin);
-        JsonObject jsonObject = new JsonObject().put("code", 20000).put("data", adlist);
-        context.response().setStatusCode(200).end(Json.encodePrettily(jsonObject));
-    }
-
-    /**
-     * 上传缓存文件分类
-     *
-     * @param path 文件上传路径
-     * @return 文件分类路径
+     * @param path    文件缓存路径
+     * @param newname 原文件名
+     * @return String 返回文件移动后路径
      */
     private Future<String> fileClassification(String path, String newname) {
         Future<String> future = Future.future();
@@ -1441,9 +2059,13 @@ public class HttpServerVerticle extends AbstractVerticle {
 
 
     /**
-     * 获取渠道名  游戏名  广告类型
+     * 获取渠道名  游戏名  广告类型 项目名
      *
-     * @return
+     * @return 若缓存不为空，返回缓存中的list，若为空则查询
+     * List.get(0)  应用名<br/>
+     * List.get(1)  渠道<br>
+     * List.get(2)  广告类型<br>
+     * List.get(3)  项目名？
      */
     private Future<List<List<String>>> getMatchingData() {
         Future<List<List<String>>> future = Future.future();
@@ -1636,6 +2258,7 @@ public class HttpServerVerticle extends AbstractVerticle {
                 List<JsonObject> jsonObjects = conn.result();
                 JsonObject json = new JsonObject().put("code", 20000).put("data", jsonObjects);
                 CacheList.CHANNEL_JSON = jsonObjects;
+                Collections.reverse(jsonObjects);
                 context.response().setStatusCode(200).end(Json.encodePrettily(json));
             } else {
                 logger.error("在数据库中查找渠道数据时发生错误------->" + conn.cause());
@@ -1711,7 +2334,6 @@ public class HttpServerVerticle extends AbstractVerticle {
             icon = context.getBodyAsJson().getString("icon");
             project = context.getBodyAsJson().getString("project");
         } catch (Exception e) {
-
             id = Integer.valueOf(context.request().getParam("id"));
             name = context.request().getParam("name");
             system = context.request().getParam("system");
@@ -1748,6 +2370,7 @@ public class HttpServerVerticle extends AbstractVerticle {
         advertisementService.query(jdbcClient, SqlStatement.SELECT_APP).setHandler(conn -> {
             if (conn.succeeded()) {
                 List<JsonObject> jsonObjects = conn.result();
+                Collections.reverse(jsonObjects);
                 JsonObject json = new JsonObject().put("code", 20000).put("data", jsonObjects);
                 CacheList.APP_NAME_JSON = jsonObjects;
                 context.response().setStatusCode(200).end(Json.encodePrettily(json));
@@ -1767,27 +2390,27 @@ public class HttpServerVerticle extends AbstractVerticle {
         advertisementService.query(jdbcClient, SqlStatement.SELECT_APP).setHandler(conn -> {
             if (conn.succeeded()) {
                 List<JsonObject> jsonObjects = conn.result();
-                List<JsonObject> list=new ArrayList<>();
-                for (int i=0;i<jsonObjects.size();i++){
-                    Boolean flag=true;
-                    for (int j=0;j<list.size();j++){
-                        if (list.get(j).getString("project_name").equals(jsonObjects.get(i).getString("project"))){
-                            flag=false;
-                            list.get(j).getJsonArray("applist").add(new JsonObject().put("app_name",jsonObjects.get(i).getString("name")));
+                List<JsonObject> list = new ArrayList<>();
+                for (int i = 0; i < jsonObjects.size(); i++) {
+                    Boolean flag = true;
+                    for (int j = 0; j < list.size(); j++) {
+                        if (list.get(j).getString("project_name").equals(jsonObjects.get(i).getString("project"))) {
+                            flag = false;
+                            list.get(j).getJsonArray("applist").add(new JsonObject().put("app_name", jsonObjects.get(i).getString("name")));
                             break;
                         }
                     }
-                    if (flag){
-                        JsonObject jsonObject1=new JsonObject().put("project_name",jsonObjects.get(i).getString("project"));
-                        JsonArray inner=new JsonArray();
-                        JsonObject jsonObject2=new JsonObject().put("app_name",jsonObjects.get(i).getString("name"));
+                    if (flag) {
+                        JsonObject jsonObject1 = new JsonObject().put("project_name", jsonObjects.get(i).getString("project"));
+                        JsonArray inner = new JsonArray();
+                        JsonObject jsonObject2 = new JsonObject().put("app_name", jsonObjects.get(i).getString("name"));
                         inner.add(jsonObject2);
-                        jsonObject1.put("applist",inner);
+                        jsonObject1.put("applist", inner);
                         list.add(jsonObject1);
                     }
                 }
                 JsonObject json = new JsonObject().put("code", 20000).put("data", list);
-                context.response().putHeader("Content-Type","application/javascript; charset=UTF-8").setStatusCode(200).end(Json.encodePrettily(json));
+                context.response().putHeader("Content-Type", "application/javascript; charset=UTF-8").setStatusCode(200).end(Json.encodePrettily(json));
             } else {
                 logger.error("在数据库中查找数据时发生错误------->" + conn.cause());
                 serviceError(context, Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
@@ -2015,9 +2638,9 @@ public class HttpServerVerticle extends AbstractVerticle {
         String project_name = context.getBodyAsJson().getString("project_name");
         advertisementService.update(jdbcClient, SqlStatement.DELETE_PROJECT_LIST, new JsonArray().add(project_name)).setHandler(result1 -> {
             advertisementService.update(jdbcClient, SqlStatement.DELETE_PROJECT, new JsonArray().add(id)).setHandler(result2 -> {
-                if (result1.succeeded()&&result2.succeeded()){
+                if (result1.succeeded() && result2.succeeded()) {
                     context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
-                }else {
+                } else {
                     if (result1.failed()) {
                         logger.error("数据库发生错误------->" + result1.cause());
                     } else if (result2.failed()) {
@@ -2104,7 +2727,8 @@ public class HttpServerVerticle extends AbstractVerticle {
                         }
                         project.get(i).put("applist", jsonObjects);
                     }
-                    context.response().putHeader("Content-Type","application/javascript; charset=UTF-8").setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", project)));
+                    Collections.reverse(project);
+                    context.response().putHeader("Content-Type", "application/javascript; charset=UTF-8").setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", project)));
                 } else {
                     if (result1.failed()) {
                         logger.error("查询数据库时发生错误------->" + result1.cause());
