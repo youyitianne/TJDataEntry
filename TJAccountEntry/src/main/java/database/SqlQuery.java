@@ -23,5 +23,7 @@ public class SqlQuery {
     public static final String DELETE_RESOURCE = "delete from tjaccount.user_resource where id in (select id from (select id from tjaccount.user_resource where username_mark = ?) tom);";
     public static final String INSERT_RESOURCE = "INSERT INTO tjaccount.user_resource(`username`,`username_mark`,`resource_mark`,`resource_name`)VALUES(?,?,?,?);";
     public static final String SELECT_RESOURCE_NAME="SELECT resource_name FROM tjaccount.user_resource where username = ?;";
-
+    public static final String INSERT_LOG = "INSERT INTO `tjaccount`.`operationlog` (`accout`,`time`,`ip`,`module`,`path`,`method`,`instruction`,`parameter`,`date`,`useragent`) VALUES(?,?,?,?,?,?,?,?,?,?);";
+    public static final String GET_LOG = "select * from `tjaccount`.`operationlog` where date>= ? and date <=?";
+    public static final String UPDATE_PASSWORD = "UPDATE `tjaccount`.`user`SET `password_salt` = ?,`password` = ?,`psd` = ? WHERE `username` = ?;";
 }

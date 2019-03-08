@@ -9,18 +9,24 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.auth.KeyStoreOptions;
+import io.vertx.ext.auth.PubSecKeyOptions;
+import io.vertx.ext.auth.User;
+import io.vertx.ext.auth.jwt.JWTAuth;
+import io.vertx.ext.auth.jwt.JWTAuthOptions;
 import io.vertx.ext.jdbc.JDBCClient;
 import io.vertx.ext.web.FileUpload;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.BodyHandler;
-import io.vertx.ext.web.handler.CorsHandler;
+import io.vertx.ext.web.handler.*;
+import io.vertx.ext.web.sstore.LocalSessionStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.ConfigConstants;
 import service.DataOperation;
 import service.InitConf;
 import service.entity.PayObject;
+import sun.rmi.runtime.Log;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -32,8 +38,12 @@ public class PayHttpVerticle extends AbstractVerticle {
     public static final String CONFIG_ACCOUNTDB_QUEUE = "paydb.queue";
     private PayDatabaseService dbService;
     private HashMap<SqlConstants, String> sql;
-    InitConf initConf = new InitConf();
+    private InitConf initConf = new InitConf();
     private String payDbQueue;
+    private JWTAuthHandler jwtAuthHandler;
+    private String uploadfilename = "";
+    private JWTAuth jwtAuth = null;
+    private PayOperationLog operationLog=new PayOperationLog();
 
     @Override
     public void start(Future<Void> startFuture) {
@@ -50,8 +60,10 @@ public class PayHttpVerticle extends AbstractVerticle {
         allowHeaders.add("origin");
         allowHeaders.add("Content-Type");
         allowHeaders.add("accept");
+        allowHeaders.add("ip");
         allowHeaders.add("Access-Control-Allow-Headers");
         allowHeaders.add("Cache-Control");
+        allowHeaders.add("Authorization");
         Set<HttpMethod> allowMethods = new HashSet<>();
         allowMethods.add(HttpMethod.GET);
         allowMethods.add(HttpMethod.POST);
@@ -61,6 +73,23 @@ public class PayHttpVerticle extends AbstractVerticle {
         router.route().handler(CorsHandler.create("*")
                 .allowedMethods(allowMethods)
                 .allowedHeaders(allowHeaders));
+        jwtAuth = JWTAuth.create(vertx, new JWTAuthOptions()
+                .setKeyStore(
+                        new KeyStoreOptions()
+                                .setPath("keystore.jceks")
+                                .setPassword("secret"))
+                .addPubSecKey(new PubSecKeyOptions()
+                        .setPublicKey("test")
+                ));
+
+        jwtAuthHandler = JWTAuthHandler.create(jwtAuth);
+        router.route().handler(BodyHandler.create());
+        router.route().handler(CookieHandler.create());
+        router.route().handler(SessionHandler.create(LocalSessionStore.create(vertx)));
+        //router.route().handler(UserSessionHandler.create(authProvider));
+
+        router.route().handler(this::operateHandler);
+
         //文件上传
         router.post("/fileupload").handler(this::uploadHandler);
         //文件上传
@@ -80,6 +109,53 @@ public class PayHttpVerticle extends AbstractVerticle {
                 startFuture.fail(ar.cause());
             }
         });
+    }
+
+    /**
+     * 日志
+     * @param context
+     */
+    private void operateHandler(RoutingContext context) {
+        jwtAuthHandler.parseCredentials(context,rs->{
+            if (rs.succeeded()){
+                JsonObject jsonObject=rs.result();
+                jwtAuth.authenticate(new JsonObject()
+                        .put("jwt", jsonObject.getString("jwt"))
+                        .put("options", new JsonObject()
+                                .put("ignoreExpiration", true)),user->{
+                    if (user.succeeded()){
+                        User user1=user.result();
+                        JsonObject userJson=user1.principal();
+                        String time=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+                        Long date=new Date().getTime()/1000;
+                        String username=userJson.getString("username");
+                        String path=context.request().uri();
+                        if (path.contains("?")){
+                            path=path.substring(0,path.indexOf("?"));
+                        }
+                        String ip=context.request().getHeader("X-FORWARD-FOR");
+                        String requestMethod=context.request().method().toString();
+                        if (requestMethod.equals("POST")&&path.contains("/fileupload")){
+                            ip = context.request().remoteAddress().toString();
+                            Set<FileUpload> fileUploads = context.fileUploads();
+                            for (FileUpload f : fileUploads) {
+                                uploadfilename = f.fileName();
+                            }
+                        }
+                        logger.info("sql---->"+sql.get(SqlConstants.OPERATION_LOG));
+                        logger.info("uploadfilename---->"+uploadfilename);
+                        operationLog.operationLog(uploadfilename,sql.get(SqlConstants.OPERATION_LOG),dbService,context,path,requestMethod,username,time,ip,date);
+                    }else {
+                        //身份验证
+                        logger.error("身份验证",user.cause());
+                    }
+                });
+            }else {
+                //解析凭证失败
+                logger.error("解析凭证失败",rs.cause());
+            }
+        });
+        context.next();
     }
 
     private void listPayDataHandler(RoutingContext context) {
@@ -144,9 +220,9 @@ public class PayHttpVerticle extends AbstractVerticle {
             channel = filename.split("_")[0].trim();
         } else {
             if (filename.indexOf("(") > -1) {
-                channel = filename.substring(0, filename.indexOf("(")).trim();    //比如移信的    移信(1).xlsx
+                channel = filename.substring(0, filename.indexOf("(")).trim();
             } else {
-                channel = filename.substring(0, filename.indexOf(".")).trim();     //比如广点通
+                channel = filename.substring(0, filename.indexOf(".")).trim();
             }
         }
         switch (channel) {

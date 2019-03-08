@@ -6,18 +6,26 @@ import database.ConfigConstants;
 import database.RepeatSql;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
+import io.vertx.core.Vertx;
 import io.vertx.core.file.FileSystem;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
+import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.auth.KeyStoreOptions;
+import io.vertx.ext.auth.PubSecKeyOptions;
+import io.vertx.ext.auth.User;
+import io.vertx.ext.auth.jwt.JWTAuth;
+import io.vertx.ext.auth.jwt.JWTAuthOptions;
 import io.vertx.ext.jdbc.JDBCClient;
 import io.vertx.ext.web.FileUpload;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.BodyHandler;
-import io.vertx.ext.web.handler.CorsHandler;
+import io.vertx.ext.web.handler.*;
+import io.vertx.ext.web.sstore.LocalSessionStore;
+import io.vertx.ext.web.sstore.SessionStore;
 import jdk.nashorn.internal.ir.LiteralNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +57,10 @@ public class HttpServerVerticle extends AbstractVerticle {
     private AdvertisementService advertisementService = new AdvertisementService();
     private ExcelWrite excelWrite = new ExcelWrite();
     private JDBCClient jdbcClient = null;
+    private JWTAuthHandler jwtAuthHandler;
+    private JWTAuth jwtAuth =null;
+    private String operationfilename = "";
+    private DataOperationLog operationLog=new DataOperationLog();
 
     @Override
     public void start(Future<Void> startFuture) {
@@ -71,8 +83,10 @@ public class HttpServerVerticle extends AbstractVerticle {
         allowHeaders.add("origin");
         allowHeaders.add("Content-Type");
         allowHeaders.add("accept");
+        allowHeaders.add("ip");
         allowHeaders.add("Access-Control-Allow-Headers");
         allowHeaders.add("Cache-Control");
+        allowHeaders.add("Authorization");
         Set<HttpMethod> allowMethods = new HashSet<>();
         allowMethods.add(HttpMethod.GET);
         allowMethods.add(HttpMethod.POST);
@@ -83,6 +97,23 @@ public class HttpServerVerticle extends AbstractVerticle {
         router.route().handler(CorsHandler.create("*")
                 .allowedMethods(allowMethods)
                 .allowedHeaders(allowHeaders));
+
+        jwtAuth = JWTAuth.create(vertx, new JWTAuthOptions()
+                .setKeyStore(
+                        new KeyStoreOptions()
+                                .setPath("keystore.jceks")
+                                .setPassword("secret"))
+                .addPubSecKey(new PubSecKeyOptions()
+                        .setPublicKey("test")
+
+                ));
+        //router.route().handler(JWTAuthHandler.create(jwtAuth));     //token验证,生成user
+        jwtAuthHandler = JWTAuthHandler.create(jwtAuth);
+        router.route().handler(BodyHandler.create());
+        router.route().handler(CookieHandler.create());
+        router.route().handler(SessionHandler.create(LocalSessionStore.create(vertx)));
+
+        router.route().handler(this::operateHandler);
 //        //静态资源处理
 //        router.route("/static/*").handler(StaticHandler.create());
         //查询重复数据
@@ -156,20 +187,67 @@ public class HttpServerVerticle extends AbstractVerticle {
         });
     }
 
+    /**
+     * 日志
+     * @param context
+     */
+    private void operateHandler(RoutingContext context) {
+        jwtAuthHandler.parseCredentials(context,rs->{
+            if (rs.succeeded()){
+                JsonObject jsonObject=rs.result();
+                jwtAuth.authenticate(new JsonObject()
+                        .put("jwt", jsonObject.getString("jwt"))
+                        .put("options", new JsonObject()
+                                .put("ignoreExpiration", true)),user->{
+                    if (user.succeeded()){
+                        User user1=user.result();
+                        JsonObject userJson=user1.principal();
+                        String time=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+                        Long date=new Date().getTime()/1000;
+                        String username=userJson.getString("username");
+                        String path=context.request().uri();
+                        if (path.contains("?")){
+                            path=path.substring(0,path.indexOf("?"));
+                        }
+                        String ip=context.request().getHeader("X-FORWARD-FOR");
+                        String requestMethod=context.request().method().toString();
+                        if (requestMethod.equals("POST")&&path.contains("/fileupload")){
+                            ip = context.request().remoteAddress().toString();
+                            Set<FileUpload> fileUploads = context.fileUploads();
+                            for (FileUpload f : fileUploads) {
+                                operationfilename = f.fileName();
+                            }
+                        }
+                        logger.info("sql---->"+SqlStatement.OPERATION_LOG);
+                        logger.info("uploadfilename---->"+operationfilename);
+                        operationLog.operationLog(operationfilename,SqlStatement.OPERATION_LOG,advertisementService,jdbcClient,context,path,requestMethod,username,time,ip,date);
+                    }else {
+                        //身份验证
+                        logger.error("身份验证",user.cause());
+                    }
+                });
+            }else {
+                //解析凭证失败
+                logger.error("解析凭证失败",rs.cause());
+            }
+        });
+        context.next();
+    }
+
     private void delrepeatHandler(RoutingContext context) {
-        JsonArray jsonArray=context.getBodyAsJson().getJsonArray("data");
-        List<JsonArray> list=new ArrayList<>();
-        for (int i=0;i<jsonArray.size();i++){
-            logger.info("del--------->"+jsonArray.getJsonObject(i).toString());
-            JsonObject jsonObject=jsonArray.getJsonObject(i);
-            JsonArray jsonArray1=new JsonArray();
+        JsonArray jsonArray = context.getBodyAsJson().getJsonArray("data");
+        List<JsonArray> list = new ArrayList<>();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            logger.info("del--------->" + jsonArray.getJsonObject(i).toString());
+            JsonObject jsonObject = jsonArray.getJsonObject(i);
+            JsonArray jsonArray1 = new JsonArray();
             jsonArray1.add(jsonObject.getInteger("id"));
             list.add(jsonArray1);
         }
-        advertisementService.batchWithParams(jdbcClient,RepeatSql.DEL_ADLIST_ONE,list).setHandler(res->{
-            if (res.succeeded()){
+        advertisementService.batchWithParams(jdbcClient, RepeatSql.DEL_ADLIST_ONE, list).setHandler(res -> {
+            if (res.succeeded()) {
                 context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000)));
-            }else {
+            } else {
                 context.response().end(Json.encodePrettily(new JsonObject().put("code", 20001)));
             }
         });
@@ -178,6 +256,7 @@ public class HttpServerVerticle extends AbstractVerticle {
 
     /**
      * 获取重复数据
+     *
      * @param context
      */
     private void getrepeatHandler(RoutingContext context) {
@@ -191,7 +270,8 @@ public class HttpServerVerticle extends AbstractVerticle {
     }
 
     /**
-     *  广告数据二次去重
+     * 广告数据二次去重
+     *
      * @param context
      */
     private void delrepeatDefaultHandler(RoutingContext context) {
@@ -208,38 +288,6 @@ public class HttpServerVerticle extends AbstractVerticle {
                 context.response().end(Json.encodePrettily(new JsonObject().put("code", 20001)));
             }
         });
-
-//        advertisementService.query(jdbcClient, RepeatSql.repeatsql1).setHandler(result -> {
-//            if (result.succeeded()) {
-//                List<JsonObject> list = result.result();
-//                if (list.size() > 0) {
-//                    StringBuilder stringBuilder=new StringBuilder();
-//                    for (int i=0;i<list.size();i++){
-//                        Integer id=list.get(i).getInteger("id");
-//                        if (i==0){
-//                            stringBuilder.append("(");
-//                        }
-//                        stringBuilder.append(id);
-//                        if (i==list.size()-1){
-//                            stringBuilder.append(")");
-//                        }else {
-//                            stringBuilder.append(",");
-//                        }
-//                    }
-//                    System.out.println( RepeatSql.delAdList+stringBuilder);
-//                    context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000)));
-//                    advertisementService.removeRepeat(jdbcClient, RepeatSql.delAdList+stringBuilder).setHandler(res -> {
-//                        if (res.succeeded()) {
-//                            context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", result.result())));
-//                        } else {
-//                            context.response().end(Json.encodePrettily(new JsonObject().put("code", 20001)));
-//                        }
-//                    });
-//                }
-//            } else {
-//                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20001)));
-//            }
-//        });
     }
 
     /**
@@ -823,11 +871,11 @@ public class HttpServerVerticle extends AbstractVerticle {
                 String newpath = rs.result();
                 switch (type) {
                     case 1:   //oppo
-                        if (finalname.split("_").length < 2) {
+                        if (finalname.split("_").length < 3) {
                             context.response().setStatusCode(503).end(Json.encodePrettily(new JsonObject().put("data", "请规范文件名")));
                             return;
                         }
-                        String oppodate = finalname.split("_")[2];
+                      String oppodate = finalname.split("_")[2];
                         try {
                             new SimpleDateFormat("yyyy-MM-dd").parse(oppodate);
                         } catch (Exception E) {
@@ -1238,7 +1286,6 @@ public class HttpServerVerticle extends AbstractVerticle {
                         } else if (j == 5) {
                             if ((innerlist.get(j) + "").indexOf(".") != -1) {
                                 String launch = (innerlist.get(j) + "").substring(0, (innerlist.get(j) + "").indexOf("."));
-                                logger.debug(innerlist.get(j) + "");
                                 Pattern pattern = Pattern.compile("[0-9]*");
                                 Matcher isNum = pattern.matcher(launch);
                                 if (isNum.matches()) {
@@ -1249,9 +1296,9 @@ public class HttpServerVerticle extends AbstractVerticle {
                             } else {
                                 jsonArray.add(0);
                             }
-
-
-                        } else {
+                        } else if (j==6){
+                            jsonArray.add(" "+innerlist.get(j));  //mysql 5.7.23 存入00:00:00  数据时前两位值改变
+                        }else {
                             jsonArray.add(innerlist.get(j));
                         }
                     }
@@ -1551,9 +1598,6 @@ public class HttpServerVerticle extends AbstractVerticle {
             context.response().setStatusCode(500).end();
             return;
         }
-        System.out.println(starttime);
-        System.out.println(endtime);
-        System.out.println(applist);
         FileSystem fileSystem = vertx.fileSystem();
         List<String> datess = new ArrayList<>();
         try {

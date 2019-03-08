@@ -22,4 +22,13 @@ public class test {
            }
         });
     }
+
+    @Test
+    public void test2(){
+        String number="0.00080";
+        String number1="0.00080";
+        System.out.println(number.length());
+        System.out.println(number1.length());
+        System.out.println(number.substring(0,6));
+    }
 }

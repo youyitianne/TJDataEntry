@@ -7,6 +7,7 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
+import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -26,6 +27,7 @@ import io.vertx.ext.web.sstore.SessionStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -40,12 +42,12 @@ public class AccountHttpVerticle extends AbstractVerticle {
     private SessionStore store = null;
     private JDBCAuth authProvider = null;
     private JWTAuthHandler jwtAuthHandler;
+    private AccountOperationLog operationLog=new AccountOperationLog();
 
     @Override
     public void start(Future<Void> startFuture) throws Exception {
         accountDbQueue = config().getString(CONFIG_ACCOUNTDB_QUEUE, "accountdb.queue");
         dbService = AccountDatabaseService.createProxy(vertx, CONFIG_ACCOUNTDB_QUEUE);
-
         AccountHttpService method = new AccountHttpService();
         HashMap<ConfigConstants, String> conf = method.loadSqlQueries();
         Router router = Router.router(vertx);
@@ -67,6 +69,7 @@ public class AccountHttpVerticle extends AbstractVerticle {
         allowHeaders.add("origin");
         allowHeaders.add("Content-Type");
         allowHeaders.add("accept");
+        allowHeaders.add("ip");
         allowHeaders.add("Access-Control-Allow-Headers");
         allowHeaders.add("Cache-Control");
         allowHeaders.add("Authorization");
@@ -81,17 +84,17 @@ public class AccountHttpVerticle extends AbstractVerticle {
         //跨域 end
 
         //sessionHandler start
-        store = LocalSessionStore.create(vertx, "myapp3.sessionmap");
-        SessionHandler sessionHandler = SessionHandler.create(store);
-        router.route().handler(sessionHandler);
+//        store = LocalSessionStore.create(vertx, "myapp3.sessionmap");
+//        SessionHandler sessionHandler = SessionHandler.create(store);
+//        router.route().handler(sessionHandler);
         //sessionHandler end
 
         //token start
 
-        JsonObject authConfig = new JsonObject().put("keyStore", new JsonObject()
-                .put("type", "jceks")
-                .put("path", "keystore.jceks")
-                .put("password", "secret"));
+        //router.route("/user/*").handler(JWTAuthHandler.create(jwtAuth));     //token验证,生成user
+        //router.route("/api/*").handler(JWTAuthHandler.create(jwtAuth));
+        //token end
+
 
         jwtAuth = JWTAuth.create(vertx, new JWTAuthOptions()
                 .setKeyStore(
@@ -103,18 +106,16 @@ public class AccountHttpVerticle extends AbstractVerticle {
                 ));
 
         jwtAuthHandler = JWTAuthHandler.create(jwtAuth);
-
-        //router.route("/user/*").handler(JWTAuthHandler.create(jwtAuth));     //token验证,生成user
-        //router.route("/api/*").handler(JWTAuthHandler.create(jwtAuth));
-        //token end
-
-        //路由    start
-        router.route().handler(CookieHandler.create());
         router.route().handler(BodyHandler.create());
+        router.route().handler(CookieHandler.create());
         router.route().handler(SessionHandler.create(LocalSessionStore.create(vertx)));
         router.route().handler(UserSessionHandler.create(authProvider));
-        router.post().handler(BodyHandler.create());
-
+        router.route().handler(this::operateHandler);
+        //获取日志
+        router.post("/operationlog").handler(this::operationLogHandler);
+        //修改个人密码
+        router.post("/updatePassword").handler(this::updatePasswordHandler);
+        //路由    start
         router.post("/login/login").handler(this::loginHandler);
         router.get("/user/info").handler(this::getInfoHandler);
         router.post("/login/logout").handler(this::logoutHandler);
@@ -128,11 +129,11 @@ public class AccountHttpVerticle extends AbstractVerticle {
         router.post("/api/role").handler(this::addRole);
         router.patch("/api/role/:id").handler(this::updateRole);
         router.delete("/api/role/:id").handler(this::delRole);
-        //perm相关
-        router.get("/api/perm").handler(this::findPerm);
-        router.post("/api/perm").handler(this::addPerm);
-        router.patch("/api/perm/:id").handler(this::updatePerm);
-        router.delete("/api/perm/:id").handler(this::delPerm);
+//        //perm相关
+//        router.get("/api/perm").handler(this::findPerm);
+//        router.post("/api/perm").handler(this::addPerm);
+//        router.patch("/api/perm/:id").handler(this::updatePerm);
+//        router.delete("/api/perm/:id").handler(this::delPerm);
         //权限相关
         router.get("/api/perms/:id").handler(this::findPerms);
         router.post("/api/perms").handler(this::addPerms);
@@ -141,10 +142,8 @@ public class AccountHttpVerticle extends AbstractVerticle {
         router.post("/api/resource").handler(this::addResource);
         //获取资源应用名
         router.post("/api/getresourcelist").handler(this::findApp_resource);
-
         //测试
         router.get("/api/getchannel").handler(this::testgetchannel);
-
         //路由    end
         Router apirouter = Router.router(vertx);
         router.mountSubRouter("/api", apirouter);
@@ -168,15 +167,99 @@ public class AccountHttpVerticle extends AbstractVerticle {
     }
 
     /**
+     * 修改个人密码
+     * @param context
+     */
+    private void updatePasswordHandler(RoutingContext context) {
+        String account=context.getBodyAsJson().getString("account");
+        String password=context.getBodyAsJson().getString("password");
+        String salt = authProvider.generateSalt();
+        String hash = authProvider.computeHash(password, salt);
+        dbService.query(SqlQuery.UPDATE_PASSWORD, new JsonArray().add(salt).add(hash).add(password).add(account), res -> {
+            if (res.succeeded()) {
+                context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
+            } else {
+                logger.error("发生错误------->" + res.cause());
+                context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
+            }
+        });
+    }
+
+
+    /**
+     * 操作日志记录
+     * @param context
+     */
+    private void operateHandler(RoutingContext context) {
+        JWTAuthHandler jwtAuthHandler=JWTAuthHandler.create(jwtAuth);
+        jwtAuthHandler.parseCredentials(context,rs->{
+            if (rs.succeeded()){
+                JsonObject jsonObject=rs.result();
+                jwtAuth.authenticate(new JsonObject()
+                        .put("jwt", jsonObject.getString("jwt"))
+                        .put("options", new JsonObject()
+                                .put("ignoreExpiration", true)),user->{
+                    if (user.succeeded()){
+                        User user1=user.result();
+                        JsonObject userJson=user1.principal();
+                        String time=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+                        Long date=new Date().getTime()/1000;
+                        String username=userJson.getString("username");
+                        String path=context.request().uri();
+                        if (path.contains("?")){
+                            path=path.substring(0,path.indexOf("?"));
+                        }
+                        operationLog.operationLog(dbService,context,path,context.request().method().toString(),username,time,context.request().getHeader("X-FORWARD-FOR"),date);
+                    }else {
+                        //身份验证
+                        logger.error("身份验证",user.cause());
+                    }
+                });
+            }else {
+                //解析凭证失败
+                logger.error("解析凭证失败",rs.cause());
+            }
+        });
+        context.next();
+    }
+
+    /**
+     * 获取操作日志
+     * @param context
+     */
+    private void operationLogHandler(RoutingContext context) {
+        String start=context.getBodyAsJson().getString("start");
+        String end=context.getBodyAsJson().getString("end");
+        Long startdate=0L;
+        Long enddate=0L;
+        try {
+            startdate=new SimpleDateFormat("yyyy-MM-dd").parse(start).getTime()/1000;
+            enddate=new SimpleDateFormat("yyyy-MM-dd").parse(end).getTime()/1000L+24*60*60-1;
+            logger.info(enddate.toString());
+        }catch (ParseException e){
+            logger.error("日期转换失败-----》",e);
+            context.response().setStatusCode(500).end();
+        }
+        dbService.fetchDatas(SqlQuery.GET_LOG,new JsonArray().add(startdate).add(enddate), res -> {
+            if (res.succeeded()) {
+                JsonObject names=new JsonObject();
+                names.put("code", 20000);
+                names.put("data",res.result());
+                context.response().setStatusCode(200).end(Json.encode(names));
+            } else {
+               logger.error("查询日志失败-----》",res.cause());
+                context.response().setStatusCode(500).end();
+            }
+        });
+    }
+
+    /**
      * 获取资源应用名
      * @param context
      */
     private void findApp_resource(RoutingContext context) {
-        System.out.println(111);
         String username = context.request().getParam("username");
-        String usernamqe = context.getBodyAsString();
         System.out.println("username:"+username);
-        System.out.println("usernamqe:"+usernamqe);
         if (username==null||username==""){
             badRequest(context);
             return;
@@ -194,7 +277,7 @@ public class AccountHttpVerticle extends AbstractVerticle {
                 context.response().setStatusCode(200).end(Json.encode(names));
             } else {
                 System.out.println(res.cause());
-                context.response().setStatusCode(404).end();
+                context.response().setStatusCode(500).end();
             }
         });
     }
@@ -314,8 +397,6 @@ public class AccountHttpVerticle extends AbstractVerticle {
         CacheList.TOKEN_CACHE_BLACKLIST.add(token);
         context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
     }
-
-
 
     /**
      * 获得权限

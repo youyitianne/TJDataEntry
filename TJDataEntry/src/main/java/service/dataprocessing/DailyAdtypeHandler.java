@@ -28,7 +28,9 @@ public class DailyAdtypeHandler {
     public static List<List<DailyAdtype>> dailyAdtypeList(JsonObject project, List<JsonObject> userList, List<JsonObject> adList, List<Integer> dateList) {
         List<JsonObject> channelList = Arrays.asList(
                 new JsonObject().put("name", "oppo").put("program_mark", "oppo"),
-                new JsonObject().put("name", "华为").put("program_mark", "huawei"));
+                new JsonObject().put("name", "华为").put("program_mark", "huawei"),
+                new JsonObject().put("name", "vivo").put("program_mark", "vivo"),
+                new JsonObject().put("name", "4399").put("program_mark", "4399"));
         List<List<DailyAdtype>> outerList = new ArrayList<>();
         for (int i = 0; i < dateList.size(); i++) {
             List<DailyAdtype> daList = new ArrayList<>();
@@ -336,10 +338,20 @@ public class DailyAdtypeHandler {
      */
     public static List<String> setAdtypeMsg(List<String> list,Integer dau,Double earned,Integer impression,Integer click){
         list.add(earned+"");
-        list.add(impression==0?"0":Judgement.formatDouble4(((double)click)/impression)+"");
+        list.add(impression==0?"0":setclickrate(click,impression));
         list.add(impression==0?"0":Judgement.formatDouble3(earned/impression*1000)+"");
         list.add(impression+"");
         list.add(dau==0?"0":Judgement.formatDouble3(((double)impression)/dau)+"");
        return list;
+    }
+
+    private static String setclickrate(Integer click,Integer impression){
+        String number=Judgement.NonScientificNotation(Judgement.formatDouble4(((double)click)/impression)+"");
+        if (number.length()>6){
+            number=number.substring(0,6);
+        }
+        return number;
+
+
     }
 }

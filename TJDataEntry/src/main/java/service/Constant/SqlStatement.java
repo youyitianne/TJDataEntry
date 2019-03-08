@@ -132,4 +132,7 @@ public class SqlStatement {
     public static String UPDATE_PROJECT="UPDATE `advertisement`.`project` SET `project_name` = ?,`preheat` = ?,`schedule` = ?,`compete_good` = ?,`version_plan` = ?,`note` = ? WHERE `id` = ?;";
 
     public static String DELETE_PROJECT="DELETE FROM `advertisement`.`project` WHERE id = ?;";
+
+    public static String OPERATION_LOG="INSERT INTO `tjaccount`.`operationlog` (`accout`,`time`,`ip`,`module`,`path`,`method`,`instruction`,`parameter`,`date`,`useragent`) VALUES(?,?,?,?,?,?,?,?,?,?);";
+
 }

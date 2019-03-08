@@ -55,6 +55,7 @@ public class InitConf {
         sqlQueries.put(SqlConstants.PAY_LIST, queriesProps.getProperty("pay_list"));
         sqlQueries.put(SqlConstants.PAY_REPEAT_SELECT, queriesProps.getProperty("pay_repeat_select"));
         sqlQueries.put(SqlConstants.PAY_REPEAT_DELETE, queriesProps.getProperty("pay_repeat_delete"));
+        sqlQueries.put(SqlConstants.OPERATION_LOG, queriesProps.getProperty("operation_log"));
         return sqlQueries;
     }
 

@@ -10,9 +10,15 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.auth.KeyStoreOptions;
+import io.vertx.ext.auth.PubSecKeyOptions;
+import io.vertx.ext.auth.User;
+import io.vertx.ext.auth.jwt.JWTAuth;
+import io.vertx.ext.auth.jwt.JWTAuthOptions;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.*;
+import io.vertx.ext.web.sstore.LocalSessionStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.Method;
@@ -27,6 +33,9 @@ public class SdkHttpVerticle extends AbstractVerticle {
     private HashMap<SqlConstants, String> sql;
     private Method method = new Method();
     private String sdkDbQueue;
+    private JWTAuthHandler jwtAuthHandler;
+    private JWTAuth jwtAuth = null;
+    private SdkOperationLog operationLog=new SdkOperationLog();
 
     @Override
     public void start(Future<Void> startFuture){
@@ -41,6 +50,7 @@ public class SdkHttpVerticle extends AbstractVerticle {
         allowHeaders.add("origin");
         allowHeaders.add("Content-Type");
         allowHeaders.add("accept");
+        allowHeaders.add("ip");
         allowHeaders.add("Access-Control-Allow-Headers");
         allowHeaders.add("Cache-Control");
         allowHeaders.add("Authorization");
@@ -52,6 +62,24 @@ public class SdkHttpVerticle extends AbstractVerticle {
         router.route().handler(CorsHandler.create("*")
                 .allowedMethods(allowMethods)
                 .allowedHeaders(allowHeaders));
+
+
+        jwtAuth = JWTAuth.create(vertx, new JWTAuthOptions()
+                .setKeyStore(
+                        new KeyStoreOptions()
+                                .setPath("keystore.jceks")
+                                .setPassword("secret"))
+                .addPubSecKey(new PubSecKeyOptions()
+                        .setPublicKey("test")
+                ));
+
+        jwtAuthHandler = JWTAuthHandler.create(jwtAuth);
+        router.route().handler(BodyHandler.create());
+        router.route().handler(CookieHandler.create());
+        router.route().handler(SessionHandler.create(LocalSessionStore.create(vertx)));
+        //router.route().handler(UserSessionHandler.create(authProvider));
+
+        router.route().handler(this::operateHandler);
 
         //项目配置表
         router.get("/api/projectconfig/:starttime/:endtime").handler(this::projectconfigListHandler);
@@ -81,6 +109,43 @@ public class SdkHttpVerticle extends AbstractVerticle {
                 startFuture.fail(ar.cause());
             }
         });
+    }
+
+    /**
+     * 日志
+     * @param context
+     */
+    private void operateHandler(RoutingContext context) {
+        JWTAuthHandler jwtAuthHandler=JWTAuthHandler.create(jwtAuth);
+        jwtAuthHandler.parseCredentials(context,rs->{
+            if (rs.succeeded()){
+                JsonObject jsonObject=rs.result();
+                jwtAuth.authenticate(new JsonObject()
+                        .put("jwt", jsonObject.getString("jwt"))
+                        .put("options", new JsonObject()
+                                .put("ignoreExpiration", true)),user->{
+                    if (user.succeeded()){
+                        User user1=user.result();
+                        JsonObject userJson=user1.principal();
+                        String time=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+                        Long date=new Date().getTime()/1000;
+                        String username=userJson.getString("username");
+                        String path=context.request().uri();
+                        if (path.contains("?")){
+                            path=path.substring(0,path.indexOf("?"));
+                        }
+                        operationLog.operationLog(sql.get(SqlConstants.OPERATION_LOG),dbService,context,path,context.request().method().toString(),username,time,context.request().getHeader("X-FORWARD-FOR"),date);
+                    }else {
+                        //身份验证
+                        logger.error("身份验证",user.cause());
+                    }
+                });
+            }else {
+                //解析凭证失败
+                logger.error("解析凭证失败",rs.cause());
+            }
+        });
+        context.next();
     }
 
     /**
