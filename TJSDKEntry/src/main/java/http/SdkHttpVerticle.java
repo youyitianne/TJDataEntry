@@ -81,6 +81,7 @@ public class SdkHttpVerticle extends AbstractVerticle {
 
         router.route().handler(this::operateHandler);
 
+        router.get("/sdkapi").handler(this::getSDKHandler);
         //项目配置表
         router.get("/api/projectconfig/:starttime/:endtime").handler(this::projectconfigListHandler);
         router.post("/api/projectconfig").handler(this::projectconfigCreateHandler);
@@ -109,6 +110,17 @@ public class SdkHttpVerticle extends AbstractVerticle {
                 startFuture.fail(ar.cause());
             }
         });
+    }
+
+    /**
+     *
+     * @param context
+     */
+    private void getSDKHandler(RoutingContext context) {
+        String timestamp=context.request().getParam("timestamp");
+        String app=context.request().getParam("app");
+        String channel=context.request().getParam("channel");
+        context.response().end(Json.encodePrettily(new JsonObject().put("timestamp",timestamp).put("channel",channel).put("app",app)));
     }
 
     /**
@@ -679,6 +691,7 @@ public class SdkHttpVerticle extends AbstractVerticle {
                         String date1 = new SimpleDateFormat("yyyy年MM月dd HH:mm:ss").format(new Date(longdate));
                         sdk_information.get(i).put("date", date);
                         sdk_information.get(i).put("date1", date1);
+                        sdk_information.get(i).put("timestamp", longdate);
                         JsonArray jsonArray = new JsonArray();
                         Iterator<JsonObject> it = paramter.iterator();
                         while (it.hasNext()) {
@@ -691,7 +704,8 @@ public class SdkHttpVerticle extends AbstractVerticle {
 
                                 String[] name = jsonObject.getString("param_name").split("-");
 //                                jsonObject.put("param_name1", name[name.length - 1]);
-                                jsonObject.put("param_name1",jsonObject.getString("param_name").substring(name[0].length()+1));
+                                String param_name1=jsonObject.getString("param_name").substring(name[0].length()+1).replace("-","");
+                                jsonObject.put("param_name1",param_name1);
 
                                 jsonArray.add(jsonObject);
                                 it.remove();

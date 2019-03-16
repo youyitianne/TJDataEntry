@@ -40,7 +40,7 @@ public class SqlStatement {
     public static String SELECT_ADDATA_arpu_withoutname = "SELECT `advertisingdata`.`date`, `advertisingdata`.`channel`,`advertisingdata`.`app_name`,`advertisingdata`.`earned`,`advertisingdata`.`platform` FROM `advertisement`.`advertisingdata` " +
             "where date >= ? and date<= ? ";
 
-    public static String SELECT_USERDATA_APP_withoutname = "SELECT `userdata`.`date`,`userdata`.`app_name`,`userdata`.`channel`,`userdata`.`dau` FROM `advertisement`.`userdata` " +
+    public static String SELECT_USERDATA_APP_withoutname = "SELECT `userdata`.`date`,`userdata`.`app_name`,`userdata`.`channel`,`userdata`.`dau`,`userdata`.`dnu` FROM `advertisement`.`userdata` " +
             "where date >= ? and date<= ? order by `userdata`.`date` asc,`userdata`.`app_name` asc";
 
     public static String SELECT_ADDATA_APP_withoutname = "SELECT `advertisingdata`.`date`, `advertisingdata`.`channel`,`advertisingdata`.`app_name`,`advertisingdata`.`earned`,`advertisingdata`.`platform` FROM `advertisement`.`advertisingdata` " +

@@ -337,7 +337,7 @@ public class DailyAdtypeHandler {
      * @return  原list
      */
     public static List<String> setAdtypeMsg(List<String> list,Integer dau,Double earned,Integer impression,Integer click){
-        list.add(earned+"");
+        list.add(Judgement.formatDouble2(earned)+"");
         list.add(impression==0?"0":setclickrate(click,impression));
         list.add(impression==0?"0":Judgement.formatDouble3(earned/impression*1000)+"");
         list.add(impression+"");
@@ -346,10 +346,7 @@ public class DailyAdtypeHandler {
     }
 
     private static String setclickrate(Integer click,Integer impression){
-        String number=Judgement.NonScientificNotation(Judgement.formatDouble4(((double)click)/impression)+"");
-        if (number.length()>6){
-            number=number.substring(0,6);
-        }
+        String number=Judgement.NonScientificNotation(Judgement.formatDouble2(((double)click/impression)*100)+"%");
         return number;
 
 

@@ -422,6 +422,28 @@ public class DataOperationLog {
                     });
                     break;
                 }
+                if (requestPath.contains("/arpufile_preview")) {
+                    logger.info("账号：" + name);
+                    logger.info("时间：" + time);
+                    logger.info("ip：" + ip);
+                    logger.info("请求路径：" + requestPath);  ///user/info
+                    logger.info("请求方式：" + requestMethod);  ///GET
+                    logger.info("****************");
+                    logger.info(name);
+                    logger.info(time);
+                    logger.info(ip);
+                    logger.info(date.toString());
+                    logger.info(context.request().getHeader("UserAgent"));
+
+
+                    advertisementService.update(jdbcClient, sql, new JsonArray().add(name).add(time).add(ip).add("数据分析")
+                            .add(requestPath).add(requestMethod).add("预览产品arpu表").add("无").add(date).add(context.request().getHeader("UserAgent"))).setHandler(rs -> {
+                        if (rs.failed()) {
+                            logger.error("插入日志失败---》", rs.cause());
+                        }
+                    });
+                    break;
+                }
                 if (requestPath.contains("/arpufile")) {
                     logger.info("账号：" + name);
                     logger.info("时间：" + time);

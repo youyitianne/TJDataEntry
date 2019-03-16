@@ -1,5 +1,6 @@
 package service.dataprocessing;
 
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -72,7 +73,6 @@ public class UmengHandler {
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 // 解析响应，获取数据
                 content = EntityUtils.toString(response.getEntity());
-                System.out.println(content);
                 return content;
             }
         }finally {
@@ -110,8 +110,6 @@ public class UmengHandler {
                 logger.error("api出错++++++》"+e);
                 return new JsonObject().put("state", "bad").put("data", "未请求到数据---->" + name + "-" + date);
             }
-
-
             JSONArray jsonArray = JSONArray.fromObject(response);
             if (j == 0) {
                 for (int i = 0; i < jsonArray.size(); i++) {
@@ -140,7 +138,7 @@ public class UmengHandler {
                 logger.error("api出错++++++》"+e);
                 return new JsonObject().put("state", "bad").put("data", "未请求到数据---->" + name + "-" + date);
             }
-            JsonObject jsonObject = new JsonObject().put("channelName", channelName).put("list", JSONArray.fromObject(channelData));
+            JsonObject jsonObject = new JsonObject().put("channelName", channelName).put("list", new JsonObject().put("appName",name).put("channelList",JSONArray.fromObject(channelData)));
             channelDataList.add(jsonObject);
         }
         return new JsonObject().put("state", "success").put("data", list).put("channel", channelDataList);
@@ -189,7 +187,6 @@ public class UmengHandler {
             logger.error("api出错++++++》"+e);
             return new JsonObject().put("state", "bad").put("data", "未请求到数据---->app列表请求失败");
         }
-        System.out.println(string);
         if (string == null) {
             return new JsonObject().put("state", "bad").put("data", "未请求到数据---->app列表请求失败");
         }
@@ -211,7 +208,6 @@ public class UmengHandler {
         }catch (Exception e){
             return new JsonObject().put("state", "bad").put("data", "未请求到数据---->app列表请求失败");
         }
-        System.out.println(string);
         if (string == null) {
             return new JsonObject().put("state", "bad").put("data", "未请求到数据---->app列表请求失败");
         }
