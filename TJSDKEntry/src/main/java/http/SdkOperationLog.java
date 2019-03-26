@@ -175,11 +175,11 @@ public class SdkOperationLog {
                     logger.info("请求路径："+requestPath);  ///user/info
                     logger.info("请求方式："+requestMethod);  ///GET
                     logger.info("模块：项目配置表管理");
-                    logger.info("操作说明：删除项目配置表发布记录");
+                    logger.info("操作说明：编辑配置表");
                     logger.info("参数：无");
                     logger.info("****************");
                     databaseService.query(sql,new JsonArray().add(name).add(time).add(ip).add("项目配置表管理")
-                            .add(requestPath).add(requestMethod).add("删除项目配置表发布记录").add("无").add(date).add(context.request().getHeader("UserAgent")),rs->{
+                            .add(requestPath).add(requestMethod).add("编辑配置表").add("无").add(date).add(context.request().getHeader("UserAgent")),rs->{
                         if (rs.failed()) {
                             logger.error("插入日志失败---》"+rs.cause());
                         }

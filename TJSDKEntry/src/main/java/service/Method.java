@@ -4,6 +4,8 @@ import database.ConfigConstants;
 import database.SqlConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -16,6 +18,7 @@ public class Method {
         InputStream queriesInputStream = null;
         Properties queriesProps = new Properties();
         try {
+            //queriesInputStream=new FileInputStream("conf.properties");
             queriesInputStream = this.getClass().getClassLoader().getResourceAsStream("conf.properties");
             queriesProps.load(queriesInputStream);
             queriesInputStream.close();
@@ -36,6 +39,7 @@ public class Method {
         InputStream queriesInputStream = null;
         Properties queriesProps = new Properties();
         try {
+            //queriesInputStream=new FileInputStream("sql.properties");
             queriesInputStream = this.getClass().getClassLoader().getResourceAsStream("sql.properties");
             queriesProps.load(queriesInputStream);
             queriesInputStream.close();
@@ -60,6 +64,10 @@ public class Method {
         sqlQueries.put(SqlConstants.PROJECT_CONFIG_LIST_DELETE_BYID, queriesProps.getProperty("project_config_list_delete_byid"));
         sqlQueries.put(SqlConstants.PROJECT_CONFIG_INFORMATION_COUNT, queriesProps.getProperty("project_config_information_count"));
         sqlQueries.put(SqlConstants.OPERATION_LOG, queriesProps.getProperty("operation_log"));
+        sqlQueries.put(SqlConstants.API_PROJECT_LIST, queriesProps.getProperty("api_project_list"));
+        sqlQueries.put(SqlConstants.API_SDK_LIST, queriesProps.getProperty("api_sdk_list"));
+        sqlQueries.put(SqlConstants.API_PROJECT_LIST_NEW, queriesProps.getProperty("api_project_list_new"));
+        sqlQueries.put(SqlConstants.API_SDK_LIST_NEW, queriesProps.getProperty("api_sdk_list_new"));
         return sqlQueries;
     }
 

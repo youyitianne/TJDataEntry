@@ -223,10 +223,10 @@ public class DailyAdtypeHandler {
                 innerList.add(Judgement.formatDouble2(dailyAdtype.getEarned())+"");
                 innerList.add(Judgement.formatDouble3(dailyAdtype.getArpu())+"");
                 innerList.add(dailyAdtype.getStartup_time()+"");
-                innerList.add(dailyAdtype.getSingle_use_time());
+                innerList.add(dailyAdtype.getSingle_use_time()==null?"0":dailyAdtype.getSingle_use_time());
                 innerList.add(dailyAdtype.getDnu()+"");
                 innerList.add(dailyAdtype.getDau()+"");
-                innerList.add(dailyAdtype.getRetention()+"");
+                innerList.add(dailyAdtype.getRetention()==null?"0":dailyAdtype.getRetention()+"");
                 innerList=setGdtList(dailyAdtype.getGdt_dac(),innerList,dailyAdtype.getDau());
                 innerList=setChanneltList(dailyAdtype.getChannel_dac(),innerList,dailyAdtype.getDau());
                 innerList=setTtList(dailyAdtype.getTt_dac(),innerList,dailyAdtype.getDau());

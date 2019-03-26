@@ -2313,6 +2313,11 @@ public class HttpServerVerticle extends AbstractVerticle {
                         if (adListAsyncResult.succeeded()) {
                             List<JsonObject> userList = userListAsyncResult.result();
                             List<JsonObject> adlist = adListAsyncResult.result();
+                            if (userList.size()==0||adlist.size()==0){
+                                logger.info("未找到该游戏广告数据");
+                                context.response().end(Json.encodePrettily(new JsonObject().put("code",20000).put("data",new JsonArray())));
+                                return;
+                            }
                             vertx.executeBlocking(handler1 -> {
                                 logger.info(userList.toString());
                                 logger.info(adlist.toString());
@@ -2924,6 +2929,7 @@ public class HttpServerVerticle extends AbstractVerticle {
                         list.add(jsonObject1);
                     }
                 }
+                logger.info("获取游戏列表成功");
                 JsonObject json = new JsonObject().put("code", 20000).put("data", list);
                 context.response().putHeader("Content-Type", "application/javascript; charset=UTF-8").setStatusCode(200).end(Json.encodePrettily(json));
             } else {

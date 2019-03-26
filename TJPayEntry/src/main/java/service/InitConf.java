@@ -4,6 +4,7 @@ import database.SqlConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -19,7 +20,8 @@ public class InitConf {
         InputStream queriesInputStream=null;
         Properties queriesProps = new Properties();
         try {
-            queriesInputStream=this.getClass().getClassLoader().getResourceAsStream("conf.properties");
+            queriesInputStream=new FileInputStream("conf.properties");
+            //queriesInputStream=this.getClass().getClassLoader().getResourceAsStream("conf.properties");
             queriesProps.load(queriesInputStream);
             queriesInputStream.close();
         }catch (IOException e){
@@ -44,7 +46,8 @@ public class InitConf {
         InputStream queriesInputStream=null;
         Properties queriesProps = new Properties();
         try {
-            queriesInputStream=this.getClass().getClassLoader().getResourceAsStream("sql.properties");
+            queriesInputStream=new FileInputStream("sql.properties");
+            //queriesInputStream=this.getClass().getClassLoader().getResourceAsStream("sql.properties");
             queriesProps.load(queriesInputStream);
             queriesInputStream.close();
         }catch (IOException e){

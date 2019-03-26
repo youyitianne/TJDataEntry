@@ -5,6 +5,7 @@ import io.vertx.core.json.JsonArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -21,6 +22,7 @@ public class AccountHttpService {
         InputStream queriesInputStream=null;
         Properties queriesProps = new Properties();
         try {
+            //queriesInputStream=new FileInputStream("conf.properties");
             queriesInputStream=this.getClass().getClassLoader().getResourceAsStream("conf.properties");
             queriesProps.load(queriesInputStream);
             queriesInputStream.close();

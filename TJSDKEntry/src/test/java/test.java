@@ -34,6 +34,71 @@ public class test {
 
     @Test
     public void test3() throws Exception{
+        JsonObject jsonObject=new JsonObject();
+        jsonObject.put("1","true");
+        jsonObject.put("2",true);
+        System.out.println(jsonObject);
+    }
+
+    @Test
+    public void test4() throws Exception{
+            String  string="地理位置\n" +
+                    "var returnCitySN = cip: 183.61.51.58 cid: 440100 cname: 广东省广州市\n" +
+                    "var returnCitySN = cip: 101.81.78.212 cid: 310000 cname: 上海市\n" +
+                    "var returnCitySN = cip: 101.81.226.85 cid: 310000 cname: 上海市\n" +
+                    "var returnCitySN = cip: 101.81.78.212 cid: 310000 cname: 上海市\n" +
+                    "var returnCitySN = cip: 183.15.245.196 cid: 440300 cname: 广东省深圳市\n" +
+                    "var returnCitySN = cip: 183.15.247.79 cid: 440300 cname: 广东省深圳市\n" +
+                    "var returnCitySN = cip: 183.232.175.3 cid: 440000 cname: 广东省\n" +
+                    "var returnCitySN = cip: 183.232.175.3 cid: 440000 cname: 广东省\n" +
+                    "var returnCitySN = cip: 116.226.152.206 cid: 310000 cname: 上海市\n" +
+                    "var returnCitySN = cip: 101.81.226.85 cid: 310000 cname: 上海市\n" +
+                    "var returnCitySN = cip: 101.81.226.85 cid: 310000 cname: 上海市\n" +
+                    "var returnCitySN = cip: 183.15.240.62 cid: 440300 cname: 广东省深圳市\n" +
+                    "var returnCitySN = cip: 101.81.226.85 cid: 310000 cname: 上海市\n" +
+                    "var returnCitySN = cip: 101.81.226.85 cid: 310000 cname: 上海市\n" +
+                    "var returnCitySN = cip: 101.81.226.85 cid: 310000 cname: 上海市\n" +
+                    "var returnCitySN = cip: 183.14.30.3 cid: 440300 cname: 广东省深圳市\n" +
+                    "var returnCitySN = cip: 183.15.244.232 cid: 440300 cname: 广东省深圳市\n" +
+                    "var returnCitySN = cip: 183.15.245.73 cid: 440300 cname: 广东省深圳市\n" +
+                    "var returnCitySN = cip: 183.14.30.3 cid: 440300 cname: 广东省深圳市\n" +
+                    "var returnCitySN = cip: 183.14.30.3 cid: 440300 cname: 广东省深圳市\n" +
+                    "var returnCitySN = cip: 183.15.240.62 cid: 440300 cname: 广东省深圳市\n" +
+                    "var returnCitySN = cip: 183.15.240.62 cid: 440300 cname: 广东省深圳市\n" +
+                    "var returnCitySN = cip: 183.14.30.2 cid: 440300 cname: 广东省深圳市\n" +
+                    "var returnCitySN = cip: 183.232.175.2 cid: 440000 cname: 广东省\n" +
+                    "var returnCitySN = cip: 183.232.175.2 cid: 440000 cname: 广东省\n" +
+                    "var returnCitySN = cip: 101.81.226.85 cid: 310000 cname: 上海市\n" +
+                    "var returnCitySN = cip: 101.81.226.85 cid: 310000 cname: 上海市\n" +
+                    "var returnCitySN = cip: 116.226.152.206 cid: 310000 cname: 上海市\n" +
+                    "var returnCitySN = cip: 183.15.240.62 cid: 440300 cname: 广东省深圳市\n" +
+                    "var returnCitySN = cip: 183.15.245.121 cid: 440300 cname: 广东省深圳市\n" +
+                    "var returnCitySN = cip: 183.15.240.62 cid: 440300 cname: 广东省深圳市\n" +
+                    "var returnCitySN = cip: 183.15.247.223 cid: 440300 cname: 广东省深圳市\n" +
+                    "var returnCitySN = cip: 183.15.240.62 cid: 440300 cname: 广东省深圳市\n" +
+                    "var returnCitySN = cip: 124.202.226.10 cid: 110000 cname: 北京市\n" +
+                    "var returnCitySN = cip: 124.202.226.10 cid: 110000 cname: 北京市\n" +
+                    "var returnCitySN = cip: 124.202.226.10 cid: 110000 cname: 北京市\n" +
+                    "var returnCitySN = cip: 124.202.226.10 cid: 110000 cname: 北京市\n" +
+                    "var returnCitySN = cip: 124.202.226.10 cid: 110000 cname: 北京市\n" +
+                    "var returnCitySN = cip: 124.202.226.10 cid: 110000 cname: 北京市\n" +
+                    "var returnCitySN = cip: 124.202.226.10 cid: 110000 cname: 北京市\n" +
+                    "var returnCitySN = cip: 124.202.226.10 cid: 110000 cname: 北京市\n" +
+                    "var returnCitySN = cip: 124.202.226.10 cid: 110000 cname: 北京市\n" +
+                    "var returnCitySN = cip: 101.81.226.85 cid: 310000 cname: 上海市\n" +
+                    "var returnCitySN = cip: 116.226.152.206 cid: 310000 cname: 上海市\n" +
+                    "var returnCitySN = cip: 116.226.152.206 cid: 310000 cname: 上海市\n" +
+                    "var returnCitySN = cip: 183.15.247.79 cid: 440300 cname: 广东省深圳市\n" +
+                    "var returnCitySN = cip: 183.15.245.121 cid: 440300 cname: 广东省深圳市\n" +
+                    "var returnCitySN = cip: 183.14.30.2 cid: 440300 cname: 广东省深圳市\n" +
+                    "var returnCitySN = cip: 183.15.245.121 cid: 440300 cname: 广东省深圳市\n";
+        for (int i=0;i<250;i++){
+            if (string.indexOf("cip")!=-1){
+                String newStrin=string;
+                System.out.println(newStrin.substring(newStrin.indexOf("cip")+4,newStrin.indexOf("cid")));
+                string=string.substring(string.indexOf("cid")+4);
+            }
+        }
 
     }
 

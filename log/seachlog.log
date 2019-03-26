@@ -1,72 +1,46 @@
-2019-03-16T17:59:05,574 DEBUG io.netty.util.internal.logging.InternalLoggerFactory:71 - Using SLF4J as the default logging framework
-2019-03-16T17:59:05,577 DEBUG io.netty.util.ResourceLeakDetector:81 - -Dio.netty.leakDetection.level: simple
-2019-03-16T17:59:05,578 DEBUG io.netty.util.ResourceLeakDetector:81 - -Dio.netty.leakDetection.maxRecords: 4
-2019-03-16T17:59:05,609 DEBUG io.netty.channel.MultithreadEventLoopGroup:76 - -Dio.netty.eventLoopThreads: 8
-2019-03-16T17:59:05,631 DEBUG io.netty.util.internal.PlatformDependent:71 - Platform: Windows
-2019-03-16T17:59:05,633 DEBUG io.netty.util.internal.PlatformDependent0:76 - -Dio.netty.noUnsafe: false
-2019-03-16T17:59:05,634 DEBUG io.netty.util.internal.PlatformDependent0:76 - Java version: 8
-2019-03-16T17:59:05,635 DEBUG io.netty.util.internal.PlatformDependent0:71 - sun.misc.Unsafe.theUnsafe: available
-2019-03-16T17:59:05,636 DEBUG io.netty.util.internal.PlatformDependent0:71 - sun.misc.Unsafe.copyMemory: available
-2019-03-16T17:59:05,637 DEBUG io.netty.util.internal.PlatformDependent0:71 - java.nio.Buffer.address: available
-2019-03-16T17:59:05,638 DEBUG io.netty.util.internal.PlatformDependent0:71 - direct buffer constructor: available
-2019-03-16T17:59:05,639 DEBUG io.netty.util.internal.PlatformDependent0:76 - java.nio.Bits.unaligned: available, true
-2019-03-16T17:59:05,639 DEBUG io.netty.util.internal.PlatformDependent0:71 - jdk.internal.misc.Unsafe.allocateUninitializedArray(int): unavailable prior to Java9
-2019-03-16T17:59:05,639 DEBUG io.netty.util.internal.PlatformDependent0:76 - java.nio.DirectByteBuffer.<init>(long, int): available
-2019-03-16T17:59:05,639 DEBUG io.netty.util.internal.PlatformDependent:76 - sun.misc.Unsafe: available
-2019-03-16T17:59:05,640 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.tmpdir: C:\Users\jin\AppData\Local\Temp (java.io.tmpdir)
-2019-03-16T17:59:05,641 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.bitMode: 64 (sun.arch.data.model)
-2019-03-16T17:59:05,642 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.noPreferDirect: false
-2019-03-16T17:59:05,642 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.maxDirectMemory: 1653604352 bytes
-2019-03-16T17:59:05,642 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.uninitializedArrayAllocationThreshold: -1
-2019-03-16T17:59:05,644 DEBUG io.netty.util.internal.CleanerJava6:71 - java.nio.ByteBuffer.cleaner(): available
-2019-03-16T17:59:05,666 DEBUG io.netty.channel.nio.NioEventLoop:76 - -Dio.netty.noKeySetOptimization: false
-2019-03-16T17:59:05,667 DEBUG io.netty.channel.nio.NioEventLoop:76 - -Dio.netty.selectorAutoRebuildThreshold: 512
-2019-03-16T17:59:05,678 DEBUG io.netty.util.internal.PlatformDependent:71 - org.jctools-core.MpscChunkedArrayQueue: available
-2019-03-16T17:59:06,598 DEBUG io.netty.resolver.dns.DefaultDnsServerAddressStreamProvider:76 - Default DNS servers: [/223.6.6.6:53, /223.5.5.5:53] (sun.net.dns.ResolverConfiguration)
-2019-03-16T17:59:06,609 DEBUG io.netty.util.NetUtil:76 - -Djava.net.preferIPv4Stack: false
-2019-03-16T17:59:06,609 DEBUG io.netty.util.NetUtil:76 - -Djava.net.preferIPv6Addresses: false
-2019-03-16T17:59:06,721 DEBUG io.netty.util.NetUtil:86 - Loopback interface: lo (Software Loopback Interface 1, 127.0.0.1)
-2019-03-16T17:59:06,722 DEBUG io.netty.util.NetUtil:81 - Failed to get SOMAXCONN from sysctl and file \proc\sys\net\core\somaxconn. Default: 200
-2019-03-16T17:59:07,112 INFO  com.mchange.v2.log.MLog:212 - MLog clients using slf4j logging.
-2019-03-16T17:59:07,120 DEBUG com.mchange.v2.log.MLog:207 - Reading VM config for path list /com/mchange/v2/log/default-mchange-log.properties, /mchange-commons.properties, /c3p0.properties, hocon:/reference,/application,/c3p0,/, /mchange-log.properties, /
-2019-03-16T17:59:07,120 DEBUG com.mchange.v2.log.MLog:207 - The configuration file for resource identifier '/mchange-commons.properties' could not be found. Skipping.
-2019-03-16T17:59:07,120 DEBUG com.mchange.v2.log.MLog:207 - The configuration file for resource identifier '/c3p0.properties' could not be found. Skipping.
-2019-03-16T17:59:07,121 DEBUG com.mchange.v2.log.MLog:207 - The configuration file for resource identifier 'hocon:/reference,/application,/c3p0,/' could not be found. Skipping.
-2019-03-16T17:59:07,121 DEBUG com.mchange.v2.log.MLog:207 - The configuration file for resource identifier '/mchange-log.properties' could not be found. Skipping.
-2019-03-16T17:59:07,124 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/mchange-commons.properties' could not be found. Skipping.
-2019-03-16T17:59:07,125 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/mchange-log.properties' could not be found. Skipping.
-2019-03-16T17:59:07,125 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier 'hocon:/reference,/application,/c3p0,/' could not be found. Skipping.
-2019-03-16T17:59:07,125 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/c3p0.properties' could not be found. Skipping.
-2019-03-16T17:59:07,148 INFO  com.mchange.v2.c3p0.C3P0Registry:212 - Initializing c3p0-0.9.5.2 [built 08-December-2015 22:06:04 -0800; debug? true; trace: 10]
-2019-03-16T17:59:07,178 DEBUG com.mchange.v2.c3p0.management.DynamicPooledDataSourceManagerMBean:204 - MBean: com.mchange.v2.c3p0:type=PooledDataSource,identityToken=1hgf11da1115wakj14zt9ra|41056db8,name=1hgf11da1115wakj14zt9ra|41056db8 registered.
-2019-03-16T17:59:07,206 DEBUG com.mchange.v2.c3p0.management.DynamicPooledDataSourceManagerMBean:204 - MBean: com.mchange.v2.c3p0:type=PooledDataSource,identityToken=1hgf11da1115wakj14zt9ra|41056db8,name=1hgf11da1115wakj14zt9ra|41056db8 unregistered, in order to be reregistered after update.
-2019-03-16T17:59:07,207 DEBUG com.mchange.v2.c3p0.management.DynamicPooledDataSourceManagerMBean:204 - MBean: com.mchange.v2.c3p0:type=PooledDataSource,identityToken=1hgf11da1115wakj14zt9ra|41056db8,name=1hgf11da1115wakj14zt9ra|41056db8 registered.
-2019-03-16T17:59:07,249 INFO  com.mchange.v2.c3p0.impl.AbstractPoolBackedDataSource:212 - Initializing c3p0 pool... com.mchange.v2.c3p0.ComboPooledDataSource [ acquireIncrement -> 3, acquireRetryAttempts -> 30, acquireRetryDelay -> 1000, autoCommitOnClose -> false, automaticTestTable -> null, breakAfterAcquireFailure -> false, checkoutTimeout -> 0, connectionCustomizerClassName -> null, connectionTesterClassName -> com.mchange.v2.c3p0.impl.DefaultConnectionTester, contextClassLoaderSource -> caller, dataSourceName -> 1hgf11da1115wakj14zt9ra|41056db8, debugUnreturnedConnectionStackTraces -> false, description -> null, driverClass -> com.mysql.cj.jdbc.Driver, extensions -> {}, factoryClassLocation -> null, forceIgnoreUnresolvedTransactions -> false, forceSynchronousCheckins -> false, forceUseNamedDriverClass -> false, identityToken -> 1hgf11da1115wakj14zt9ra|41056db8, idleConnectionTestPeriod -> 0, initialPoolSize -> 3, jdbcUrl -> jdbc:mysql://localhost/tjsdk?characterEncoding=UTF-8&useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&autoReconnect=true  , maxAdministrativeTaskTime -> 0, maxConnectionAge -> 0, maxIdleTime -> 0, maxIdleTimeExcessConnections -> 0, maxPoolSize -> 50, maxStatements -> 0, maxStatementsPerConnection -> 0, minPoolSize -> 3, numHelperThreads -> 3, preferredTestQuery -> null, privilegeSpawnedThreads -> false, properties -> {user=******, password=******}, propertyCycle -> 0, statementCacheNumDeferredCloseThreads -> 0, testConnectionOnCheckin -> false, testConnectionOnCheckout -> false, unreturnedConnectionTimeout -> 0, userOverrides -> {}, usesTraditionalReflectiveProxies -> false ]
-2019-03-16T17:59:07,264 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/mchange-commons.properties' could not be found. Skipping.
-2019-03-16T17:59:07,264 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/mchange-log.properties' could not be found. Skipping.
-2019-03-16T17:59:07,264 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier '/c3p0.properties' could not be found. Skipping.
-2019-03-16T17:59:07,264 DEBUG com.mchange.v2.cfg.MConfig:207 - The configuration file for resource identifier 'hocon:/reference,/application,/c3p0,/' could not be found. Skipping.
-2019-03-16T17:59:07,266 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - com.mchange.v2.resourcepool.BasicResourcePool@5c3913b4 config: [start -> 3; min -> 3; max -> 50; inc -> 3; num_acq_attempts -> 30; acq_attempt_delay -> 1000; check_idle_resources_delay -> 0; max_resource_age -> 0; max_idle_time -> 0; excess_max_idle_time -> 0; destroy_unreturned_resc_time -> 0; expiration_enforcement_delay -> 0; break_on_acquisition_failure -> false; debug_store_checkout_exceptions -> false; force_synchronous_checkins -> false]
-2019-03-16T17:59:07,266 DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPoolManager:204 - Created new pool for auth, username (masked): 'ro******'.
-2019-03-16T17:59:07,266 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - acquire test -- pool size: 0; target_pool_size: 3; desired target? 1
-2019-03-16T17:59:07,267 DEBUG com.mchange.v2.resourcepool.BasicResourcePool:204 - awaitAvailable(): [unknown]
-2019-03-16T17:59:07,649 INFO  database.SdkDatabaseVerticle:36 - database start success
-2019-03-16T17:59:07,883 DEBUG io.netty.buffer.AbstractByteBuf:81 - -Dio.netty.buffer.bytebuf.checkAccessible: true
-2019-03-16T17:59:07,886 DEBUG io.netty.util.ResourceLeakDetectorFactory:76 - Loaded default ResourceLeakDetector: io.netty.util.ResourceLeakDetector@5fdb4628
-2019-03-16T17:59:09,559 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.numHeapArenas: 8
-2019-03-16T17:59:09,559 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.numDirectArenas: 8
-2019-03-16T17:59:09,559 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.pageSize: 8192
-2019-03-16T17:59:09,559 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.maxOrder: 11
-2019-03-16T17:59:09,560 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.chunkSize: 16777216
-2019-03-16T17:59:09,560 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.tinyCacheSize: 512
-2019-03-16T17:59:09,560 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.smallCacheSize: 256
-2019-03-16T17:59:09,560 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.normalCacheSize: 64
-2019-03-16T17:59:09,560 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.maxCachedBufferCapacity: 32768
-2019-03-16T17:59:09,560 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.cacheTrimInterval: 8192
-2019-03-16T17:59:09,561 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.useCacheForAllThreads: true
-2019-03-16T17:59:09,564 DEBUG io.netty.util.internal.InternalThreadLocalMap:76 - -Dio.netty.threadLocalMap.stringBuilder.initialSize: 1024
-2019-03-16T17:59:09,564 DEBUG io.netty.util.internal.InternalThreadLocalMap:76 - -Dio.netty.threadLocalMap.stringBuilder.maxSize: 4096
-2019-03-16T17:59:09,608 DEBUG io.netty.resolver.dns.UnixResolverDnsServerAddressStreamProvider:86 - failed to parse /etc/resolv.conf and/or /etc/resolver
+2019-03-26T10:15:31,229 DEBUG io.netty.util.internal.logging.InternalLoggerFactory:71 - Using SLF4J as the default logging framework
+2019-03-26T10:15:31,268 DEBUG io.netty.util.ResourceLeakDetector:81 - -Dio.netty.leakDetection.level: simple
+2019-03-26T10:15:31,269 DEBUG io.netty.util.ResourceLeakDetector:81 - -Dio.netty.leakDetection.maxRecords: 4
+2019-03-26T10:15:31,350 DEBUG io.netty.channel.MultithreadEventLoopGroup:76 - -Dio.netty.eventLoopThreads: 8
+2019-03-26T10:15:31,430 DEBUG io.netty.util.internal.PlatformDependent:71 - Platform: Windows
+2019-03-26T10:15:31,433 DEBUG io.netty.util.internal.PlatformDependent0:76 - -Dio.netty.noUnsafe: false
+2019-03-26T10:15:31,433 DEBUG io.netty.util.internal.PlatformDependent0:76 - Java version: 8
+2019-03-26T10:15:31,436 DEBUG io.netty.util.internal.PlatformDependent0:71 - sun.misc.Unsafe.theUnsafe: available
+2019-03-26T10:15:31,437 DEBUG io.netty.util.internal.PlatformDependent0:71 - sun.misc.Unsafe.copyMemory: available
+2019-03-26T10:15:31,438 DEBUG io.netty.util.internal.PlatformDependent0:71 - java.nio.Buffer.address: available
+2019-03-26T10:15:31,439 DEBUG io.netty.util.internal.PlatformDependent0:71 - direct buffer constructor: available
+2019-03-26T10:15:31,446 DEBUG io.netty.util.internal.PlatformDependent0:76 - java.nio.Bits.unaligned: available, true
+2019-03-26T10:15:31,446 DEBUG io.netty.util.internal.PlatformDependent0:71 - jdk.internal.misc.Unsafe.allocateUninitializedArray(int): unavailable prior to Java9
+2019-03-26T10:15:31,447 DEBUG io.netty.util.internal.PlatformDependent0:76 - java.nio.DirectByteBuffer.<init>(long, int): available
+2019-03-26T10:15:31,447 DEBUG io.netty.util.internal.PlatformDependent:76 - sun.misc.Unsafe: available
+2019-03-26T10:15:31,448 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.tmpdir: C:\Users\jin\AppData\Local\Temp (java.io.tmpdir)
+2019-03-26T10:15:31,449 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.bitMode: 64 (sun.arch.data.model)
+2019-03-26T10:15:31,450 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.noPreferDirect: false
+2019-03-26T10:15:31,482 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.maxDirectMemory: 1653604352 bytes
+2019-03-26T10:15:31,482 DEBUG io.netty.util.internal.PlatformDependent:76 - -Dio.netty.uninitializedArrayAllocationThreshold: -1
+2019-03-26T10:15:31,485 DEBUG io.netty.util.internal.CleanerJava6:71 - java.nio.ByteBuffer.cleaner(): available
+2019-03-26T10:15:31,516 DEBUG io.netty.channel.nio.NioEventLoop:76 - -Dio.netty.noKeySetOptimization: false
+2019-03-26T10:15:31,516 DEBUG io.netty.channel.nio.NioEventLoop:76 - -Dio.netty.selectorAutoRebuildThreshold: 512
+2019-03-26T10:15:31,530 DEBUG io.netty.util.internal.PlatformDependent:71 - org.jctools-core.MpscChunkedArrayQueue: available
+2019-03-26T10:15:32,187 DEBUG io.netty.resolver.dns.DefaultDnsServerAddressStreamProvider:76 - Default DNS servers: [/223.6.6.6:53, /223.5.5.5:53] (sun.net.dns.ResolverConfiguration)
+2019-03-26T10:15:32,200 DEBUG io.netty.util.NetUtil:76 - -Djava.net.preferIPv4Stack: false
+2019-03-26T10:15:32,201 DEBUG io.netty.util.NetUtil:76 - -Djava.net.preferIPv6Addresses: false
+2019-03-26T10:15:32,363 DEBUG io.netty.util.NetUtil:86 - Loopback interface: lo (Software Loopback Interface 1, 127.0.0.1)
+2019-03-26T10:15:32,364 DEBUG io.netty.util.NetUtil:81 - Failed to get SOMAXCONN from sysctl and file \proc\sys\net\core\somaxconn. Default: 200
+2019-03-26T10:15:33,795 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.numHeapArenas: 8
+2019-03-26T10:15:33,796 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.numDirectArenas: 8
+2019-03-26T10:15:33,796 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.pageSize: 8192
+2019-03-26T10:15:33,797 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.maxOrder: 11
+2019-03-26T10:15:33,797 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.chunkSize: 16777216
+2019-03-26T10:15:33,797 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.tinyCacheSize: 512
+2019-03-26T10:15:33,797 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.smallCacheSize: 256
+2019-03-26T10:15:33,797 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.normalCacheSize: 64
+2019-03-26T10:15:33,797 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.maxCachedBufferCapacity: 32768
+2019-03-26T10:15:33,798 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.cacheTrimInterval: 8192
+2019-03-26T10:15:33,798 DEBUG io.netty.buffer.PooledByteBufAllocator:76 - -Dio.netty.allocator.useCacheForAllThreads: true
+2019-03-26T10:15:33,801 DEBUG io.netty.util.internal.InternalThreadLocalMap:76 - -Dio.netty.threadLocalMap.stringBuilder.initialSize: 1024
+2019-03-26T10:15:33,802 DEBUG io.netty.util.internal.InternalThreadLocalMap:76 - -Dio.netty.threadLocalMap.stringBuilder.maxSize: 4096
+2019-03-26T10:15:33,879 DEBUG io.netty.resolver.dns.UnixResolverDnsServerAddressStreamProvider:86 - failed to parse /etc/resolv.conf and/or /etc/resolver
 java.lang.IllegalArgumentException: \etc\resolv.conf didn't provide any name servers
 	at io.netty.resolver.dns.UnixResolverDnsServerAddressStreamProvider.<init>(UnixResolverDnsServerAddressStreamProvider.java:98) ~[netty-resolver-dns-4.1.15.Final.jar:4.1.15.Final]
 	at io.netty.resolver.dns.UnixResolverDnsServerAddressStreamProvider.<init>(UnixResolverDnsServerAddressStreamProvider.java:124) ~[netty-resolver-dns-4.1.15.Final.jar:4.1.15.Final]
@@ -84,7 +58,7 @@ java.lang.IllegalArgumentException: \etc\resolv.conf didn't provide any name ser
 	at io.vertx.core.net.impl.AsyncResolveConnectHelper.doBind(AsyncResolveConnectHelper.java:87) ~[vertx-core-3.5.0.jar:?]
 	at io.vertx.core.http.impl.HttpServerImpl.listen(HttpServerImpl.java:344) ~[vertx-core-3.5.0.jar:?]
 	at io.vertx.core.http.impl.HttpServerImpl.listen(HttpServerImpl.java:231) ~[vertx-core-3.5.0.jar:?]
-	at http.SdkHttpVerticle.start(SdkHttpVerticle.java:104) ~[classes/:?]
+	at UiServerVerticle.start(UiServerVerticle.java:57) ~[classes/:?]
 	at io.vertx.core.impl.DeploymentManager.lambda$doDeploy$10(DeploymentManager.java:481) ~[vertx-core-3.5.0.jar:?]
 	at io.vertx.core.impl.ContextImpl.lambda$wrapTask$2(ContextImpl.java:344) ~[vertx-core-3.5.0.jar:?]
 	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163) [netty-common-4.1.15.Final.jar:4.1.15.Final]
@@ -92,17 +66,214 @@ java.lang.IllegalArgumentException: \etc\resolv.conf didn't provide any name ser
 	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:463) [netty-transport-4.1.15.Final.jar:4.1.15.Final]
 	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:858) [netty-common-4.1.15.Final.jar:4.1.15.Final]
 	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_181]
-2019-03-16T17:59:09,628 DEBUG io.netty.channel.DefaultChannelId:76 - -Dio.netty.processId: 19496 (auto-detected)
-2019-03-16T17:59:09,713 DEBUG io.netty.channel.DefaultChannelId:76 - -Dio.netty.machineId: 00:50:56:ff:fe:c0:00:01 (auto-detected)
-2019-03-16T17:59:09,735 DEBUG io.netty.buffer.ByteBufUtil:76 - -Dio.netty.allocator.type: pooled
-2019-03-16T17:59:09,735 DEBUG io.netty.buffer.ByteBufUtil:76 - -Dio.netty.threadLocalDirectBufferSize: 65536
-2019-03-16T17:59:09,735 DEBUG io.netty.buffer.ByteBufUtil:76 - -Dio.netty.maxThreadLocalCharBufferSize: 16384
-2019-03-16T17:59:09,754 INFO  http.SdkHttpVerticle:106 - HTTP server running on port 8085
-2019-03-16T17:59:21,631 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.maxCapacityPerThread: 32768
-2019-03-16T17:59:21,631 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.maxSharedCapacityFactor: 2
-2019-03-16T17:59:21,632 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.linkCapacity: 16
-2019-03-16T17:59:21,632 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.ratio: 8
-2019-03-16T17:59:21,767 ERROR http.SdkHttpVerticle:157 - 解析凭证失败
+2019-03-26T10:15:33,912 DEBUG io.netty.channel.DefaultChannelId:76 - -Dio.netty.processId: 15660 (auto-detected)
+2019-03-26T10:15:34,160 DEBUG io.netty.channel.DefaultChannelId:76 - -Dio.netty.machineId: 00:50:56:ff:fe:c0:00:01 (auto-detected)
+2019-03-26T10:15:34,186 DEBUG io.netty.buffer.ByteBufUtil:76 - -Dio.netty.allocator.type: pooled
+2019-03-26T10:15:34,186 DEBUG io.netty.buffer.ByteBufUtil:76 - -Dio.netty.threadLocalDirectBufferSize: 65536
+2019-03-26T10:15:34,187 DEBUG io.netty.buffer.ByteBufUtil:76 - -Dio.netty.maxThreadLocalCharBufferSize: 16384
+2019-03-26T10:15:34,210 INFO  UiServerVerticle:59 - HTTP server running on port 8082
+2019-03-26T10:15:44,473 ERROR http.SdkHttpVerticle:187 - 解析凭证失败
 io.vertx.ext.web.handler.impl.HttpStatusException: Unauthorized
-2019-03-16T17:59:22,352 ERROR http.SdkHttpVerticle:157 - 解析凭证失败
+2019-03-26T10:15:48,260 ERROR http.SdkHttpVerticle:187 - 解析凭证失败
+io.vertx.ext.web.handler.impl.HttpStatusException: Unauthorized
+2019-03-26T10:15:51,993 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.maxCapacityPerThread: 32768
+2019-03-26T10:15:51,994 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.maxSharedCapacityFactor: 2
+2019-03-26T10:15:51,994 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.linkCapacity: 16
+2019-03-26T10:15:51,994 DEBUG io.netty.util.Recycler:76 - -Dio.netty.recycler.ratio: 8
+2019-03-26T10:15:52,003 DEBUG io.netty.buffer.AbstractByteBuf:81 - -Dio.netty.buffer.bytebuf.checkAccessible: true
+2019-03-26T10:15:52,004 DEBUG io.netty.util.ResourceLeakDetectorFactory:76 - Loaded default ResourceLeakDetector: io.netty.util.ResourceLeakDetector@64ac3c8c
+2019-03-26T10:17:08,984 INFO  http.AccountOperationLog:69 - -----------------
+2019-03-26T10:17:08,984 INFO  http.AccountOperationLog:70 - 账号：admin
+2019-03-26T10:17:08,984 INFO  http.AccountOperationLog:71 - 时间：2019-03-26 10:17:08
+2019-03-26T10:17:08,984 INFO  http.AccountOperationLog:72 - ip：192.168.1.144
+2019-03-26T10:17:08,985 INFO  http.AccountOperationLog:73 - 请求路径：/user/info
+2019-03-26T10:17:08,985 INFO  http.AccountOperationLog:74 - 请求方式：GET
+2019-03-26T10:17:08,985 INFO  http.AccountOperationLog:75 - 模块：账号管理
+2019-03-26T10:17:08,985 INFO  http.AccountOperationLog:76 - 操作说明：获取账号权限(登录)
+2019-03-26T10:17:08,985 INFO  http.AccountOperationLog:77 - 参数：无
+2019-03-26T10:17:08,996 INFO  http.AccountOperationLog:78 - ****************
+2019-03-26T10:17:09,020 INFO  http.AccountHttpVerticle:378 - admin  get info success["admin"]-------------------------------
+2019-03-26T10:17:09,405 ERROR http.SdkHttpVerticle:187 - 解析凭证失败
+io.vertx.ext.web.handler.impl.HttpStatusException: Unauthorized
+2019-03-26T10:17:10,278 INFO  http.SdkOperationLog:53 - -----------------
+2019-03-26T10:17:10,278 INFO  http.SdkOperationLog:54 - 账号：admin
+2019-03-26T10:17:10,278 INFO  http.SdkOperationLog:55 - 时间：2019-03-26 10:17:10
+2019-03-26T10:17:10,278 INFO  http.SdkOperationLog:56 - ip：192.168.1.144
+2019-03-26T10:17:10,278 INFO  http.SdkOperationLog:57 - 请求路径：/api/projectconfig/1994-03-30/2019-03-26
+2019-03-26T10:17:10,278 INFO  http.SdkOperationLog:58 - 请求方式：GET
+2019-03-26T10:17:10,278 INFO  http.SdkOperationLog:59 - 模块：项目配置表管理
+2019-03-26T10:17:10,278 INFO  http.SdkOperationLog:60 - 操作说明：获取所有项目配置表
+2019-03-26T10:17:10,279 INFO  http.SdkOperationLog:61 - 参数：无
+2019-03-26T10:17:10,278 INFO  http.DataOperationLog:200 - 账号：admin
+2019-03-26T10:17:10,279 INFO  http.SdkOperationLog:62 - ****************
+2019-03-26T10:17:10,279 INFO  http.DataOperationLog:201 - 时间：2019-03-26 10:17:10
+2019-03-26T10:17:10,279 INFO  http.DataOperationLog:202 - ip：192.168.1.144
+2019-03-26T10:17:10,279 INFO  http.DataOperationLog:203 - 请求路径：/channel
+2019-03-26T10:17:10,279 INFO  http.DataOperationLog:204 - 请求方式：GET
+2019-03-26T10:17:10,279 INFO  http.DataOperationLog:205 - ****************
+2019-03-26T10:17:10,280 INFO  http.SdkOperationLog:72 - -----------------
+2019-03-26T10:17:10,280 INFO  http.SdkOperationLog:73 - 账号：admin
+2019-03-26T10:17:10,280 INFO  http.SdkOperationLog:74 - 时间：2019-03-26 10:17:10
+2019-03-26T10:17:10,280 INFO  http.SdkOperationLog:75 - ip：192.168.1.144
+2019-03-26T10:17:10,280 INFO  http.SdkOperationLog:76 - 请求路径：/api/listtemplate
+2019-03-26T10:17:10,280 INFO  http.SdkOperationLog:77 - 请求方式：GET
+2019-03-26T10:17:10,280 INFO  http.SdkOperationLog:78 - 模块：项目配置表管理
+2019-03-26T10:17:10,281 INFO  http.SdkOperationLog:79 - 操作说明：获取有效的sdk模板
+2019-03-26T10:17:10,281 INFO  http.SdkOperationLog:80 - 参数：无
+2019-03-26T10:17:10,281 INFO  http.SdkOperationLog:81 - ****************
+2019-03-26T10:17:11,086 INFO  http.DataOperationLog:245 - 账号：admin
+2019-03-26T10:17:11,086 INFO  http.DataOperationLog:246 - 时间：2019-03-26 10:17:11
+2019-03-26T10:17:11,086 INFO  http.DataOperationLog:247 - ip：192.168.1.144
+2019-03-26T10:17:11,086 INFO  http.DataOperationLog:248 - 请求路径：/project
+2019-03-26T10:17:11,086 INFO  http.DataOperationLog:249 - 请求方式：GET
+2019-03-26T10:17:11,086 INFO  http.DataOperationLog:250 - ****************
+2019-03-26T10:17:32,177 ERROR http.SdkHttpVerticle:187 - 解析凭证失败
+io.vertx.ext.web.handler.impl.HttpStatusException: Unauthorized
+2019-03-26T10:17:57,104 ERROR http.SdkHttpVerticle:187 - 解析凭证失败
+io.vertx.ext.web.handler.impl.HttpStatusException: Unauthorized
+2019-03-26T10:17:59,465 ERROR http.SdkHttpVerticle:187 - 解析凭证失败
+io.vertx.ext.web.handler.impl.HttpStatusException: Unauthorized
+2019-03-26T10:20:09,047 ERROR http.SdkHttpVerticle:187 - 解析凭证失败
+io.vertx.ext.web.handler.impl.HttpStatusException: Unauthorized
+2019-03-26T10:20:24,015 ERROR http.SdkHttpVerticle:187 - 解析凭证失败
+io.vertx.ext.web.handler.impl.HttpStatusException: Unauthorized
+2019-03-26T10:21:21,960 ERROR http.SdkHttpVerticle:187 - 解析凭证失败
+io.vertx.ext.web.handler.impl.HttpStatusException: Unauthorized
+2019-03-26T10:21:32,807 ERROR http.SdkHttpVerticle:187 - 解析凭证失败
+io.vertx.ext.web.handler.impl.HttpStatusException: Unauthorized
+2019-03-26T10:21:55,841 ERROR http.SdkHttpVerticle:187 - 解析凭证失败
+io.vertx.ext.web.handler.impl.HttpStatusException: Unauthorized
+2019-03-26T10:25:17,871 ERROR http.SdkHttpVerticle:187 - 解析凭证失败
+io.vertx.ext.web.handler.impl.HttpStatusException: Unauthorized
+2019-03-26T10:25:47,631 ERROR http.SdkHttpVerticle:187 - 解析凭证失败
+io.vertx.ext.web.handler.impl.HttpStatusException: Unauthorized
+2019-03-26T10:26:05,834 ERROR http.SdkHttpVerticle:187 - 解析凭证失败
+io.vertx.ext.web.handler.impl.HttpStatusException: Unauthorized
+2019-03-26T10:26:54,095 ERROR http.SdkHttpVerticle:187 - 解析凭证失败
+io.vertx.ext.web.handler.impl.HttpStatusException: Unauthorized
+2019-03-26T10:27:16,343 ERROR http.SdkHttpVerticle:187 - 解析凭证失败
+io.vertx.ext.web.handler.impl.HttpStatusException: Unauthorized
+2019-03-26T10:28:49,654 ERROR http.AccountHttpVerticle:220 - 解析凭证失败
+io.vertx.ext.web.handler.impl.HttpStatusException: Unauthorized
+2019-03-26T10:28:49,873 INFO  http.AccountHttpVerticle:332 - admin 登录,2019-03-26 10:28:49-------------------------
+2019-03-26T10:28:49,953 INFO  http.AccountOperationLog:69 - -----------------
+2019-03-26T10:28:49,954 INFO  http.AccountOperationLog:70 - 账号：admin
+2019-03-26T10:28:49,954 INFO  http.AccountOperationLog:71 - 时间：2019-03-26 10:28:49
+2019-03-26T10:28:49,954 INFO  http.AccountOperationLog:72 - ip：192.168.1.254
+2019-03-26T10:28:49,954 INFO  http.AccountOperationLog:73 - 请求路径：/user/info
+2019-03-26T10:28:49,955 INFO  http.AccountOperationLog:74 - 请求方式：GET
+2019-03-26T10:28:49,955 INFO  http.AccountOperationLog:75 - 模块：账号管理
+2019-03-26T10:28:49,955 INFO  http.AccountOperationLog:76 - 操作说明：获取账号权限(登录)
+2019-03-26T10:28:49,955 INFO  http.AccountOperationLog:77 - 参数：无
+2019-03-26T10:28:49,955 INFO  http.AccountOperationLog:78 - ****************
+2019-03-26T10:28:49,964 INFO  http.AccountHttpVerticle:378 - admin  get info success["admin"]-------------------------------
+2019-03-26T10:28:51,251 INFO  http.DataOperationLog:125 - 账号：admin
+2019-03-26T10:28:51,251 INFO  http.DataOperationLog:126 - 时间：2019-03-26 10:28:51
+2019-03-26T10:28:51,251 INFO  http.DataOperationLog:127 - ip：192.168.1.254
+2019-03-26T10:28:51,252 INFO  http.DataOperationLog:128 - 请求路径：/names
+2019-03-26T10:28:51,252 INFO  http.DataOperationLog:129 - 请求方式：GET
+2019-03-26T10:28:51,252 INFO  http.DataOperationLog:130 - ****************
+2019-03-26T10:28:51,313 INFO  http.DataOperationLog:230 - 账号：admin
+2019-03-26T10:28:51,313 INFO  http.DataOperationLog:231 - 时间：2019-03-26 10:28:51
+2019-03-26T10:28:51,313 INFO  http.DataOperationLog:232 - ip：192.168.1.254
+2019-03-26T10:28:51,314 INFO  http.DataOperationLog:233 - 请求路径：/projectList
+2019-03-26T10:28:51,314 INFO  http.DataOperationLog:234 - 请求方式：GET
+2019-03-26T10:28:51,314 INFO  http.DataOperationLog:235 - ****************
+2019-03-26T10:28:51,422 INFO  http.HttpServerVerticle:2932 - 获取游戏列表成功
+2019-03-26T10:28:51,529 INFO  http.DataOperationLog:292 - 账号：admin
+2019-03-26T10:28:51,529 INFO  http.DataOperationLog:293 - 时间：2019-03-26 10:28:51
+2019-03-26T10:28:51,529 INFO  http.DataOperationLog:294 - ip：192.168.1.254
+2019-03-26T10:28:51,529 INFO  http.DataOperationLog:295 - 请求路径：/daily_preview
+2019-03-26T10:28:51,529 INFO  http.DataOperationLog:296 - 请求方式：POST
+2019-03-26T10:28:51,530 INFO  http.DataOperationLog:297 - ****************
+2019-03-26T10:28:52,824 INFO  http.HttpServerVerticle:2014 - [{"project":"3d拼图","date":1552924800,"earned":38.10999999999999}, {"project":"一球爆破","date":1552924800,"earned":16.390000000000008}, {"project":"一起来挖矿","date":1552924800,"earned":63.620000000000005}, {"project":"保护气球","date":1552924800,"earned":509.11}, {"project":"保护热气球","date":1552924800,"earned":18.580000000000002}, {"project":"全民跳一跳","date":1552924800,"earned":104.58}, {"project":"八分音符酱","date":1552924800,"earned":255.73}, {"project":"六角拼拼","date":1552924800,"earned":106.97000000000004}, {"project":"割草大作战","date":1552924800,"earned":333.65}, {"project":"十字绣","date":1552924800,"earned":561.89}, {"project":"吃鸡大英雄","date":1552924800,"earned":98.17999999999999}, {"project":"喵里奥","date":1552924800,"earned":0.5}, {"project":"奇妙的森林","date":1552924800,"earned":0.03}, {"project":"完美贴合","date":1552924800,"earned":40.389999999999986}, {"project":"宝宝学认知","date":1552924800,"earned":34.28}, {"project":"宝宝爱洗手","date":1552924800,"earned":16.24}, {"project":"寻光","date":1552924800,"earned":1.6900000000000002}, {"project":"开心玻璃杯","date":1552924800,"earned":2441.8499999999995}, {"project":"彩球碰撞","date":1552924800,"earned":647.7399999999998}, {"project":"我爱猜诗词","date":1552924800,"earned":16.009999999999998}, {"project":"拥挤城市","date":1552924800,"earned":6200.01}, {"project":"指尖陀螺","date":1552924800,"earned":1079.69}, {"project":"指尖飞车","date":1552924800,"earned":246.71999999999989}, {"project":"掘地登山","date":1552924800,"earned":174.17000000000002}, {"project":"雪球大作战","date":1552924800,"earned":0.13999999999999999}, {"project":"欢乐打豆豆","date":1552924800,"earned":282.0400000000001}, {"project":"派对大作战","date":1552924800,"earned":2175.4899999999993}, {"project":"滚动的球球","date":1552924800,"earned":24.100000000000005}, {"project":"火柴人你好","date":1552924800,"earned":4491.439999999999}, {"project":"3d拼图","date":1552924800,"earned":42.06}, {"project":"球球大战方块","date":1552924800,"earned":17.23}, {"project":"球球跳","date":1552924800,"earned":72.09000000000003}, {"project":"疯狂投篮","date":1552924800,"earned":195.35}, {"project":"疾走弹球","date":1552924800,"earned":0.53}, {"project":"粘住火柴蜘蛛人","date":1552924800,"earned":381.89000000000004}, {"project":"红心大战接龙","date":1552924800,"earned":1177.5500000000006}, {"project":"纽扣的游戏","date":1552924800,"earned":686.9000000000001}, {"project":"线条飞跃","date":1552924800,"earned":29.21}, {"project":"羽毛球大乱斗","date":1552924800,"earned":0.30000000000000004}, {"project":"芝士就是力量","date":1552924800,"earned":115.90000000000002}, {"project":"贪吃大作战","date":1552924800,"earned":1451.5800000000002}, {"project":"贪吃蛇大战2048","date":1552924800,"earned":41.809999999999995}, {"project":"连线解谜","date":1552924800,"earned":222.93}, {"project":"雪球大作战","date":1552924800,"earned":1109.8099999999995}, {"project":"面条滑溜溜","date":1552924800,"earned":150.65}, {"project":"飞刀射击","date":1552924800,"earned":7.909999999999998}, {"project":"飞车大作战","date":1552924800,"earned":24.419999999999998}, {"project":"魅影车手","date":1552924800,"earned":303.21}, {"project":"3d拼图","date":1553011200,"earned":34.02}, {"project":"一球爆破","date":1553011200,"earned":27.040000000000003}, {"project":"一起来挖矿","date":1553011200,"earned":75.78999999999999}, {"project":"保护气球","date":1553011200,"earned":859.1499999999999}, {"project":"保护热气球","date":1553011200,"earned":17.44}, {"project":"全民跳一跳","date":1553011200,"earned":98.80999999999999}, {"project":"八分音符酱","date":1553011200,"earned":185.10999999999999}, {"project":"六角拼拼","date":1553011200,"earned":109.92999999999999}, {"project":"割草大作战","date":1553011200,"earned":304.32}, {"project":"十字绣","date":1553011200,"earned":579.4899999999998}, {"project":"吃鸡大英雄","date":1553011200,"earned":117.04999999999998}, {"project":"喵里奥","date":1553011200,"earned":4.04}, {"project":"奇妙的森林","date":1553011200,"earned":0.03}, {"project":"完美贴合","date":1553011200,"earned":45.620000000000005}, {"project":"宝宝学认知","date":1553011200,"earned":31.57}, {"project":"宝宝爱洗手","date":1553011200,"earned":15.39}, {"project":"寻光","date":1553011200,"earned":2.14}, {"project":"开心玻璃杯","date":1553011200,"earned":2301.2400000000007}, {"project":"彩球碰撞","date":1553011200,"earned":578.9200000000001}, {"project":"我爱猜诗词","date":1553011200,"earned":14.58}, {"project":"拥挤城市","date":1553011200,"earned":6375.37}, {"project":"指尖陀螺","date":1553011200,"earned":967.3600000000004}, {"project":"指尖飞车","date":1553011200,"earned":247.37}, {"project":"掘地登山","date":1553011200,"earned":165.00999999999996}, {"project":"雪球大作战","date":1553011200,"earned":0.82}, {"project":"欢乐打豆豆","date":1553011200,"earned":285.72}, {"project":"派对大作战","date":1553011200,"earned":2374.5200000000013}, {"project":"滚动的球球","date":1553011200,"earned":19.89}, {"project":"火柴人你好","date":1553011200,"earned":4504.930000000001}, {"project":"3d拼图","date":1553011200,"earned":53.88}, {"project":"球球大战方块","date":1553011200,"earned":18.489999999999995}, {"project":"球球跳","date":1553011200,"earned":78.37}, {"project":"疯狂投篮","date":1553011200,"earned":196.16999999999996}, {"project":"疾走弹球","date":1553011200,"earned":0.0}, {"project":"粘住火柴蜘蛛人","date":1553011200,"earned":390.39000000000004}, {"project":"红心大战接龙","date":1553011200,"earned":1249.01}, {"project":"纽扣的游戏","date":1553011200,"earned":664.82}, {"project":"线条飞跃","date":1553011200,"earned":24.25}, {"project":"芝士就是力量","date":1553011200,"earned":107.09999999999998}, {"project":"贪吃大作战","date":1553011200,"earned":1362.54}, {"project":"贪吃蛇大战2048","date":1553011200,"earned":34.82000000000001}, {"project":"连线解谜","date":1553011200,"earned":174.50000000000003}, {"project":"雪球大作战","date":1553011200,"earned":1366.3599999999997}, {"project":"面条滑溜溜","date":1553011200,"earned":132.3}, {"project":"飞刀射击","date":1553011200,"earned":6.800000000000001}, {"project":"飞车大作战","date":1553011200,"earned":18.900000000000002}, {"project":"魅影车手","date":1553011200,"earned":290.96000000000004}, {"project":"3d拼图","date":1553097600,"earned":35.16}, {"project":"一球爆破","date":1553097600,"earned":34.24}, {"project":"一起来挖矿","date":1553097600,"earned":66.72000000000001}, {"project":"保护气球","date":1553097600,"earned":883.6099999999999}, {"project":"保护热气球","date":1553097600,"earned":12.7}, {"project":"全民跳一跳","date":1553097600,"earned":112.32000000000001}, {"project":"八分音符酱","date":1553097600,"earned":169.41000000000003}, {"project":"六角拼拼","date":1553097600,"earned":97.55000000000004}, {"project":"割草大作战","date":1553097600,"earned":443.36}, {"project":"十字绣","date":1553097600,"earned":607.88}, {"project":"吃鸡大英雄","date":1553097600,"earned":119.78}, {"project":"喵里奥","date":1553097600,"earned":45.559999999999995}, {"project":"奇妙的森林","date":1553097600,"earned":0.25}, {"project":"完美贴合","date":1553097600,"earned":37.21999999999999}, {"project":"宝宝学认知","date":1553097600,"earned":37.71}, {"project":"宝宝爱洗手","date":1553097600,"earned":12.68}, {"project":"寻光","date":1553097600,"earned":2.6099999999999994}, {"project":"开心玻璃杯","date":1553097600,"earned":2195.89}, {"project":"彩球碰撞","date":1553097600,"earned":613.1000000000001}, {"project":"我爱猜诗词","date":1553097600,"earned":15.77}, {"project":"拥挤城市","date":1553097600,"earned":6540.469999999998}, {"project":"指尖陀螺","date":1553097600,"earned":925.8599999999998}, {"project":"指尖飞车","date":1553097600,"earned":281.1499999999998}, {"project":"掘地登山","date":1553097600,"earned":153.82999999999998}, {"project":"雪球大作战","date":1553097600,"earned":0.74}, {"project":"欢乐打豆豆","date":1553097600,"earned":274.64}, {"project":"派对大作战","date":1553097600,"earned":2714.16}, {"project":"滚动的球球","date":1553097600,"earned":27.730000000000004}, {"project":"火柴人你好","date":1553097600,"earned":4243.66}, {"project":"3d拼图","date":1553097600,"earned":47.59}, {"project":"球球大战方块","date":1553097600,"earned":9.22}, {"project":"球球跳","date":1553097600,"earned":80.39}, {"project":"疯狂投篮","date":1553097600,"earned":211.96999999999994}, {"project":"疾走弹球","date":1553097600,"earned":0.13}, {"project":"粘住火柴蜘蛛人","date":1553097600,"earned":359.39999999999975}, {"project":"红心大战接龙","date":1553097600,"earned":1248.8900000000003}, {"project":"纽扣的游戏","date":1553097600,"earned":655.1499999999999}, {"project":"线条飞跃","date":1553097600,"earned":20.36}, {"project":"芝士就是力量","date":1553097600,"earned":91.04}, {"project":"贪吃大作战","date":1553097600,"earned":1516.41}, {"project":"贪吃蛇大战2048","date":1553097600,"earned":31.600000000000012}, {"project":"连线解谜","date":1553097600,"earned":181.76999999999998}, {"project":"雪球大作战","date":1553097600,"earned":1587.6700000000005}, {"project":"面条滑溜溜","date":1553097600,"earned":123.17}, {"project":"飞刀射击","date":1553097600,"earned":7.49}, {"project":"飞车大作战","date":1553097600,"earned":16.66}, {"project":"魅影车手","date":1553097600,"earned":265.21000000000004}, {"project":"3d拼图","date":1553184000,"earned":62.28}, {"project":"一球爆破","date":1553184000,"earned":33.91}, {"project":"一起来挖矿","date":1553184000,"earned":89.13000000000001}, {"project":"保护气球","date":1553184000,"earned":1290.9499999999998}, {"project":"保护热气球","date":1553184000,"earned":19.020000000000003}, {"project":"全民跳一跳","date":1553184000,"earned":90.89999999999999}, {"project":"八分音符酱","date":1553184000,"earned":224.13000000000005}, {"project":"六角拼拼","date":1553184000,"earned":87.92}, {"project":"割草大作战","date":1553184000,"earned":594.75}, {"project":"十字绣","date":1553184000,"earned":831.7699999999999}, {"project":"吃鸡大英雄","date":1553184000,"earned":205.29999999999998}, {"project":"喵里奥","date":1553184000,"earned":286.83}, {"project":"奇妙的森林","date":1553184000,"earned":0.02}, {"project":"完美贴合","date":1553184000,"earned":51.58}, {"project":"宝宝学认知","date":1553184000,"earned":33.78}, {"project":"宝宝爱洗手","date":1553184000,"earned":16.479999999999997}, {"project":"寻光","date":1553184000,"earned":3.09}, {"project":"开心玻璃杯","date":1553184000,"earned":2799.6400000000003}, {"project":"彩球碰撞","date":1553184000,"earned":907.7199999999997}, {"project":"我爱猜诗词","date":1553184000,"earned":23.89}, {"project":"拥挤城市","date":1553184000,"earned":8346.560000000001}, {"project":"指尖陀螺","date":1553184000,"earned":1418.0000000000002}, {"project":"指尖飞车","date":1553184000,"earned":409.1499999999999}, {"project":"掘地登山","date":1553184000,"earned":308.28999999999985}, {"project":"雪球大作战","date":1553184000,"earned":0.58}, {"project":"欢乐打豆豆","date":1553184000,"earned":259.1499999999999}, {"project":"派对大作战","date":1553184000,"earned":3949.25}, {"project":"滚动的球球","date":1553184000,"earned":41.64}, {"project":"火柴人你好","date":1553184000,"earned":6607.85}, {"project":"3d拼图","date":1553184000,"earned":53.79}, {"project":"球球大战方块","date":1553184000,"earned":13.54}, {"project":"球球跳","date":1553184000,"earned":92.07999999999998}, {"project":"疯狂投篮","date":1553184000,"earned":336.39}, {"project":"疾走弹球","date":1553184000,"earned":0.8300000000000001}, {"project":"粘住火柴蜘蛛人","date":1553184000,"earned":508.1099999999999}, {"project":"红心大战接龙","date":1553184000,"earned":1163.3799999999997}, {"project":"纽扣的游戏","date":1553184000,"earned":887.1299999999997}, {"project":"线条飞跃","date":1553184000,"earned":26.299999999999997}, {"project":"芝士就是力量","date":1553184000,"earned":121.15}, {"project":"贪吃大作战","date":1553184000,"earned":2149.31}, {"project":"贪吃蛇大战2048","date":1553184000,"earned":45.84}, {"project":"连线解谜","date":1553184000,"earned":244.12}, {"project":"雪球大作战","date":1553184000,"earned":2165.56}, {"project":"面条滑溜溜","date":1553184000,"earned":168.28}, {"project":"飞刀射击","date":1553184000,"earned":7.1499999999999995}, {"project":"飞车大作战","date":1553184000,"earned":28.46}, {"project":"魅影车手","date":1553184000,"earned":355.12}, {"project":"3d拼图","date":1553270400,"earned":99.72000000000001}, {"project":"一球爆破","date":1553270400,"earned":101.58}, {"project":"一起来挖矿","date":1553270400,"earned":153.57000000000002}, {"project":"保护气球","date":1553270400,"earned":2819.8700000000003}, {"project":"保护热气球","date":1553270400,"earned":31.639999999999997}, {"project":"全民跳一跳","date":1553270400,"earned":136.52}, {"project":"八分音符酱","date":1553270400,"earned":530.86}, {"project":"六角拼拼","date":1553270400,"earned":84.23000000000002}, {"project":"割草大作战","date":1553270400,"earned":1239.57}, {"project":"十字绣","date":1553270400,"earned":1604.4400000000005}, {"project":"吃鸡大英雄","date":1553270400,"earned":467.47999999999996}, {"project":"喵里奥","date":1553270400,"earned":839.9100000000001}, {"project":"奇妙的森林","date":1553270400,"earned":0.08}, {"project":"完美贴合","date":1553270400,"earned":76.68}, {"project":"宝宝学认知","date":1553270400,"earned":44.1}, {"project":"宝宝爱洗手","date":1553270400,"earned":27.990000000000002}, {"project":"寻光","date":1553270400,"earned":4.35}, {"project":"开心玻璃杯","date":1553270400,"earned":4624.089999999999}, {"project":"彩球碰撞","date":1553270400,"earned":1737.8999999999996}, {"project":"我爱猜诗词","date":1553270400,"earned":18.65}, {"project":"拥挤城市","date":1553270400,"earned":14634.38}, {"project":"指尖陀螺","date":1553270400,"earned":2449.0400000000004}, {"project":"指尖飞车","date":1553270400,"earned":761.4899999999998}, {"project":"掘地登山","date":1553270400,"earned":951.51}, {"project":"雪球大作战","date":1553270400,"earned":2.03}, {"project":"欢乐打豆豆","date":1553270400,"earned":231.31}, {"project":"派对大作战","date":1553270400,"earned":7819.330000000001}, {"project":"滚动的球球","date":1553270400,"earned":74.51}, {"project":"火柴人你好","date":1553270400,"earned":13864.320000000002}, {"project":"3d拼图","date":1553270400,"earned":81.31}, {"project":"球球大战方块","date":1553270400,"earned":21.15}, {"project":"球球跳","date":1553270400,"earned":180.96999999999997}, {"project":"疯狂投篮","date":1553270400,"earned":539.3499999999999}, {"project":"疾走弹球","date":1553270400,"earned":2.16}, {"project":"粘住火柴蜘蛛人","date":1553270400,"earned":877.7800000000001}, {"project":"红心大战接龙","date":1553270400,"earned":1087.4699999999998}, {"project":"纽扣的游戏","date":1553270400,"earned":1684.42}, {"project":"线条飞跃","date":1553270400,"earned":51.9}, {"project":"芝士就是力量","date":1553270400,"earned":380.08000000000004}, {"project":"贪吃大作战","date":1553270400,"earned":4201.2300000000005}, {"project":"贪吃蛇大战2048","date":1553270400,"earned":77.47}, {"project":"连线解谜","date":1553270400,"earned":652.2299999999998}, {"project":"雪球大作战","date":1553270400,"earned":4063.1800000000003}, {"project":"面条滑溜溜","date":1553270400,"earned":348.75}, {"project":"飞刀射击","date":1553270400,"earned":12.1}, {"project":"飞车大作战","date":1553270400,"earned":48.540000000000006}, {"project":"魅影车手","date":1553270400,"earned":653.8800000000001}, {"project":"3d拼图","date":1553356800,"earned":85.60999999999997}, {"project":"一球爆破","date":1553356800,"earned":344.70000000000005}, {"project":"一起来挖矿","date":1553356800,"earned":130.49000000000004}, {"project":"保护气球","date":1553356800,"earned":2857.5999999999985}, {"project":"保护热气球","date":1553356800,"earned":27.509999999999998}, {"project":"全民跳一跳","date":1553356800,"earned":138.01999999999998}, {"project":"八分音符酱","date":1553356800,"earned":490.55000000000007}, {"project":"六角拼拼","date":1553356800,"earned":81.84000000000003}, {"project":"割草大作战","date":1553356800,"earned":1041.8799999999999}, {"project":"十字绣","date":1553356800,"earned":1331.2799999999997}, {"project":"吃鸡大英雄","date":1553356800,"earned":431.5899999999999}, {"project":"喵里奥","date":1553356800,"earned":795.4199999999998}, {"project":"奇妙的森林","date":1553356800,"earned":0.17}, {"project":"完美贴合","date":1553356800,"earned":73.76}, {"project":"宝宝学认知","date":1553356800,"earned":38.4}, {"project":"宝宝爱洗手","date":1553356800,"earned":25.22}, {"project":"寻光","date":1553356800,"earned":4.859999999999999}, {"project":"开心玻璃杯","date":1553356800,"earned":4302.319999999999}, {"project":"彩球碰撞","date":1553356800,"earned":1758.5599999999997}, {"project":"我爱猜诗词","date":1553356800,"earned":18.789999999999996}, {"project":"拥挤城市","date":1553356800,"earned":12968.260000000006}, {"project":"指尖陀螺","date":1553356800,"earned":2239.5299999999997}, {"project":"指尖飞车","date":1553356800,"earned":658.4500000000003}, {"project":"掘地登山","date":1553356800,"earned":1203.3300000000002}, {"project":"雪球大作战","date":1553356800,"earned":1.54}, {"project":"欢乐打豆豆","date":1553356800,"earned":235.35}, {"project":"派对大作战","date":1553356800,"earned":7116.8200000000015}, {"project":"滚动的球球","date":1553356800,"earned":62.23}, {"project":"火柴人你好","date":1553356800,"earned":12282.24}, {"project":"3d拼图","date":1553356800,"earned":75.52}, {"project":"球球大战方块","date":1553356800,"earned":21.519999999999996}, {"project":"球球跳","date":1553356800,"earned":176.17}, {"project":"疯狂投篮","date":1553356800,"earned":448.83000000000004}, {"project":"疾走弹球","date":1553356800,"earned":1.3900000000000001}, {"project":"粘住火柴蜘蛛人","date":1553356800,"earned":794.02}, {"project":"红心大战接龙","date":1553356800,"earned":1145.0900000000001}, {"project":"纽扣的游戏","date":1553356800,"earned":1402.7099999999996}, {"project":"线条飞跃","date":1553356800,"earned":72.47999999999999}, {"project":"芝士就是力量","date":1553356800,"earned":226.16000000000003}, {"project":"贪吃大作战","date":1553356800,"earned":3331.74}, {"project":"贪吃蛇大战2048","date":1553356800,"earned":68.39}, {"project":"连线解谜","date":1553356800,"earned":551.6000000000001}, {"project":"雪球大作战","date":1553356800,"earned":4104.82}, {"project":"面条滑溜溜","date":1553356800,"earned":1187.1499999999999}, {"project":"飞刀射击","date":1553356800,"earned":7.399999999999999}, {"project":"飞车大作战","date":1553356800,"earned":45.370000000000005}, {"project":"魅影车手","date":1553356800,"earned":642.6499999999999}]
+2019-03-26T10:28:52,907 DEBUG http.HttpServerVerticle:2049 - 135
+2019-03-26T10:28:52,908 DEBUG http.HttpServerVerticle:2050 - 283
+2019-03-26T10:28:52,937 INFO  http.HttpServerVerticle:2098 - [[日期, 保护气球, 开心玻璃杯, 指尖飞车, 面条滑溜溜, 吃鸡大英雄, 芝士就是力量, 掘地登山, 拥挤城市, 粘住火柴蜘蛛人, 六角拼拼, 寻光, 飞刀射击, 羽毛球大乱斗, 奇妙的森林, 红心大战接龙, 八分音符酱, 欢乐打豆豆, 贪吃大作战, 贪吃蛇大战2048, 球球大战方块, 十字绣, 疯狂投篮, 纽扣的游戏, 完美贴合, 球球跳, 球球跳一跳, 宝宝爱洗手, 魅影车手, 全民跳一跳, 滚动的球球, 雪球大作战, 3d拼图, 我爱猜诗词, 指尖陀螺, 线条飞跃, 彩球碰撞, 派对大作战, 火柴人你好, 一起来挖矿, 疾走弹球, 保护热气球, 一球爆破, 旋转跳跃：欢乐球球, 割草大作战, 连线解谜, 飞车大作战, 宝宝学认知, 喵里奥], [2019-03-19, 2513, 5326, 2309, 823, 858, 0, 0, 47867, 2689, 0, 0, 0, 0, 0, 1930, 2008, 0, 7570, 0, 0, 0, 0, 6684, 0, 0, 0, 0, 0, 0, 0, 4946, 0, 0, 0, 0, 4571, 17066, 24134, 0, 0, 558, 0, 0, 6355, 2061, 0, 271, 7157], [2019-03-20, 3231, 4189, 2517, 834, 897, 718, 0, 40273, 2980, 0, 0, 0, 0, 0, 1985, 1893, 1012, 7255, 0, 0, 0, 0, 6817, 0, 0, 0, 0, 1647, 0, 0, 4813, 777, 0, 0, 0, 4302, 17982, 24929, 538, 0, 469, 0, 0, 5857, 1991, 242, 273, 4815], [2019-03-21, 3820, 3901, 2267, 873, 1071, 0, 2171, 39209, 2792, 0, 0, 0, 0, 0, 1996, 1984, 0, 7182, 0, 0, 2798, 3173, 6428, 0, 0, 0, 0, 1867, 0, 0, 5506, 791, 198, 0, 220, 4764, 20078, 26036, 671, 0, 275, 0, 0, 6215, 2399, 244, 244, 4415], [2019-03-22, 6137, 6055, 0, 1440, 0, 0, 3844, 56286, 4417, 0, 0, 0, 0, 0, 2121, 3327, 0, 10927, 0, 0, 4113, 5171, 8726, 0, 0, 0, 0, 0, 0, 0, 7916, 0, 0, 8829, 0, 6893, 31562, 49777, 0, 0, 0, 0, 0, 9006, 3336, 0, 0, 13600], [2019-03-23, 13771, 11647, 0, 3426, 0, 0, 10072, 107850, 8380, 0, 0, 0, 0, 0, 2537, 11035, 0, 22817, 0, 0, 8044, 9385, 18369, 0, 0, 0, 0, 0, 0, 0, 17853, 0, 0, 15790, 0, 14786, 66658, 97771, 0, 0, 0, 0, 0, 20405, 10297, 0, 0, 33005], [2019-03-24, 12049, 9741, 0, 12937, 0, 0, 12294, 93973, 6872, 0, 0, 0, 0, 0, 2240, 6789, 0, 19982, 0, 0, 6724, 7133, 15459, 0, 0, 0, 0, 0, 0, 0, 16321, 0, 0, 13756, 0, 13608, 56645, 73550, 0, 0, 0, 0, 0, 16078, 7656, 0, 0, 29831], [2019-03-25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+2019-03-26T10:28:52,937 INFO  http.HttpServerVerticle:2102 - 获取预览数据成功
+2019-03-26T10:31:00,028 INFO  http.SdkOperationLog:53 - -----------------
+2019-03-26T10:31:00,029 INFO  http.SdkOperationLog:54 - 账号：admin
+2019-03-26T10:31:00,029 INFO  http.SdkOperationLog:55 - 时间：2019-03-26 10:31:00
+2019-03-26T10:31:00,029 INFO  http.SdkOperationLog:56 - ip：192.168.1.254
+2019-03-26T10:31:00,029 INFO  http.SdkOperationLog:57 - 请求路径：/api/projectconfig/1/2
+2019-03-26T10:31:00,042 INFO  http.SdkOperationLog:58 - 请求方式：GET
+2019-03-26T10:31:00,042 INFO  http.SdkOperationLog:59 - 模块：项目配置表管理
+2019-03-26T10:31:00,043 INFO  http.SdkOperationLog:60 - 操作说明：获取所有项目配置表
+2019-03-26T10:31:00,043 INFO  http.SdkOperationLog:61 - 参数：无
+2019-03-26T10:31:00,043 INFO  http.SdkOperationLog:62 - ****************
+2019-03-26T10:31:00,036 INFO  http.AccountOperationLog:192 - -----------------
+2019-03-26T10:31:00,087 INFO  http.AccountOperationLog:193 - 账号：admin
+2019-03-26T10:31:00,087 INFO  http.AccountOperationLog:194 - 时间：2019-03-26 10:30:59
+2019-03-26T10:31:00,087 INFO  http.AccountOperationLog:195 - ip：192.168.1.254
+2019-03-26T10:31:00,087 INFO  http.AccountOperationLog:196 - 请求路径：/api/getresourcelist
+2019-03-26T10:31:00,088 INFO  http.AccountOperationLog:197 - 请求方式：POST
+2019-03-26T10:31:00,088 INFO  http.AccountOperationLog:198 - 模块：资源管理
+2019-03-26T10:31:00,088 INFO  http.AccountOperationLog:199 - 操作说明：根据资源分配获取项目列表
+2019-03-26T10:31:00,088 INFO  http.AccountOperationLog:200 - 参数：无
+2019-03-26T10:31:00,088 INFO  http.AccountOperationLog:201 - ****************
+2019-03-26T10:31:00,319 INFO  http.DataOperationLog:125 - 账号：admin
+2019-03-26T10:31:00,320 INFO  http.DataOperationLog:126 - 时间：2019-03-26 10:31:00
+2019-03-26T10:31:00,320 INFO  http.DataOperationLog:127 - ip：192.168.1.254
+2019-03-26T10:31:00,320 INFO  http.DataOperationLog:128 - 请求路径：/names
+2019-03-26T10:31:00,320 INFO  http.DataOperationLog:129 - 请求方式：GET
+2019-03-26T10:31:00,320 INFO  http.DataOperationLog:130 - ****************
+2019-03-26T10:31:00,648 INFO  http.DataOperationLog:200 - 账号：admin
+2019-03-26T10:31:00,648 INFO  http.DataOperationLog:201 - 时间：2019-03-26 10:31:00
+2019-03-26T10:31:00,648 INFO  http.DataOperationLog:202 - ip：192.168.1.254
+2019-03-26T10:31:00,648 INFO  http.DataOperationLog:203 - 请求路径：/channel
+2019-03-26T10:31:00,648 INFO  http.DataOperationLog:204 - 请求方式：GET
+2019-03-26T10:31:00,648 INFO  http.DataOperationLog:205 - ****************
+2019-03-26T10:31:00,711 INFO  http.DataOperationLog:245 - 账号：admin
+2019-03-26T10:31:00,712 INFO  http.DataOperationLog:246 - 时间：2019-03-26 10:31:00
+2019-03-26T10:31:00,712 INFO  http.DataOperationLog:247 - ip：192.168.1.254
+2019-03-26T10:31:00,712 INFO  http.DataOperationLog:248 - 请求路径：/project
+2019-03-26T10:31:00,712 INFO  http.DataOperationLog:249 - 请求方式：GET
+2019-03-26T10:31:00,713 INFO  http.DataOperationLog:250 - ****************
+2019-03-26T10:32:16,111 ERROR http.SdkHttpVerticle:187 - 解析凭证失败
+io.vertx.ext.web.handler.impl.HttpStatusException: Unauthorized
+2019-03-26T10:32:49,775 INFO  http.DataOperationLog:125 - 账号：admin
+2019-03-26T10:32:49,776 INFO  http.DataOperationLog:126 - 时间：2019-03-26 10:32:49
+2019-03-26T10:32:49,776 INFO  http.DataOperationLog:127 - ip：192.168.1.144
+2019-03-26T10:32:49,776 INFO  http.DataOperationLog:128 - 请求路径：/names
+2019-03-26T10:32:49,776 INFO  http.DataOperationLog:129 - 请求方式：GET
+2019-03-26T10:32:49,781 INFO  http.SdkOperationLog:53 - -----------------
+2019-03-26T10:32:49,781 INFO  http.SdkOperationLog:54 - 账号：admin
+2019-03-26T10:32:49,781 INFO  http.SdkOperationLog:55 - 时间：2019-03-26 10:32:49
+2019-03-26T10:32:49,781 INFO  http.SdkOperationLog:56 - ip：192.168.1.144
+2019-03-26T10:32:49,781 INFO  http.SdkOperationLog:57 - 请求路径：/api/projectconfig/1/2
+2019-03-26T10:32:49,781 INFO  http.SdkOperationLog:58 - 请求方式：GET
+2019-03-26T10:32:49,782 INFO  http.SdkOperationLog:59 - 模块：项目配置表管理
+2019-03-26T10:32:49,782 INFO  http.SdkOperationLog:60 - 操作说明：获取所有项目配置表
+2019-03-26T10:32:49,782 INFO  http.SdkOperationLog:61 - 参数：无
+2019-03-26T10:32:49,783 INFO  http.SdkOperationLog:62 - ****************
+2019-03-26T10:32:49,790 INFO  http.AccountOperationLog:192 - -----------------
+2019-03-26T10:32:49,791 INFO  http.AccountOperationLog:193 - 账号：admin
+2019-03-26T10:32:49,791 INFO  http.AccountOperationLog:194 - 时间：2019-03-26 10:32:49
+2019-03-26T10:32:49,791 INFO  http.AccountOperationLog:195 - ip：192.168.1.144
+2019-03-26T10:32:49,776 INFO  http.DataOperationLog:130 - ****************
+2019-03-26T10:32:49,791 INFO  http.AccountOperationLog:196 - 请求路径：/api/getresourcelist
+2019-03-26T10:32:49,808 INFO  http.AccountOperationLog:197 - 请求方式：POST
+2019-03-26T10:32:49,808 INFO  http.AccountOperationLog:198 - 模块：资源管理
+2019-03-26T10:32:49,808 INFO  http.AccountOperationLog:199 - 操作说明：根据资源分配获取项目列表
+2019-03-26T10:32:49,819 INFO  http.AccountOperationLog:200 - 参数：无
+2019-03-26T10:32:49,819 INFO  http.AccountOperationLog:201 - ****************
+2019-03-26T10:32:49,929 INFO  http.DataOperationLog:200 - 账号：admin
+2019-03-26T10:32:49,930 INFO  http.DataOperationLog:201 - 时间：2019-03-26 10:32:49
+2019-03-26T10:32:49,930 INFO  http.DataOperationLog:202 - ip：192.168.1.144
+2019-03-26T10:32:49,930 INFO  http.DataOperationLog:203 - 请求路径：/channel
+2019-03-26T10:32:49,981 INFO  http.DataOperationLog:204 - 请求方式：GET
+2019-03-26T10:32:49,981 INFO  http.DataOperationLog:205 - ****************
+2019-03-26T10:32:50,106 INFO  http.DataOperationLog:245 - 账号：admin
+2019-03-26T10:32:50,106 INFO  http.DataOperationLog:246 - 时间：2019-03-26 10:32:50
+2019-03-26T10:32:50,106 INFO  http.DataOperationLog:247 - ip：192.168.1.144
+2019-03-26T10:32:50,106 INFO  http.DataOperationLog:248 - 请求路径：/project
+2019-03-26T10:32:50,124 INFO  http.DataOperationLog:249 - 请求方式：GET
+2019-03-26T10:32:50,124 INFO  http.DataOperationLog:250 - ****************
+2019-03-26T10:40:04,666 ERROR http.SdkHttpVerticle:187 - 解析凭证失败
+io.vertx.ext.web.handler.impl.HttpStatusException: Unauthorized
+2019-03-26T10:40:09,579 ERROR http.SdkHttpVerticle:187 - 解析凭证失败
+io.vertx.ext.web.handler.impl.HttpStatusException: Unauthorized
+2019-03-26T10:41:02,783 ERROR http.SdkHttpVerticle:187 - 解析凭证失败
+io.vertx.ext.web.handler.impl.HttpStatusException: Unauthorized
+2019-03-26T10:41:07,930 ERROR http.SdkHttpVerticle:187 - 解析凭证失败
 io.vertx.ext.web.handler.impl.HttpStatusException: Unauthorized

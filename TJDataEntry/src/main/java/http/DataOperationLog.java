@@ -272,6 +272,37 @@ public class DataOperationLog {
                     break;
                 }
             case "POST":
+
+                if (requestPath.contains("/dailyadtype_preview")) {
+                    logger.info("账号：" + name);
+                    logger.info("时间：" + time);
+                    logger.info("ip：" + ip);
+                    logger.info("请求路径：" + requestPath);  ///user/info
+                    logger.info("请求方式：" + requestMethod);  ///GET
+                    logger.info("****************");
+                    advertisementService.update(jdbcClient, sql, new JsonArray().add(name).add(time).add(ip).add("数据分析")
+                            .add(requestPath).add(requestMethod).add("展次表预览").add(context.request().getParam("name")+context.request().getParam("program_mark")+context.request().getParam("note")+context.request().getParam("introduce")).add(date).add(context.request().getHeader("UserAgent"))).setHandler(rs -> {
+                        if (rs.failed()) {
+                            logger.error("插入日志失败---》", rs.cause());
+                        }
+                    });
+                    break;
+                }
+                if (requestPath.contains("/daily_preview")) {
+                    logger.info("账号：" + name);
+                    logger.info("时间：" + time);
+                    logger.info("ip：" + ip);
+                    logger.info("请求路径：" + requestPath);  ///user/info
+                    logger.info("请求方式：" + requestMethod);  ///GET
+                    logger.info("****************");
+                    advertisementService.update(jdbcClient, sql, new JsonArray().add(name).add(time).add(ip).add("数据分析")
+                            .add(requestPath).add(requestMethod).add("总收益表预览").add(context.request().getParam("name")+context.request().getParam("program_mark")+context.request().getParam("note")+context.request().getParam("introduce")).add(date).add(context.request().getHeader("UserAgent"))).setHandler(rs -> {
+                        if (rs.failed()) {
+                            logger.error("插入日志失败---》", rs.cause());
+                        }
+                    });
+                    break;
+                }
                 if (requestPath.contains("/adtype")) {
                     logger.info("账号：" + name);
                     logger.info("时间：" + time);
@@ -434,8 +465,6 @@ public class DataOperationLog {
                     logger.info(ip);
                     logger.info(date.toString());
                     logger.info(context.request().getHeader("UserAgent"));
-
-
                     advertisementService.update(jdbcClient, sql, new JsonArray().add(name).add(time).add(ip).add("数据分析")
                             .add(requestPath).add(requestMethod).add("预览产品arpu表").add("无").add(date).add(context.request().getHeader("UserAgent"))).setHandler(rs -> {
                         if (rs.failed()) {

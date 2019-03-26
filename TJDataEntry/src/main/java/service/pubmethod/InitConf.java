@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.entity.ArpuData;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -21,6 +22,7 @@ public class InitConf {
         InputStream queriesInputStream=null;
         Properties queriesProps = new Properties();
         try {
+            //queriesInputStream=new FileInputStream("databasecon.properties");
             queriesInputStream=this.getClass().getClassLoader().getResourceAsStream("databasecon.properties");
             queriesProps.load(queriesInputStream);
             queriesInputStream.close();
