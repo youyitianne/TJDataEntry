@@ -115,6 +115,7 @@ public class SdkHttpVerticle extends AbstractVerticle {
     }
 
     /**
+     * 指定一张表
      * api获取SDK数据
      *
      * @param context
@@ -133,13 +134,14 @@ public class SdkHttpVerticle extends AbstractVerticle {
     }
 
     /**
+     * 最新的一张表
      * api获取SDK数据
      *
      * @param context
      */
     private void getSDKHandler_new(RoutingContext context) {
-        String package_name = context.request().getParam("package_name");
-        String channel_mark = context.request().getParam("channel_mark");
+        String package_name = context.request().getParam("package_name").trim();
+        String channel_mark = context.request().getParam("channel_mark").trim();
         if (package_name == null || channel_mark == null) {
             JsonObject result = new JsonObject();
             result.put("message", "参数不完整");
@@ -466,6 +468,12 @@ public class SdkHttpVerticle extends AbstractVerticle {
         String versioncode_update_version = context.getBodyAsJson().getString("versioncode_update_version");
         String note = context.getBodyAsJson().getString("note");
         String sdkstatus = context.getBodyAsJson().getString("sdkstatus");
+        String icon=context.getBodyAsJson().getString("icon");
+        String splash=context.getBodyAsJson().getString("splash");
+        JsonObject keystore=context.getBodyAsJson().getJsonObject("keystore");
+        System.out.println(keystore);
+        logger.info(icon);
+        logger.info(splash);
         JsonObject jsonObject = context.getBodyAsJson().getJsonObject("form");
         JsonArray form = jsonObject.getJsonArray("domains");
         JsonArray select = jsonObject.getJsonArray("select");
@@ -515,11 +523,13 @@ public class SdkHttpVerticle extends AbstractVerticle {
         }
         try {
             sdk_information.add(timevalue).add(app_name).add(package_name).add(version_online_version).add(version_update_version).add(versioncode_online_version).add(versioncode_update_version).add(note)
-                    .add(channel_mark).add(sdkstatus).add(checkbox).add(second_checkbox).add(id);
+                    .add(channel_mark).add(sdkstatus).add(checkbox).add(second_checkbox).add(icon).add(splash)
+                    .add(keystore.getString("filepath")).add(keystore.getString("keystorePass")).add(keystore.getString("keyaliasName")).add(keystore.getString("keyaliasPass")).add(id);
             sdk_paramter_delete.add(timevalue).add(app_name).add(channel_mark);
         } catch (Exception e) {
             logger.error(e.toString());
             badRequest(context);
+            return;
         }
         dbService.query(sql.get(SqlConstants.PROJECT_CONFIG_INFORMATION_UPDATE), sdk_information, result -> {
             dbService.query(sql.get(SqlConstants.PROJECT_CONFIG_PARAMTER_DELETE), sdk_paramter_delete, result1 -> {
@@ -557,7 +567,7 @@ public class SdkHttpVerticle extends AbstractVerticle {
     }
 
     /**
-     * 创建项目配置
+     * 发布项目配置
      *
      * @param context
      */
@@ -566,8 +576,8 @@ public class SdkHttpVerticle extends AbstractVerticle {
         List<JsonArray> paramters = new ArrayList<>();
         Long timevalue = context.getBodyAsJson().getLong("timevalue");
         String app_name = context.getBodyAsJson().getString("app_name");
-        String package_name = context.getBodyAsJson().getString("package_name");
-        String channel_mark = context.getBodyAsJson().getString("channel_mark");
+        String package_name = context.getBodyAsJson().getString("package_name").trim();
+        String channel_mark = context.getBodyAsJson().getString("channel_mark").trim();
         String version_online_version = context.getBodyAsJson().getString("version_online_version");
         String version_update_version = context.getBodyAsJson().getString("version_update_version");
         String versioncode_online_version = context.getBodyAsJson().getString("versioncode_online_version");
@@ -575,6 +585,21 @@ public class SdkHttpVerticle extends AbstractVerticle {
         String note = context.getBodyAsJson().getString("note");
         String sdkstatus = context.getBodyAsJson().getString("sdkstatus");
         String publish = context.getBodyAsJson().getString("publish");
+        String icon=context.getBodyAsJson().getString("icon");
+        String splash=context.getBodyAsJson().getString("splash");
+        if (icon==null){
+            icon=null;
+        }
+        if (splash==null){
+            splash=null;
+        }
+
+
+        JsonObject keystore=context.getBodyAsJson().getJsonObject("keystore");
+        System.out.println(keystore);
+        logger.info(icon);
+        logger.info(splash);
+
         JsonObject jsonObject = context.getBodyAsJson().getJsonObject("form");
         JsonArray select = jsonObject.getJsonArray("select");
         JsonArray form = jsonObject.getJsonArray("domains");
@@ -625,7 +650,9 @@ public class SdkHttpVerticle extends AbstractVerticle {
         }
         try {
             sdk_information.add(timevalue).add(app_name).add(package_name).add(version_online_version).add(version_update_version)
-                    .add(versioncode_online_version).add(versioncode_update_version).add(channel_mark).add(sdkstatus).add(publish).add(checkbox).add(second_checkbox).add(note);
+                    .add(versioncode_online_version).add(versioncode_update_version).add(channel_mark).add(sdkstatus).add(publish).add(checkbox).add(second_checkbox).add(note)
+                    .add(icon).add(splash)
+                    .add(keystore.getString("filepath")).add(keystore.getString("keystorePass")).add(keystore.getString("keyaliasName")).add(keystore.getString("keyaliasPass"));
         } catch (Exception e) {
             logger.error(e.toString());
             badRequest(context);
@@ -681,8 +708,8 @@ public class SdkHttpVerticle extends AbstractVerticle {
      * @param context
      */
     private void projectconfigCreateHandler_pro(RoutingContext context) {
-        String package_name = context.getBodyAsJson().getString("package_name");
-        String channel_mark = context.getBodyAsJson().getString("channel_mark");
+        String package_name = context.getBodyAsJson().getString("package_name").trim();
+        String channel_mark = context.getBodyAsJson().getString("channel_mark").trim();
         Long date=context.getBodyAsJson().getLong("date");
         if (package_name==null||channel_mark==null||date==null){
             badRequest(context);
@@ -691,7 +718,7 @@ public class SdkHttpVerticle extends AbstractVerticle {
         JsonArray sdk_information = new JsonArray()
                 .add(date)
                 .add("暂无").add(package_name).add("暂无").add("暂无").add("暂无") .add("暂无")
-                .add(channel_mark).add(1).add(0).add("暂无").add("暂无").add("暂无");
+                .add(channel_mark).add(1).add(0).add("暂无").add("暂无").add("暂无").add("暂无").add("暂无").add("暂无").add("暂无").add("暂无").add("暂无");
         dbService.fetchDatas(sql.get(SqlConstants.PROJECT_CONFIG_INFORMATION_COUNT), new JsonArray().add(package_name).add(channel_mark), rs -> {
             if (rs.succeeded()) {
                 List<JsonObject> jsonObjects = rs.result();
@@ -813,6 +840,7 @@ public class SdkHttpVerticle extends AbstractVerticle {
 
 
     /**
+     * SDK获取json格式key表（一张）
      * 从数据库获取项目配置表，拼接(api)
      *
      * @param sql
@@ -897,6 +925,7 @@ public class SdkHttpVerticle extends AbstractVerticle {
     }
 
     /**
+     * SDK获取json格式key表（最新）
      * 从数据库获取项目配置表，拼接(api)
      *
      * @param sql
@@ -915,11 +944,8 @@ public class SdkHttpVerticle extends AbstractVerticle {
                         return;
                     }
                     List<JsonObject> paramter = result1.result();
-
                     JsonObject sdk_config = sdk_information.get(0);
-
                     JsonObject configtable = new JsonObject();
-
                     Integer date = sdk_config.getInteger("date");
                     String channel = sdk_config.getString("channel_mark").trim();
                     configtable.put("productName", sdk_config.getString("app_name").trim());
@@ -927,6 +953,27 @@ public class SdkHttpVerticle extends AbstractVerticle {
                     configtable.put("channel", sdk_config.getString("channel_mark").trim());
                     configtable.put("versionName", sdk_config.getString("version_update").trim());
                     configtable.put("versionCode", Integer.valueOf(sdk_config.getString("versioncode_update_version").trim()));
+
+                    if (!"暂无".equals(sdk_config.getString("icon").trim())){
+                        configtable.put("defaultIcon", "http://192.168.1.144:8087/getFile?path="+sdk_config.getString("icon").trim());
+                    }
+                    if (!"暂无".equals(sdk_config.getString("splash").trim())){
+                        configtable.put("splashImage", "http://192.168.1.144:8087/getFile?path="+sdk_config.getString("splash").trim());
+                    }
+                    if (!"暂无".equals(sdk_config.getString("keystorePath").trim())){
+                        configtable.put("keystorePath", "http://192.168.1.144:8087/getFile?path="+sdk_config.getString("keystorePath").trim());
+                    }
+                    if (!"暂无".equals(sdk_config.getString("keystorePass").trim())){
+                        configtable.put("keystorePass", sdk_config.getString("keystorePass").trim());
+                    }
+                    if (!"暂无".equals(sdk_config.getString("keyaliasName").trim())){
+                        configtable.put("keyaliasName", sdk_config.getString("keyaliasName").trim());
+                    }
+                    if (!"暂无".equals(sdk_config.getString("keyaliasPass").trim())){
+                        configtable.put("keyaliasPass", sdk_config.getString("keyaliasPass").trim());
+                    }
+
+
 
                     JsonObject success = new JsonObject();
                     success.put("basic", configtable);

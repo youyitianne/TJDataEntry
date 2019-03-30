@@ -11,12 +11,10 @@
 
     <artifactId>TJSDKEntry</artifactId>
 
-
     <properties>
         <vertx.version>3.5.2</vertx.version>
         <main.verticle>MainVerticle</main.verticle>
     </properties>
-
 
     <dependencies>
         <dependency>

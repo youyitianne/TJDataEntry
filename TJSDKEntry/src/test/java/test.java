@@ -33,10 +33,10 @@ public class test {
     }
 
     @Test
-    public void test3() throws Exception{
-        JsonObject jsonObject=new JsonObject();
-        jsonObject.put("1","true");
-        jsonObject.put("2",true);
+    public void test3() throws Exception {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.put("1", "true");
+        jsonObject.put("2", true);
         System.out.println(jsonObject);
     }
 
@@ -101,5 +101,13 @@ public class test {
         }
 
     }
+
+
+    @Test
+    public void test5() throws Exception{
+      String icon="http://192.168.1.144:8087/getFile?path=TJMission\\res\\088a695d-9ff0-482a-9673-50b556335a18&name=shezhi.png";
+        System.out.println(icon.substring(0,icon.indexOf("&name=")));
+    }
+
 
 }

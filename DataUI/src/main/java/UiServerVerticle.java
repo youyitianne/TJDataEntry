@@ -50,6 +50,7 @@ public class UiServerVerticle extends AbstractVerticle {
         //静态资源处理
         router.route("/static/*").handler(StaticHandler.create());
         //静态资源处理
+        router.get("/favicon.ico").handler(this::icoHandler);
         router.route("/*").handler(this::loginHandler);
 
         int portNumber = Integer.valueOf(conf.get(ConfigConstants.HTTP_PORT));
@@ -63,6 +64,10 @@ public class UiServerVerticle extends AbstractVerticle {
                 startFuture.fail(ar.cause());
             }
         });
+    }
+
+    private void icoHandler(RoutingContext context) {
+        context.response().sendFile("webroot/favicon.ico");
     }
 
     private void loginHandler(RoutingContext context) {
