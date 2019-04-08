@@ -42,6 +42,7 @@ import io.vertx.serviceproxy.ServiceExceptionMessageCodec;
 import io.vertx.core.json.JsonArray;
 import java.util.List;
 import io.vertx.ext.jdbc.JDBCClient;
+import io.vertx.core.Vertx;
 import database.MissionDatabaseService;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.AsyncResult;
@@ -134,6 +135,7 @@ public class MissionDatabaseServiceVertxProxyHandler extends ProxyHandler {
           service.batch((java.lang.String)json.getValue("sqlQuery"), convertList(json.getJsonArray("list").getList()), createHandler(msg));
           break;
         }
+
 
         default: {
           throw new IllegalStateException("Invalid action: " + action);

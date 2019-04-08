@@ -45,14 +45,14 @@ public class MissionDatabaseVerticle extends AbstractVerticle {
 
 
     List<String> lists = Arrays.asList(
-            "CREATE TABLE if not exists `fileinfo` (\n" +
+            "CREATE TABLE if not exists  `fileinfo` (\n" +
                     "  `fileguid` varchar(255) NOT NULL,\n" +
                     "  `filename` varchar(255) DEFAULT NULL,\n" +
                     "  `date` mediumtext,\n" +
                     "  PRIMARY KEY (`fileguid`),\n" +
                     "  UNIQUE KEY `guid_UNIQUE` (`fileguid`)\n" +
                     ") ENGINE=InnoDB DEFAULT CHARSET=utf8;",
-            "CREATE TABLE if not exists `keystoreinfo` (\n" +
+            "CREATE TABLE  if not exists `keystoreinfo` (\n" +
                     "  `keystoreguid` varchar(255) NOT NULL,\n" +
                     "  `date` mediumtext,\n" +
                     "  `keystoreName` varchar(255) DEFAULT NULL,\n" +

@@ -2,6 +2,7 @@ package http;
 
 import database.AccountDatabaseService;
 import database.ConfigConstants;
+import database.Load;
 import database.SqlQuery;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
@@ -48,8 +49,8 @@ public class AccountHttpVerticle extends AbstractVerticle {
     public void start(Future<Void> startFuture) throws Exception {
         accountDbQueue = config().getString(CONFIG_ACCOUNTDB_QUEUE, "accountdb.queue");
         dbService = AccountDatabaseService.createProxy(vertx, CONFIG_ACCOUNTDB_QUEUE);
-        AccountHttpService method = new AccountHttpService();
-        HashMap<ConfigConstants, String> conf = method.loadSqlQueries();
+        Load load=new Load();
+        HashMap<ConfigConstants, String> conf = load.loadConfQueries();
         Router router = Router.router(vertx);
 
         JsonObject config = new JsonObject()

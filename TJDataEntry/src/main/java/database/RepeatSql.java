@@ -18,7 +18,8 @@ public class RepeatSql {
 
     public static final String DEL_ADLIST = "delete from advertisement.advertisingdata where id in ";
 
-    public static final String DEL_ADLIST_ONE = "delete from advertisement.advertisingdata where id = ? ";
+    public static final String DEL_ADLIST_ONE = "delete from advertisement.advertisingdata where id in ";
+   // public static final String DEL_ADLIST_ONE = "delete from advertisement.advertisingdata where id = ? ";
 
     public static final String GET_USER_REPEAT1=" select * from advertisement.userdata a \n" +
             "where \n" +

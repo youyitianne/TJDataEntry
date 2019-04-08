@@ -36,6 +36,7 @@ public class SdkHttpVerticle extends AbstractVerticle {
     private JWTAuthHandler jwtAuthHandler;
     private JWTAuth jwtAuth = null;
     private SdkOperationLog operationLog = new SdkOperationLog();
+    private static final String domainName="http://192.168.1.144:8087";
 
     @Override
     public void start(Future<Void> startFuture) {
@@ -583,6 +584,7 @@ public class SdkHttpVerticle extends AbstractVerticle {
         String versioncode_online_version = context.getBodyAsJson().getString("versioncode_online_version");
         String versioncode_update_version = context.getBodyAsJson().getString("versioncode_update_version");
         String note = context.getBodyAsJson().getString("note");
+//        String publisher = context.getBodyAsJson().getString("publisher");
         String sdkstatus = context.getBodyAsJson().getString("sdkstatus");
         String publish = context.getBodyAsJson().getString("publish");
         String icon=context.getBodyAsJson().getString("icon");
@@ -593,8 +595,6 @@ public class SdkHttpVerticle extends AbstractVerticle {
         if (splash==null){
             splash=null;
         }
-
-
         JsonObject keystore=context.getBodyAsJson().getJsonObject("keystore");
         System.out.println(keystore);
         logger.info(icon);
@@ -657,10 +657,13 @@ public class SdkHttpVerticle extends AbstractVerticle {
             logger.error(e.toString());
             badRequest(context);
         }
+        logger.info("SDK 配置表发布 start---");
+
         if (publish.equals("1")) {
             dbService.query(sql.get(SqlConstants.PROJECT_CONFIG_INFORMATION_INSERT), sdk_information, result -> {
                 dbService.batch(sql.get(SqlConstants.PROJECT_CONFIG_PARAMTER_INSERT), paramters, result1 -> {
                     if (result.succeeded() && result1.succeeded()) {
+                        logger.info("SDK 配置表发布成功");
                         context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", "成功")));
                     } else {
                         if (result.failed()) {
@@ -674,31 +677,8 @@ public class SdkHttpVerticle extends AbstractVerticle {
                 });
             });
         } else {
-            dbService.fetchDatas(sql.get(SqlConstants.PROJECT_CONFIG_INFORMATION_COUNT), new JsonArray().add(package_name).add(channel_mark), rs -> {
-                if (rs.succeeded()) {
-                    List<JsonObject> jsonObjects = rs.result();
-                    if (jsonObjects.get(0).getInteger("count(*)").equals(0)) {
-                        dbService.query(sql.get(SqlConstants.PROJECT_CONFIG_INFORMATION_INSERT), sdk_information, result -> {
-                            dbService.batch(sql.get(SqlConstants.PROJECT_CONFIG_PARAMTER_INSERT), paramters, result1 -> {
-                                if (result.succeeded() && result1.succeeded()) {
-                                    context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", "成功")));
-                                } else {
-                                    if (result.failed()) {
-                                        logger.error("sdk_information 插入失败", result1.cause());
-                                    }
-                                    if (result1.failed()) {
-                                        logger.error("paramters 插入失败", result.cause());
-                                    }
-                                    badRequest(context);
-                                }
-                            });
-                        });
-                    } else {
-                        context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", "失败")));
-                    }
-                }
-            });
 
+            context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", "失败")));
         }
     }
 
@@ -955,13 +935,13 @@ public class SdkHttpVerticle extends AbstractVerticle {
                     configtable.put("versionCode", Integer.valueOf(sdk_config.getString("versioncode_update_version").trim()));
 
                     if (!"暂无".equals(sdk_config.getString("icon").trim())){
-                        configtable.put("defaultIcon", "http://192.168.1.144:8087/getFile?path="+sdk_config.getString("icon").trim());
+                        configtable.put("defaultIcon", domainName+"/file?path="+sdk_config.getString("icon").trim());
                     }
                     if (!"暂无".equals(sdk_config.getString("splash").trim())){
-                        configtable.put("splashImage", "http://192.168.1.144:8087/getFile?path="+sdk_config.getString("splash").trim());
+                        configtable.put("splashImage", domainName+"/file?path="+sdk_config.getString("splash").trim());
                     }
                     if (!"暂无".equals(sdk_config.getString("keystorePath").trim())){
-                        configtable.put("keystorePath", "http://192.168.1.144:8087/getFile?path="+sdk_config.getString("keystorePath").trim());
+                        configtable.put("keystorePath", domainName+"/file?path="+sdk_config.getString("keystorePath").trim());
                     }
                     if (!"暂无".equals(sdk_config.getString("keystorePass").trim())){
                         configtable.put("keystorePass", sdk_config.getString("keystorePass").trim());

@@ -20,7 +20,7 @@ public class InitConf {
         InputStream queriesInputStream=null;
         Properties queriesProps = new Properties();
         try {
-            queriesInputStream=new FileInputStream("conf.properties");
+            queriesInputStream=new FileInputStream("confTJPay/conf.properties");
             //queriesInputStream=this.getClass().getClassLoader().getResourceAsStream("conf.properties");
             queriesProps.load(queriesInputStream);
             queriesInputStream.close();
@@ -46,7 +46,7 @@ public class InitConf {
         InputStream queriesInputStream=null;
         Properties queriesProps = new Properties();
         try {
-            queriesInputStream=new FileInputStream("sql.properties");
+            queriesInputStream=new FileInputStream("confTJPay/sql.properties");
             //queriesInputStream=this.getClass().getClassLoader().getResourceAsStream("sql.properties");
             queriesProps.load(queriesInputStream);
             queriesInputStream.close();

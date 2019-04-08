@@ -35,6 +35,7 @@ public class AccountDatabaseServiceImpl implements AccountDatabaseService {
                         readyHandler.handle(Future. succeededFuture(this));
                     }
                 });
+                connection.close();
             }
         });
     }

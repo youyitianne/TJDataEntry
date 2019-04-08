@@ -129,7 +129,18 @@
             <version>1.0.2</version>
         </dependency>
 
-
+        <!--服务代理和代码生成 -->
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-service-proxy</artifactId>
+            <version>3.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-codegen</artifactId>
+            <version>3.5.0</version>
+            <scope>provided</scope>
+        </dependency>
 
     </dependencies>
 

@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="DataUI" />
         <module name="TJDataEntry" />
+        <module name="TJResourceStoreEntry" />
         <module name="TJShieldingSystem" />
       </profile>
       <profile name="Annotation profile for TJSDKEntry" enabled="true">
@@ -43,6 +44,9 @@
         <module name="TJAccountEntry" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="TJDataUIEntry" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
@@ -50,6 +54,7 @@
       <module name="TJMission" options="-AoutputDirectory=F:\workspace\TJServerKit\TJMission/src/main" />
       <module name="TJPayEntry" options="-AoutputDirectory=F:\workspace\TJServerKit\TJPayEntry/src/main" />
       <module name="TJSDKEntry" options="-AoutputDirectory=F:\workspace\TJServerKit\TJSDKEntry/src/main" />
+      <module name="TJShieldingSystem" options="" />
     </option>
   </component>
 </project>

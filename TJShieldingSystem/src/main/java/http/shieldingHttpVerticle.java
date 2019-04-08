@@ -24,7 +24,8 @@ public class shieldingHttpVerticle extends AbstractVerticle {
     private Logger logger = LoggerFactory.getLogger(shieldingHttpVerticle.class.getName());
     private Method method = new Method();
     HttpMethodClient client = new HttpMethodClient();
-    String domainName = "console.tomatojoy.com:8085";
+    //String domainName = "192.168.1.101:8085";
+    String domainName = "console.tomatojoy.cn";
 
     @Override
     public void start(Future<Void> startFuture) throws Exception {

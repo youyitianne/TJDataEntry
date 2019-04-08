@@ -10,6 +10,7 @@ import io.vertx.serviceproxy.ServiceBinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -24,7 +25,8 @@ public class AccountDatabaseVerticle extends AbstractVerticle {
 
     @Override
     public void start(Future<Void> startFuture) {
-        HashMap<ConfigConstants, String> conf = loadSqlQueries();
+        Load load=new Load();
+        HashMap<ConfigConstants, String> conf = load.loadConfQueries();
 
         JsonObject jsonObject_conf = new JsonObject()
                 .put("url", conf.get(ConfigConstants.DATABASE_URL))
@@ -51,34 +53,40 @@ public class AccountDatabaseVerticle extends AbstractVerticle {
     }
 
     List<String> lists = Arrays.asList(
-            "CREATE TABLE  if not exists `tjaccount`.`roles_perms` (\n" +
+            "CREATE TABLE  if not exists  `operationlog` (\n" +
+                    "  `id` int(11) NOT NULL AUTO_INCREMENT,\n" +
+                    "  `accout` varchar(255) DEFAULT NULL,\n" +
+                    "  `time` varchar(255) DEFAULT NULL,\n" +
+                    "  `ip` varchar(255) DEFAULT NULL,\n" +
+                    "  `module` varchar(255) DEFAULT NULL,\n" +
+                    "  `path` varchar(255) DEFAULT NULL,\n" +
+                    "  `method` varchar(255) DEFAULT NULL,\n" +
+                    "  `instruction` varchar(255) DEFAULT NULL,\n" +
+                    "  `parameter` varchar(255) DEFAULT NULL,\n" +
+                    "  `useragent` varchar(3000) DEFAULT NULL,\n" +
+                    "  `date` bigint(20) DEFAULT NULL,\n" +
+                    "  PRIMARY KEY (`id`)\n" +
+                    ") ENGINE=InnoDB AUTO_INCREMENT=27654 DEFAULT CHARSET=utf8;",
+            "CREATE TABLE  if not exists  `roles_perms` (\n" +
                     "  `id` int(11) NOT NULL AUTO_INCREMENT,\n" +
                     "  `role` varchar(255) DEFAULT NULL,\n" +
                     "  `perm` varchar(255) DEFAULT NULL,\n" +
                     "  `note` varchar(45) DEFAULT NULL,\n" +
                     "  PRIMARY KEY (`id`)\n" +
                     ") ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;",
-            "CREATE TABLE  if not exists `tjaccount`.`user` (\n" +
+            "CREATE TABLE  if not exists  `USER` (\n" +
                     "  `id` int(11) NOT NULL AUTO_INCREMENT,\n" +
                     "  `username` varchar(255) DEFAULT NULL,\n" +
-                    "  `psd` varchar(45) DEFAULT NULL,\n" +
-                    "  `department` varchar(45) DEFAULT NULL,\n" +
-                    "  `position` varchar(45) DEFAULT NULL,\n" +
-                    "  `note` varchar(45) DEFAULT NULL,\n" +
                     "  `password` varchar(255) DEFAULT NULL,\n" +
                     "  `password_salt` varchar(255) DEFAULT NULL,\n" +
+                    "  `psd` varchar(45) DEFAULT NULL,\n" +
+                    "  `note` varchar(45) DEFAULT NULL,\n" +
+                    "  `position` varchar(45) DEFAULT NULL,\n" +
+                    "  `department` varchar(45) DEFAULT NULL,\n" +
                     "  PRIMARY KEY (`id`),\n" +
                     "  UNIQUE KEY `username_UNIQUE` (`username`)\n" +
-                    ") ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;",
-            "CREATE TABLE if not exists `tjaccount`.`user_resource` (\n" +
-                    "  `id` int(11) NOT NULL AUTO_INCREMENT,\n" +
-                    "  `username` varchar(45) DEFAULT NULL,\n" +
-                    "  `username_mark` int(11) DEFAULT NULL,\n" +
-                    "  `resource_mark` int(11) DEFAULT NULL,\n" +
-                    "  `resource_name` varchar(45) DEFAULT NULL,\n" +
-                    "  PRIMARY KEY (`id`)\n" +
-                    ") ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;",
-            "CREATE TABLE if not exists `tjaccount`.`user_roles` (\n" +
+                    ") ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8;",
+            "CREATE TABLE  if not exists  `user_roles` (\n" +
                     "  `id` int(11) NOT NULL AUTO_INCREMENT,\n" +
                     "  `username` varchar(255) DEFAULT NULL,\n" +
                     "  `username_mark` varchar(45) DEFAULT NULL,\n" +
@@ -87,35 +95,27 @@ public class AccountDatabaseVerticle extends AbstractVerticle {
                     "  `role_describe` varchar(45) DEFAULT NULL,\n" +
                     "  `note` varchar(45) DEFAULT NULL,\n" +
                     "  PRIMARY KEY (`id`)\n" +
-                    ") ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8;",
-            "CREATE TABLE if not exists `tjaccount`.`userperms` (\n" +
+                    ") ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8;",
+            "CREATE TABLE  if not exists  `user_resource` (\n" +
+                    "  `id` int(11) NOT NULL AUTO_INCREMENT,\n" +
+                    "  `username` varchar(45) DEFAULT NULL,\n" +
+                    "  `username_mark` int(11) DEFAULT NULL,\n" +
+                    "  `resource_mark` int(11) DEFAULT NULL,\n" +
+                    "  `resource_name` varchar(45) DEFAULT NULL,\n" +
+                    "  PRIMARY KEY (`id`)\n" +
+                    ") ENGINE=InnoDB AUTO_INCREMENT=776 DEFAULT CHARSET=utf8;",
+            "CREATE TABLE  if not exists  `userperms` (\n" +
                     "  `id` int(11) NOT NULL AUTO_INCREMENT,\n" +
                     "  `username` varchar(45) DEFAULT NULL,\n" +
                     "  `username_mark` varchar(45) DEFAULT NULL,\n" +
                     "  `permission` varchar(45) DEFAULT NULL,\n" +
                     "  PRIMARY KEY (`id`)\n" +
-                    ") ENGINE=InnoDB AUTO_INCREMENT=341 DEFAULT CHARSET=utf8;"
+                    ") ENGINE=InnoDB AUTO_INCREMENT=1666 DEFAULT CHARSET=utf8;\n"
+
+
     );
 
-    private HashMap<ConfigConstants, String> loadSqlQueries() {
-        InputStream queriesInputStream=null;
-        Properties queriesProps = new Properties();
-        try {
-            queriesInputStream=this.getClass().getClassLoader().getResourceAsStream("conf.properties");
-            queriesProps.load(queriesInputStream);
-            queriesInputStream.close();
-        }catch (IOException e){
-            logger.error("read databasecon.properties failed "+e);
-        }
-        HashMap<ConfigConstants, String> sqlQueries = new HashMap<>();
-        sqlQueries.put(ConfigConstants.DATABASE_URL, queriesProps.getProperty("url"));
-        sqlQueries.put(ConfigConstants.DATABASE_DRIVER_CLASS, queriesProps.getProperty("driver_class"));
-        sqlQueries.put(ConfigConstants.DATABASE_MAX_POOL_SIZE, queriesProps.getProperty("max_pool_size"));
-        sqlQueries.put(ConfigConstants.DATABASE_USER, queriesProps.getProperty("user"));
-        sqlQueries.put(ConfigConstants.DATABASE_PASSWORD, queriesProps.getProperty("password"));
-        sqlQueries.put(ConfigConstants.HTTP_PORT, queriesProps.getProperty("http_port"));
-        return sqlQueries;
-    }
+
 
 
 }

@@ -35,6 +35,7 @@ import io.vertx.serviceproxy.ServiceExceptionMessageCodec;
 import io.vertx.core.json.JsonArray;
 import java.util.List;
 import io.vertx.ext.jdbc.JDBCClient;
+import io.vertx.core.Vertx;
 import database.MissionDatabaseService;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.AsyncResult;

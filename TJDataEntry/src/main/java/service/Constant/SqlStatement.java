@@ -18,9 +18,11 @@ public class SqlStatement {
 
     public static String DEL_ID_ADVERTISEMENT="delete from advertisement.advertisingdata where id in ";
 
-    public static String INSERT_ADVERTISEMENT="insert into advertisement.advertisingdata (date,app_name,channel,advertising_type,earned,click_rate,ecpm,impression,click,fill_rate,platform,note,sdk_name) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    public static String INSERT_ADVERTISEMENT="insert into advertisement.advertisingdata (date,app_name,channel,advertising_type,earned,click_rate,ecpm,impression,click,fill_rate,platform,note,sdk_name) values ";
+    //public static String INSERT_ADVERTISEMENT="insert into advertisement.advertisingdata (date,app_name,channel,advertising_type,earned,click_rate,ecpm,impression,click,fill_rate,platform,note,sdk_name) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-    public static String INSERT_USER="insert into advertisement.userdata (date,app_name,channel,dnu,dau,startup_time,single_use_time,retention,version) values (?,?,?,?,?,?,?,?,?)";
+    public static String INSERT_USER="insert into advertisement.userdata (date,app_name,channel,dnu,dau,startup_time,single_use_time,retention,version) values ";
+    //public static String INSERT_USER="insert into advertisement.userdata (date,app_name,channel,dnu,dau,startup_time,single_use_time,retention,version) values (?,?,?,?,?,?,?,?,?)";
 
     public static String SELECT_USERDATA = "select * from advertisement.userdata where date >= ? and date<= ?";
 
@@ -121,7 +123,8 @@ public class SqlStatement {
 
     public static String REPEAT_PROJECT="SELECT count(*) FROM advertisement.project where project_name= ? ;";
 
-    public static String INSERT_PROJECT_LIST="INSERT INTO `advertisement`.`project_list`(`project_name`,`package_name`,`channel`)VALUES(?,?,?);";
+    public static String INSERT_PROJECT_LIST="INSERT INTO `advertisement`.`project_list`(`project_name`,`package_name`,`channel`)VALUES ";
+    //public static String INSERT_PROJECT_LIST="INSERT INTO `advertisement`.`project_list`(`project_name`,`package_name`,`channel`)VALUES(?,?,?);";
 
     public static String SELECT_PROJECT="SELECT * FROM advertisement.project;";
 

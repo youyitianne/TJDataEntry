@@ -52,6 +52,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+
 public class HttpServerVerticle extends AbstractVerticle {
     private Logger logger = LoggerFactory.getLogger(HttpServerVerticle.class.getName());
     private DataOperation dataOperation = null;
@@ -238,6 +239,11 @@ public class HttpServerVerticle extends AbstractVerticle {
         context.next();
     }
 
+    /**
+     * 手动删除重复数据
+     *
+     * @param context
+     */
     private void delrepeatHandler(RoutingContext context) {
         JsonArray jsonArray = context.getBodyAsJson().getJsonArray("data");
         List<JsonArray> list = new ArrayList<>();
@@ -248,7 +254,27 @@ public class HttpServerVerticle extends AbstractVerticle {
             jsonArray1.add(jsonObject.getInteger("id"));
             list.add(jsonArray1);
         }
-        advertisementService.batchWithParams(jdbcClient, RepeatSql.DEL_ADLIST_ONE, list).setHandler(res -> {
+        StringBuilder builder = new StringBuilder();
+        if (list.size() < 35000) {
+            for (int i = 0; i < list.size(); i++) {
+                if (i == 0) {
+                    builder.append("(");
+                }
+                builder.append(list.get(i));
+                if (i == list.size() - 1) {
+                    builder.append(")");
+                } else {
+                    builder.append(",");
+                }
+            }
+        } else {
+            context.response().end(Json.encodePrettily(new JsonObject().put("code", 20001)));
+            return;
+        }
+        logger.info("手动删除重复数据---->"+builder.toString());
+        String sql = RepeatSql.DEL_ADLIST_ONE + builder.toString();
+        //delete from advertisement.advertisingdata where id =
+        advertisementService.queryNoResult(jdbcClient, sql).setHandler(res -> {
             if (res.succeeded()) {
                 context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000)));
             } else {
@@ -403,12 +429,12 @@ public class HttpServerVerticle extends AbstractVerticle {
         vertx.executeBlocking(hander1 -> {
             JsonObject jsonObject = umengHandler.getUmengApp();
             if (jsonObject.getString("state").equals("success")) {
-                JsonArray jsonArray=jsonObject.getJsonArray("data");
-                Set set=new HashSet();
+                JsonArray jsonArray = jsonObject.getJsonArray("data");
+                Set set = new HashSet();
                 set.addAll(jsonArray.getList());
-                List newList=new ArrayList();
+                List newList = new ArrayList();
                 newList.addAll(set);
-                jsonObject.put("data",newList);
+                jsonObject.put("data", newList);
                 hander1.complete(jsonObject);
             } else {
                 hander1.fail(jsonObject.getString("data"));
@@ -806,7 +832,40 @@ public class HttpServerVerticle extends AbstractVerticle {
                         dataOperation.userDataOpertion(newpath, finalname, finalchannel).setHandler(listAsyncResult -> {
                             if (listAsyncResult.succeeded()) {
                                 List<JsonArray> value = Transform.userDatatoUserJsonArrayList(listAsyncResult.result());
-                                advertisementService.batchWithParams(jdbcClient, SqlStatement.INSERT_USER, value).setHandler(result -> {
+                                StringBuilder builder = new StringBuilder();
+                                if (value.size() < 35000) {
+                                    for (int i = 0; i < value.size(); i++) {
+                                        JsonArray jsonArray = value.get(i);
+                                        Integer date = jsonArray.getInteger(0);
+                                        String app_name = jsonArray.getString(1);
+                                        String channel = jsonArray.getString(2);
+                                        Integer dnu = jsonArray.getInteger(3);
+                                        Integer dau = jsonArray.getInteger(4);
+                                        Integer startup_time = jsonArray.getInteger(5);
+                                        String single_use_time = jsonArray.getString(6);
+                                        Double retention = jsonArray.getDouble(7);
+                                        String version = jsonArray.getString(8);
+                                        builder.append("(" + date + ","
+                                                + "'" + app_name + "'" + ","
+                                                + "'" + channel + "'" + ","
+                                                + dnu + ","
+                                                + dau + ","
+                                                + startup_time + ","
+                                                + "'" + single_use_time + "'" + ","
+                                                + retention + ","
+                                                + "'" + version + "'" + ")");
+                                        if (i != value.size() - 1) {
+                                            builder.append(",");
+                                        }
+                                    }
+                                } else {
+                                    serviceError(context, Json.encodePrettily(new JsonObject().put("data", "用户数据去重失败")));
+                                    return;
+                                }
+                                logger.info("用户数据处理 友盟---->"+builder.toString());
+//insert into advertisement.userdata (date,app_name,channel,dnu,dau,startup_time,single_use_time,retention,version) values (?,?,?,?,?,?,?,?,?),()
+                                advertisementService.queryNoResult(jdbcClient, SqlStatement.INSERT_USER + builder.toString()).setHandler(result -> {
+
                                     if (result.succeeded()) {
                                         advertisementService.removeRepeat(jdbcClient, SqlStatement.REPEAT_ID_USER, SqlStatement.DEL_ID_USER).setHandler(result1 -> {
                                             if (result1.succeeded()) {
@@ -866,7 +925,32 @@ public class HttpServerVerticle extends AbstractVerticle {
                         dataOperation.newUserDataOpertion(newpath, finalname, finalchannel).setHandler(listAsyncResult -> {
                             if (listAsyncResult.succeeded()) {
                                 List<JsonArray> value = Transform.userDatatoUserJsonArrayList(listAsyncResult.result());
-                                advertisementService.batchWithParams(jdbcClient, SqlStatement.INSERT_USER, value).setHandler(result -> {
+
+                                StringBuilder builder = new StringBuilder();
+                                if (value.size() < 35000) {
+                                    for (int i = 0; i < value.size(); i++) {
+                                        JsonArray jsonArray = value.get(i);
+                                        Object date = jsonArray.getValue(0);
+                                        Object app_name = jsonArray.getValue(1);
+                                        Object channel = jsonArray.getValue(2);
+                                        Object dnu = jsonArray.getValue(3);
+                                        Object dau = jsonArray.getValue(4);
+                                        Object startup_time = jsonArray.getValue(5);
+                                        Object single_use_time = jsonArray.getValue(6);
+                                        Object retention = jsonArray.getValue(7);
+                                        Object version = jsonArray.getValue(8);
+                                        builder.append("(" + date + "," + "'" + app_name + "'" + "," + "'" + channel + "'" + "," + dnu + "," + dau + "," + startup_time + "," + "'" + single_use_time + "'" + "," + retention + "," + "'" + version + "'" + ")");
+                                        if (i != value.size() - 1) {
+                                            builder.append(",");
+                                        }
+                                    }
+                                } else {
+                                    serviceError(context, Json.encodePrettily(new JsonObject().put("data", "用户数据去重失败")));
+                                    return;
+                                }
+                                logger.info("用户数据处理 友盟1---->"+builder.toString());
+
+                                advertisementService.queryNoResult(jdbcClient, SqlStatement.INSERT_USER + builder).setHandler(result -> {
                                     if (result.succeeded()) {
                                         advertisementService.removeRepeat(jdbcClient, SqlStatement.REPEAT_ID_USER, SqlStatement.DEL_ID_USER).setHandler(result1 -> {
                                             if (result1.succeeded()) {
@@ -1103,7 +1187,48 @@ public class HttpServerVerticle extends AbstractVerticle {
                                     }
                                     message = finalname + "    第" + list1 + "行数据发现异常，请检查上传文件~";
                                 }
-                                advertisementService.batchWithParams(jdbcClient, SqlStatement.INSERT_ADVERTISEMENT, adlist).setHandler(result1 -> {
+                                StringBuilder builder = new StringBuilder();
+                                if (adlist.size() < 35000) {
+                                    for (int i = 0; i < adlist.size(); i++) {
+                                        JsonArray jsonArray = adlist.get(i);
+                                        Integer date = jsonArray.getInteger(0);
+                                        String app_name = jsonArray.getString(1);
+                                        String channel = jsonArray.getString(2);
+                                        String advertising_type = jsonArray.getString(3);
+                                        Double earned = jsonArray.getDouble(4);
+                                        Double click_rate = jsonArray.getDouble(5);
+                                        Double ecpm = jsonArray.getDouble(6);
+                                        Integer ipmression = jsonArray.getInteger(7);
+                                        Integer click = jsonArray.getInteger(8);
+                                        Double fill_rate = jsonArray.getDouble(9);
+                                        String platform = jsonArray.getString(10);
+                                        String note = jsonArray.getString(11);
+                                        String sdk_name = jsonArray.getString(12);
+                                        builder.append("(" + date
+                                                + "'" + app_name + "',"
+                                                + "'" + channel + "',"
+                                                + "'" + advertising_type + "',"
+                                                + earned + ","
+                                                + click_rate + ","
+                                                + ecpm + ","
+                                                + ipmression + ","
+                                                + click + ","
+                                                + fill_rate + ","
+                                                + "'" + platform + "',"
+                                                + "'" + note + "',"
+                                                + "'" + sdk_name + "')");
+                                        if (i != adlist.size() - 1) {
+                                            builder.append(",");
+                                        }
+                                    }
+                                } else {
+                                    logger.error("广告数据过多");
+                                    serviceError(context, Json.encodePrettily(new JsonObject().put("data", "广告数据过多。")));
+                                }
+                                logger.info("联想数据处理---->"+builder.toString());
+
+//insert into advertisement.advertisingdata (date,app_name,channel,advertising_type,earned,click_rate,ecpm,impression,click,fill_rate,platform,note,sdk_name) values (?,?,?,?,?,?,?,?,?,?,?,?,?)
+                                advertisementService.queryNoResult(jdbcClient, SqlStatement.INSERT_ADVERTISEMENT + builder).setHandler(result1 -> {
                                     if (result1.succeeded()) {
                                         advertisementService.removeRepeat(jdbcClient, SqlStatement.REPEAT_ID_ADVERTISEMENT, SqlStatement.DEL_ID_ADVERTISEMENT).setHandler(result2 -> {
                                             if (result2.succeeded()) {
@@ -1347,21 +1472,59 @@ public class HttpServerVerticle extends AbstractVerticle {
                                     }
                                 } else if (j == 6) {
                                     jsonArray.add(" " + innerlist.get(j));  //mysql 5.7.23 存入00:00:00  数据时前两位值改变
-                                }  else if (j == 1) {
-                                    if (Judgement.matchName(innerlist.get(1).toString(), matchinglist.get(0)).equals("未知")){
-                                        operationSuccess(context, new JsonObject().put("data", finnalfilename + "数据解析失败，("+innerlist.get(1).toString()+")发现异常命名~"));
+                                } else if (j == 1) {
+                                    if (Judgement.matchName(innerlist.get(1).toString(), matchinglist.get(0)).equals("未知")) {
+                                        operationSuccess(context, new JsonObject().put("data", finnalfilename + "数据解析失败，(" + innerlist.get(1).toString() + ")发现异常命名~"));
                                         return;
                                     }
                                     jsonArray.add(Judgement.matchName(innerlist.get(1).toString(), matchinglist.get(0)));
-                                }else {
+                                } else {
                                     jsonArray.add(innerlist.get(j));
                                 }
                             }
                             jsonArrayList.add(jsonArray);
                         }
-                        advertisementService.batchWithParams(jdbcClient, SqlStatement.INSERT_USER, jsonArrayList).setHandler(result -> {
+
+                        StringBuilder builder = new StringBuilder();
+                        if (jsonArrayList.size() < 35000) {
+                            for (int i = 0; i < jsonArrayList.size(); i++) {
+                                JsonArray jsonArray = jsonArrayList.get(i);
+                                if (i==0){
+                                    System.out.println(jsonArray);
+                                }
+                                Integer date = jsonArray.getInteger(0);
+                                String app_name = jsonArray.getString(1);
+                                String channel = jsonArray.getString(2);
+                                String dnu = jsonArray.getString(3);
+                                String dau = jsonArray.getString(4);
+                                String startup_time = jsonArray.getString(5);
+                                String single_use_time = jsonArray.getString(6);
+                                String retention = jsonArray.getString(7);
+                                String version = jsonArray.getString(8);
+                                builder.append("(" + date + ","
+                                        + "'" + app_name + "'" + ","
+                                        + "'" + channel + "'" + ","
+                                        + dnu + ","
+                                        + dau + ","
+                                        + startup_time + ","
+                                        + "'" + single_use_time + "'" + ","
+                                        + retention + ","
+                                        + "'" + version + "'" + ")");
+                                if (i != jsonArrayList.size() - 1) {
+                                    builder.append(",");
+                                }
+                            }
+                        } else {
+                            serviceError(context, Json.encodePrettily(new JsonObject().put("data", "用户数据去重失败")));
+                            return;
+                        }
+                        logger.info(" 友盟数据处理 友盟3---->"+SqlStatement.INSERT_USER +builder.toString());
+//insert into advertisement.userdata (date,app_name,channel,dnu,dau,startup_time,single_use_time,retention,version) values
+                        advertisementService.queryNoResult(jdbcClient, SqlStatement.INSERT_USER + builder).setHandler(result -> {
                             if (result.succeeded()) {
                                 advertisementService.removeRepeat(jdbcClient, SqlStatement.REPEAT_ID_USER, SqlStatement.DEL_ID_USER).setHandler(result1 -> {
+                                    System.out.println(4);
+
                                     if (result1.succeeded()) {
                                         operationSuccess(context, new JsonObject().put("data", finnalfilename + "数据已成功上传，并未发现异常~"));
                                     } else {
@@ -1398,7 +1561,48 @@ public class HttpServerVerticle extends AbstractVerticle {
         } else {
             message = filename + "    第" + list1 + "行数据发现异常，请检查上传文件~";
         }
-        advertisementService.batchWithParams(jdbcClient, SqlStatement.INSERT_ADVERTISEMENT, jsonArrayList).setHandler(result -> {
+
+        StringBuilder builder = new StringBuilder();
+        if (jsonArrayList.size() < 35000) {
+            for (int i = 0; i < jsonArrayList.size(); i++) {
+                JsonArray jsonArray = jsonArrayList.get(i);
+                Integer date = jsonArray.getInteger(0);
+                String app_name = jsonArray.getString(1);
+                String channel = jsonArray.getString(2);
+                String advertising_type = jsonArray.getString(3);
+                Double earned = jsonArray.getDouble(4);
+                Double click_rate = jsonArray.getDouble(5);
+                Double ecpm = jsonArray.getDouble(6);
+                Integer ipmression = jsonArray.getInteger(7);
+                Integer click = jsonArray.getInteger(8);
+                Double fill_rate = jsonArray.getDouble(9);
+                String platform = jsonArray.getString(10);
+                String note = jsonArray.getString(11);
+                String sdk_name = jsonArray.getString(12);
+                builder.append("(" + date
+                        + "'" + app_name + "',"
+                        + "'" + channel + "',"
+                        + "'" + advertising_type + "',"
+                        + earned + ","
+                        + click_rate + ","
+                        + ecpm + ","
+                        + ipmression + ","
+                        + click + ","
+                        + fill_rate + ","
+                        + "'" + platform + "',"
+                        + "'" + note + "',"
+                        + "'" + sdk_name + "')");
+                if (i != jsonArrayList.size() - 1) {
+                    builder.append(",");
+                }
+            }
+        } else {
+            logger.error("广告数据过多");
+            serviceError(context, Json.encodePrettily(new JsonObject().put("data", "广告数据过多。")));
+        }
+        logger.info(" 在广告数据插入数据库前筛选处理 ---->"+builder.toString());
+//insert into advertisement.advertisingdata (date,app_name,channel,advertising_type,earned,click_rate,ecpm,impression,click,fill_rate,platform,note,sdk_name) values
+        advertisementService.queryNoResult(jdbcClient, SqlStatement.INSERT_ADVERTISEMENT + builder).setHandler(result -> {
             if (result.succeeded()) {
                 advertisementService.removeRepeat(jdbcClient, SqlStatement.REPEAT_ID_ADVERTISEMENT, SqlStatement.DEL_ID_ADVERTISEMENT).setHandler(result2 -> {
                     if (result2.succeeded()) {
@@ -1462,6 +1666,7 @@ public class HttpServerVerticle extends AbstractVerticle {
                 }
                 longdates.add(i, (long) datetime);
             }
+
             advertisementService.findDatasWithParams(jdbcClient, SqlStatement.SELECT_USERDATA, new JsonArray().add(longstarttime).add(longendtime)).setHandler(listAsyncResult -> {
                 if (listAsyncResult.succeeded()) {
                     List<JsonObject> userlist = listAsyncResult.result();
@@ -1675,88 +1880,87 @@ public class HttpServerVerticle extends AbstractVerticle {
         Integer longendtime = Transform.transForMilliSecondByTim(endtime, "yyyy-MM-dd");
 
         List<String> dates = datess;
-            StringBuilder builder = new StringBuilder();
-            List<Long> longdates = new ArrayList<>();
-            for (int i = 0; i < dates.size(); i++) {
-                Integer datetime = Transform.transForMilliSecondByTim(dates.get(i), "yyyy-MM-dd");
-                builder.append(datetime);
-                if (i != dates.size() - 1) {
-                    builder.append(",");
-                }
-                longdates.add(i, (long) datetime);
+        StringBuilder builder = new StringBuilder();
+        List<Long> longdates = new ArrayList<>();
+        for (int i = 0; i < dates.size(); i++) {
+            Integer datetime = Transform.transForMilliSecondByTim(dates.get(i), "yyyy-MM-dd");
+            builder.append(datetime);
+            if (i != dates.size() - 1) {
+                builder.append(",");
             }
-            JsonArray appNameList = applist.getJsonArray("applist");
-            JsonArray jsonArray = new JsonArray();
-            jsonArray.add(longstarttime).add(longendtime);
-            for (int i = 0; i < 10; i++) {
-                if (i < appNameList.size()) {
-                    jsonArray.add(appNameList.getJsonObject(i).getString("app_name"));
-                } else {
-                    jsonArray.add("");
-                }
+            longdates.add(i, (long) datetime);
+        }
+        JsonArray appNameList = applist.getJsonArray("applist");
+        JsonArray jsonArray = new JsonArray();
+        jsonArray.add(longstarttime).add(longendtime);
+        for (int i = 0; i < 10; i++) {
+            if (i < appNameList.size()) {
+                jsonArray.add(appNameList.getJsonObject(i).getString("app_name"));
+            } else {
+                jsonArray.add("");
             }
-            advertisementService.findDatasWithParams(jdbcClient, SqlStatement.SELECT_USERDATA_arpu_withname, jsonArray).setHandler(userListAsyncResult -> {
-                if (userListAsyncResult.succeeded()) {
-                    advertisementService.findDatasWithParams(jdbcClient, SqlStatement.SELECT_ADDATA_arpu_withname, jsonArray).setHandler(adListAsyncResult -> {
-                        if (adListAsyncResult.succeeded()) {
-                            List<JsonObject> userlist = userListAsyncResult.result();
-                            List<JsonObject> adlist = adListAsyncResult.result();
-                            vertx.executeBlocking(handler1 -> {
-                                List<List<ArpuData>> arpuData_lists = InitConf.getAllArpuData1(userlist, adlist, longdates, app_name);
-                                List<List> outerlist = new ArrayList<>();
-                                for (int i = 0; i < arpuData_lists.size(); i++) {
-                                    List<String> innerlist = new ArrayList<>();
-                                    List<ArpuData> arpu_list = arpuData_lists.get(i);
-                                    Double total_earned = 0.0;
-                                    Double total_user = 0.0;
-                                    Double total_arpu = 0.0;
-                                    for (int j = 0; j < arpu_list.size(); j++) {
-                                        ArpuData arpuData = arpu_list.get(j);
-                                        if (j == 0) {
-                                            innerlist.add(datesss.get(i) + "");
-                                            innerlist.add(total_earned.toString());
-                                            innerlist.add(total_user.toString());
-                                            innerlist.add(total_arpu.toString());
-                                        }
-                                        innerlist.add(Judgement.formatDouble2(arpuData.getToutiao_earned()) + "");
-                                        innerlist.add(Judgement.formatDouble2(arpuData.getChannel_earned()) + "");
-                                        innerlist.add(Judgement.formatDouble2(arpuData.getGdt_earned()) + "");
-                                        innerlist.add(Judgement.formatDouble2(arpuData.getAll_earned()) + "");
-                                        innerlist.add(arpuData.getActive_user() + "");
-                                        innerlist.add(Judgement.formatDouble3(arpuData.getToutiao_arpu()) + "");
-                                        innerlist.add(Judgement.formatDouble3(arpuData.getChannel_arpu()) + "");
-                                        innerlist.add(Judgement.formatDouble3(arpuData.getGdt_arpu()) + "");
-                                        innerlist.add(Judgement.formatDouble3(arpuData.getAll_arpu()) + "");
-                                        total_earned = total_earned + arpuData.getAll_earned();
-                                        total_user = total_user + arpuData.getActive_user();
+        }
+        advertisementService.findDatasWithParams(jdbcClient, SqlStatement.SELECT_USERDATA_arpu_withname, jsonArray).setHandler(userListAsyncResult -> {
+            if (userListAsyncResult.succeeded()) {
+                advertisementService.findDatasWithParams(jdbcClient, SqlStatement.SELECT_ADDATA_arpu_withname, jsonArray).setHandler(adListAsyncResult -> {
+                    if (adListAsyncResult.succeeded()) {
+                        List<JsonObject> userlist = userListAsyncResult.result();
+                        List<JsonObject> adlist = adListAsyncResult.result();
+                        vertx.executeBlocking(handler1 -> {
+                            List<List<ArpuData>> arpuData_lists = InitConf.getAllArpuData1(userlist, adlist, longdates, app_name);
+                            List<List> outerlist = new ArrayList<>();
+                            for (int i = 0; i < arpuData_lists.size(); i++) {
+                                List<String> innerlist = new ArrayList<>();
+                                List<ArpuData> arpu_list = arpuData_lists.get(i);
+                                Double total_earned = 0.0;
+                                Double total_user = 0.0;
+                                Double total_arpu = 0.0;
+                                for (int j = 0; j < arpu_list.size(); j++) {
+                                    ArpuData arpuData = arpu_list.get(j);
+                                    if (j == 0) {
+                                        innerlist.add(datesss.get(i) + "");
+                                        innerlist.add(total_earned.toString());
+                                        innerlist.add(total_user.toString());
+                                        innerlist.add(total_arpu.toString());
                                     }
-                                    innerlist.set(1, Judgement.formatDouble2(total_earned) + "");
-                                    innerlist.set(2, Judgement.formatDouble2(total_user) + "");
-                                    innerlist.set(3, total_user==0?"0":Judgement.NonScientificNotation(Judgement.formatDouble2(total_earned / total_user) + ""));
-                                    outerlist.add(innerlist);
+                                    innerlist.add(Judgement.formatDouble2(arpuData.getToutiao_earned()) + "");
+                                    innerlist.add(Judgement.formatDouble2(arpuData.getChannel_earned()) + "");
+                                    innerlist.add(Judgement.formatDouble2(arpuData.getGdt_earned()) + "");
+                                    innerlist.add(Judgement.formatDouble2(arpuData.getAll_earned()) + "");
+                                    innerlist.add(arpuData.getActive_user() + "");
+                                    innerlist.add(Judgement.formatDouble3(arpuData.getToutiao_arpu()) + "");
+                                    innerlist.add(Judgement.formatDouble3(arpuData.getChannel_arpu()) + "");
+                                    innerlist.add(Judgement.formatDouble3(arpuData.getGdt_arpu()) + "");
+                                    innerlist.add(Judgement.formatDouble3(arpuData.getAll_arpu()) + "");
+                                    total_earned = total_earned + arpuData.getAll_earned();
+                                    total_user = total_user + arpuData.getActive_user();
                                 }
+                                innerlist.set(1, Judgement.formatDouble2(total_earned) + "");
+                                innerlist.set(2, Judgement.formatDouble2(total_user) + "");
+                                innerlist.set(3, total_user == 0 ? "0" : Judgement.NonScientificNotation(Judgement.formatDouble2(total_earned / total_user) + ""));
+                                outerlist.add(innerlist);
+                            }
 
-                                handler1.complete(outerlist);
-                            }, handler2 -> {
-                                if (handler2.succeeded()) {
-                                    logger.info("预览arpu表成功");
-                                    JSONArray jsonArray1=JSONArray.fromObject(handler2.result());
-                                    context.response().end(Json.encodePrettily(new JsonObject().put("code",20000).put("data",jsonArray1)));
-                                } else {
-                                    serviceError(context, handler2.cause().toString());
-                                }
-                            });
-                        } else {
-                            adListAsyncResult.cause();
-                        }
-                    });
-                } else {
-                    userListAsyncResult.cause();
-                }
+                            handler1.complete(outerlist);
+                        }, handler2 -> {
+                            if (handler2.succeeded()) {
+                                logger.info("预览arpu表成功");
+                                JSONArray jsonArray1 = JSONArray.fromObject(handler2.result());
+                                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", jsonArray1)));
+                            } else {
+                                serviceError(context, handler2.cause().toString());
+                            }
+                        });
+                    } else {
+                        adListAsyncResult.cause();
+                    }
+                });
+            } else {
+                userListAsyncResult.cause();
+            }
 
         });
     }
-
 
 
     /**
@@ -1992,7 +2196,7 @@ public class HttpServerVerticle extends AbstractVerticle {
                             }
                             JsonObject jsonObject_user = new JsonObject();
                             JsonObject jsonObject_ad = new JsonObject();
-                            JsonObject jsonObject_newuser=new JsonObject();
+                            JsonObject jsonObject_newuser = new JsonObject();
                             for (int i = 0; i < dateList.size(); i++) {
                                 JsonObject jsonObject3 = new JsonObject();
                                 jsonObject3 = jsonObject3.mergeIn(jsonObject1);
@@ -2079,7 +2283,7 @@ public class HttpServerVerticle extends AbstractVerticle {
                                     String dau = jsonObject_user.getJsonObject(date).getInteger(project) + "";
                                     innerList_earned.add(Judgement.formatDouble2(Double.valueOf(earned)) + "");
                                     innerList_dau.add(dau);
-                                    String dnu=jsonObject_newuser.getJsonObject(date).getInteger(project)+"";
+                                    String dnu = jsonObject_newuser.getJsonObject(date).getInteger(project) + "";
                                     innerList_dnu.add(dnu);
 
                                     innerList_arpu.add(Integer.valueOf(dau) == 0 ? 0 + "" : Judgement.formatDouble3(Double.valueOf(earned) / Integer.valueOf(dau)) + "");
@@ -2091,7 +2295,7 @@ public class HttpServerVerticle extends AbstractVerticle {
                             }
                             JsonObject jsonObject = new JsonObject();
                             jsonObject.put("earned", outerList_earned);
-                            jsonObject.put("original",adlist);
+                            jsonObject.put("original", adlist);
                             jsonObject.put("arpu", outerList_arpu);
                             jsonObject.put("dau", outerList_dau);
                             jsonObject.put("dnu", outerList_dnu);
@@ -2286,68 +2490,68 @@ public class HttpServerVerticle extends AbstractVerticle {
         logger.info(longstarttime.toString());
         logger.info(longendtime.toString());
         List<String> dates = datess;
-            StringBuilder builder = new StringBuilder();
-            List<Long> longdates = new ArrayList<>();
-            for (int i = 0; i < dates.size(); i++) {
-                Integer datetime = Transform.transForMilliSecondByTim(dates.get(i), "yyyy-MM-dd");
-                builder.append(datetime);
-                if (i != dates.size() - 1) {
-                    builder.append(",");
-                }
-                longdates.add(i, (long) datetime);
+        StringBuilder builder = new StringBuilder();
+        List<Long> longdates = new ArrayList<>();
+        for (int i = 0; i < dates.size(); i++) {
+            Integer datetime = Transform.transForMilliSecondByTim(dates.get(i), "yyyy-MM-dd");
+            builder.append(datetime);
+            if (i != dates.size() - 1) {
+                builder.append(",");
             }
-            JsonArray appNameList = project.getJsonArray("applist");
-            JsonArray jsonArray = new JsonArray();
-            jsonArray.add(longstarttime).add(longendtime);
-            for (int i = 0; i < 10; i++) {
-                if (i < appNameList.size()) {
-                    jsonArray.add(appNameList.getJsonObject(i).getString("app_name"));
-                } else {
-                    jsonArray.add("");
-                }
+            longdates.add(i, (long) datetime);
+        }
+        JsonArray appNameList = project.getJsonArray("applist");
+        JsonArray jsonArray = new JsonArray();
+        jsonArray.add(longstarttime).add(longendtime);
+        for (int i = 0; i < 10; i++) {
+            if (i < appNameList.size()) {
+                jsonArray.add(appNameList.getJsonObject(i).getString("app_name"));
+            } else {
+                jsonArray.add("");
             }
-            logger.info(jsonArray.toString());
-            advertisementService.findDatasWithParams(jdbcClient, SqlStatement.SELECT_USERDATA_arpu_withname, jsonArray).setHandler(userListAsyncResult -> {
-                if (userListAsyncResult.succeeded()) {
-                    advertisementService.findDatasWithParams(jdbcClient, SqlStatement.SELECT_ADDATA_arpu_withname, jsonArray).setHandler(adListAsyncResult -> {
-                        if (adListAsyncResult.succeeded()) {
-                            List<JsonObject> userList = userListAsyncResult.result();
-                            List<JsonObject> adlist = adListAsyncResult.result();
-                            if (userList.size()==0||adlist.size()==0){
-                                logger.info("未找到该游戏广告数据");
-                                context.response().end(Json.encodePrettily(new JsonObject().put("code",20000).put("data",new JsonArray())));
-                                return;
-                            }
-                            vertx.executeBlocking(handler1 -> {
-                                logger.info(userList.toString());
-                                logger.info(adlist.toString());
-                                logger.info(String.valueOf(userList.size()));
-                                logger.info(String.valueOf(adlist.size()));
-                                List<List<DailyAdtype>> dailyAdtypes = DailyAdtypeHandler.dailyAdtypeList(project, userList, adlist, dateList);     //添加额外渠道
-                                List<List> dailyAdtypelist = DailyAdtypeHandler.toList(dailyAdtypes, dateFormatList);
-                                logger.info(dailyAdtypes.toString());
-                                logger.info(String.valueOf(dailyAdtypes.size()));
-                                handler1.complete(dailyAdtypelist);
-                            }, handler2 -> {
-                                if (handler2.succeeded()) {
-                                    logger.info("获取新展次表预览成功");
-                                    if (handler2.result()==null){
-                                        serviceError(context, "result is null");
-                                    }
-                                    JSONArray jsonArray1=JSONArray.fromObject(handler2.result());
-                                    context.response().end(Json.encodePrettily(new JsonObject().put("code",20000).put("data",jsonArray1)));
-                                } else {
-                                    logger.warn(handler2.cause().toString());
-                                    serviceError(context, handler2.cause().toString());
-                                }
-                            });
-                        } else {
-                            adListAsyncResult.cause();
+        }
+        logger.info(jsonArray.toString());
+        advertisementService.findDatasWithParams(jdbcClient, SqlStatement.SELECT_USERDATA_arpu_withname, jsonArray).setHandler(userListAsyncResult -> {
+            if (userListAsyncResult.succeeded()) {
+                advertisementService.findDatasWithParams(jdbcClient, SqlStatement.SELECT_ADDATA_arpu_withname, jsonArray).setHandler(adListAsyncResult -> {
+                    if (adListAsyncResult.succeeded()) {
+                        List<JsonObject> userList = userListAsyncResult.result();
+                        List<JsonObject> adlist = adListAsyncResult.result();
+                        if (userList.size() == 0 || adlist.size() == 0) {
+                            logger.info("未找到该游戏广告数据");
+                            context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", new JsonArray())));
+                            return;
                         }
-                    });
-                } else {
-                    userListAsyncResult.cause();
-                }
+                        vertx.executeBlocking(handler1 -> {
+                            logger.info(userList.toString());
+                            logger.info(adlist.toString());
+                            logger.info(String.valueOf(userList.size()));
+                            logger.info(String.valueOf(adlist.size()));
+                            List<List<DailyAdtype>> dailyAdtypes = DailyAdtypeHandler.dailyAdtypeList(project, userList, adlist, dateList);     //添加额外渠道
+                            List<List> dailyAdtypelist = DailyAdtypeHandler.toList(dailyAdtypes, dateFormatList);
+                            logger.info(dailyAdtypes.toString());
+                            logger.info(String.valueOf(dailyAdtypes.size()));
+                            handler1.complete(dailyAdtypelist);
+                        }, handler2 -> {
+                            if (handler2.succeeded()) {
+                                logger.info("获取新展次表预览成功");
+                                if (handler2.result() == null) {
+                                    serviceError(context, "result is null");
+                                }
+                                JSONArray jsonArray1 = JSONArray.fromObject(handler2.result());
+                                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", jsonArray1)));
+                            } else {
+                                logger.warn(handler2.cause().toString());
+                                serviceError(context, handler2.cause().toString());
+                            }
+                        });
+                    } else {
+                        adListAsyncResult.cause();
+                    }
+                });
+            } else {
+                userListAsyncResult.cause();
+            }
         });
     }
 
@@ -3122,7 +3326,21 @@ public class HttpServerVerticle extends AbstractVerticle {
                 Integer count = list.get(0).getInteger("count(*)");
                 if (count == 0) {
                     advertisementService.update(jdbcClient, SqlStatement.INSERT_PROJECT, insert).setHandler(rs1 -> {
-                        advertisementService.batchWithParams(jdbcClient, SqlStatement.INSERT_PROJECT_LIST, jsonArrays).setHandler(rs2 -> {
+                        StringBuilder builder = new StringBuilder();
+                        for (int i = 0; i < jsonArrays.size(); i++) {
+                            JsonArray jsonArray = jsonArrays.get(i);
+                            String projectName = jsonArray.getString(0);
+                            String packageName = jsonArray.getString(1);
+                            String channel = jsonArray.getString(2);
+                            builder.append("('" + projectName + "','" + packageName + "','" + channel + "')");
+                            if (i != jsonArrays.size() - 1) {
+                                builder.append(",");
+                            }
+                        }
+
+                        logger.info(" API添加游戏 ---->"+builder.toString());
+                        //INSERT INTO `advertisement`.`project_list`(`project_name`,`package_name`,`channel`)VALUES
+                        advertisementService.queryNoResult(jdbcClient, SqlStatement.INSERT_PROJECT_LIST + builder).setHandler(rs2 -> {
                             if (rs1.succeeded() && rs2.succeeded()) {
                                 context.response().setStatusCode(201).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", "ok")));
                             } else {
@@ -3190,7 +3408,21 @@ public class HttpServerVerticle extends AbstractVerticle {
         JsonArray jsonArray = new JsonArray();
         jsonArray.add(project_name).add(preheat).add(schedule).add(compete_good).add(version_plan).add(note).add(id);
         advertisementService.update(jdbcClient, SqlStatement.DELETE_PROJECT_LIST, new JsonArray().add(project_name)).setHandler(result1 -> {
-            advertisementService.batchWithParams(jdbcClient, SqlStatement.INSERT_PROJECT_LIST, jsonArrays).setHandler(result2 -> {
+
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < jsonArrays.size(); i++) {
+                JsonArray one = jsonArrays.get(i);
+                String projectName = one.getString(0);
+                String packageName = one.getString(1);
+                String channel = one.getString(2);
+                builder.append("('" + projectName + "','" + packageName + "','" + channel + "')");
+                if (i != jsonArrays.size() - 1) {
+                    builder.append(",");
+                }
+            }
+            logger.info(" API更新游戏 ---->"+builder.toString());
+            //INSERT INTO `advertisement`.`project_list`(`project_name`,`package_name`,`channel`)VALUES
+            advertisementService.queryNoResult(jdbcClient, SqlStatement.INSERT_PROJECT_LIST + builder).setHandler(result2 -> {
                 advertisementService.update(jdbcClient, SqlStatement.UPDATE_PROJECT, jsonArray).setHandler(result3 -> {
                     if (result1.succeeded() && result2.succeeded() && result3.succeeded()) {
                         context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));

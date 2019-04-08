@@ -1,1 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([["F/qV"],{"F/qV":function(e,o,l){"use strict";l.r(o);var n=l("KHd+"),i=Object(n.a)({},void 0,void 0,!1,null,null,null);i.options.__file="role_perms_Table.vue",o.default=i.exports}}]);

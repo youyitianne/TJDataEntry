@@ -22,8 +22,8 @@ public class InitConf {
         InputStream queriesInputStream=null;
         Properties queriesProps = new Properties();
         try {
-            //queriesInputStream=new FileInputStream("databasecon.properties");
-            queriesInputStream=this.getClass().getClassLoader().getResourceAsStream("databasecon.properties");
+            queriesInputStream=new FileInputStream("confTJData/databasecon.properties");
+           // queriesInputStream=this.getClass().getClassLoader().getResourceAsStream("confTJData/databasecon.properties");
             queriesProps.load(queriesInputStream);
             queriesInputStream.close();
         }catch (IOException e){
@@ -31,11 +31,17 @@ public class InitConf {
         }
         HashMap<ConfigConstants, String> sqlQueries = new HashMap<>();
         sqlQueries.put(ConfigConstants.DATABASE_URL, queriesProps.getProperty("url"));
+        logger.info(queriesProps.getProperty("url"));
         sqlQueries.put(ConfigConstants.DATABASE_DRIVER_CLASS, queriesProps.getProperty("driver_class"));
+        logger.info(queriesProps.getProperty("driver_class"));
         sqlQueries.put(ConfigConstants.DATABASE_MAX_POOL_SIZE, queriesProps.getProperty("max_pool_size"));
+        logger.info( queriesProps.getProperty("max_pool_size"));
         sqlQueries.put(ConfigConstants.DATABASE_USER, queriesProps.getProperty("user"));
+        logger.info(queriesProps.getProperty("user"));
         sqlQueries.put(ConfigConstants.DATABASE_PASSWORD, queriesProps.getProperty("password"));
+        logger.info( queriesProps.getProperty("password"));
         sqlQueries.put(ConfigConstants.HTTP_PORT, queriesProps.getProperty("http_port"));
+        logger.info(queriesProps.getProperty("http_port"));
         return sqlQueries;
     }
 

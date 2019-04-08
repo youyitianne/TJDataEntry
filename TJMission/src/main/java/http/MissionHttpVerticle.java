@@ -40,6 +40,7 @@ public class MissionHttpVerticle extends AbstractVerticle {
     private HashMap<SqlConstants, String> sql;
     private Method method = new Method();
     private static final String rootPath = "TJMission";
+    private static final String domainName = "http://192.168.1.144:8087";
 
 
     @Override
@@ -83,11 +84,11 @@ public class MissionHttpVerticle extends AbstractVerticle {
         router.route().handler(SessionHandler.create(LocalSessionStore.create(vertx)));
 
         //文件上传
+        router.get("/file").handler(this::getHandler);
         router.post("/file").handler(this::uploadHandler_file);
-        router.post("/keystore").handler(this::uploadHandler_keystore);
         router.get("/fileInfo").handler(this::listHandler);
+        router.post("/keystore").handler(this::uploadHandler_keystore);
         router.get("/keystoreInfo").handler(this::listHandler_keystore);
-        router.post("/getFile").handler(this::downLoadHandler);
         router.get("/getFile").handler(this::downLoadHandler1);
         router.delete("/delFile").handler(this::delHandler);
         router.patch("/updateKeystore").handler(this::updateKeystoreHandler);
@@ -107,6 +108,56 @@ public class MissionHttpVerticle extends AbstractVerticle {
             }
         });
     }
+
+    /**
+     * 获取文件
+     *
+     * @param context
+     */
+    private void getHandler(RoutingContext context) {
+        String path = context.request().getParam("path");
+        File file = new File(rootPath + File.separator + "res" + File.separator + path);
+        if (file.exists()) {
+            logger.info("获取资源成功");
+            context.response().sendFile(rootPath + File.separator + "res" + File.separator + path);
+        } else {
+            logger.info("获取资源失败");
+            context.response().putHeader("Content-Type", "text/plain; charset=utf-8").end(Json.encodePrettily(new JsonObject().put("message", "路径错误")));
+        }
+    }
+
+
+//    /**
+//     *  keystore上传处理
+//     *
+//     *  @param context
+//     *
+//     */
+//
+//    private void uploadHandler_keystore(RoutingContext context) {
+//        String guid=context.getBodyAsJson().getString("guid");
+//        String file=context.getBodyAsJson().getString("file");
+//        Long date = new Date().getTime();
+//        JsonArray jsonArray = new JsonArray();
+//        jsonArray.add(guid).add(file).add(date);
+//        dbService.query(sql.get(SqlConstants.FILEINFO_INSERT), jsonArray, result -> {
+//            if (result.succeeded()) {
+//                logger.info("上传成功");
+//                dbService.query(sql.get(SqlConstants.KEYSTORE_INSERT), new JsonArray().add(date).add(guid).add(file), result1 -> {
+//                    if (result1.succeeded()) {
+//                        context.response().end(Json.encodePrettily(new JsonObject().put("repcode", 3000)));
+//                    } else {
+//                        logger.error("保存失败,请重新上传", result1.cause());
+//                        context.response().end(Json.encodePrettily(new JsonObject().put("repcode", 3001).put("data", "保存失败,请重新上传")));
+//                    }
+//                });
+//            } else {
+//                logger.error("保存失败,请重新上传", result.cause());
+//                context.response().end(Json.encodePrettily(new JsonObject().put("repcode", 3001).put("data", "保存失败,请重新上传")));
+//            }
+//        });
+//    }
+
 
     /**
      * keystore上传处理
@@ -137,7 +188,7 @@ public class MissionHttpVerticle extends AbstractVerticle {
                         logger.info("上传成功");
                         dbService.query(sql.get(SqlConstants.KEYSTORE_INSERT), new JsonArray().add(date).add(guid).add(finalFilename), result1 -> {
                             if (result1.succeeded()) {
-                                context.response().end(Json.encodePrettily(new JsonObject().put("repcode", "3000").put("data", "http://192.168.1.144:8087/getFile?path=" + guid + "&name=" + finalFilename)));
+                                context.response().end(Json.encodePrettily(new JsonObject().put("repcode", "3000").put("data", domainName + "/getFile?path=" + guid + "&name=" + finalFilename)));
                             } else {
                                 logger.error("保存失败,请重新上传", result1.cause());
                                 context.response().end(Json.encodePrettily(new JsonObject().put("repcode", "3001").put("data", "保存失败,请重新上传")));
@@ -223,50 +274,28 @@ public class MissionHttpVerticle extends AbstractVerticle {
     }
 
     /**
-     * 下载文件
-     *
-     * @param context
-     */
-    private void downLoadHandler(RoutingContext context) {
-        String path = context.getBodyAsJson().getString("filepath");
-        logger.info(path);
-        File file = new File(path);
-        if (file.exists()) {
-            logger.info("下载成功");
-            context.response().putHeader("mark", "wenjian").
-                    putHeader("Content-Disposition", "filename=aaa.xls").
-                    putHeader("Content-Type", "application/octet-stream").
-                    putHeader("statusText", "wenjian").
-                    setStatusMessage("wenjian").
-                    sendFile(path);
-        } else {
-            logger.info("下载失败");
-            context.response().sendFile(null);
-        }
-    }
-
-    /**
      * 下载文件1
+     * <p>
+     * path 就是guid
+     * /getFile?path=TJMission\res\51b45c16-0d4c-415d-a4c5-eee9930bac48
      *
-     *path 就是guid
-     * http://192.168.1.144:8087/getFile?path=TJMission\res\51b45c16-0d4c-415d-a4c5-eee9930bac48
      * @param context
      */
     private void downLoadHandler1(RoutingContext context) {
         String path = context.request().getParam("path");
         String fileName = context.request().getParam("name");
-        if (path==null||path.length()==0){
+        if (path == null || path.length() == 0) {
             context.response().end("No resources found");
             return;
         }
         logger.info(path);
-        File file = new File("TJMission\\res\\"+path);
+        File file = new File("TJMission" + File.separator + "res" + File.separator + path);
         if (file.exists()) {
             logger.info("下载成功");
             if (fileName != null) {
-                context.response().sendFile("TJMission\\res\\"+path);
+                context.response().sendFile("TJMission" + File.separator + "res" + File.separator + path);
             } else {
-                context.response().putHeader("Content-Disposition", "attachment; filename=" + path).sendFile("TJMission\\res\\"+path);
+                context.response().putHeader("Content-Disposition", "attachment; filename=" + path).sendFile("TJMission" + File.separator + "res" + File.separator + path);
             }
         } else {
             logger.info("下载失败");
@@ -291,7 +320,7 @@ public class MissionHttpVerticle extends AbstractVerticle {
                     Date date1 = new Date();
                     date1.setTime(Long.valueOf(date));
                     list.get(i).put("date1", sdf.format(date1));
-                    list.get(i).put("path", "http://192.168.1.144:8087/getFile?path=" + list.get(i).getString("fileguid") + "&name=" + list.get(i).getString("filename"));
+                    list.get(i).put("path", domainName + "/getFile?path=" + list.get(i).getString("fileguid"));
                 }
                 logger.info("查询成功");
                 context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 0).put("data", list)));
@@ -318,7 +347,7 @@ public class MissionHttpVerticle extends AbstractVerticle {
                     Date date1 = new Date();
                     date1.setTime(Long.valueOf(date));
                     list.get(i).put("date1", sdf.format(date1));
-                    list.get(i).put("path", "http://192.168.1.144:8087/getFile?path=" + list.get(i).getString("keystoreguid") + "&name=" + list.get(i).getString("keystoreName"));
+                    list.get(i).put("path", domainName + "/getFile?path=" + list.get(i).getString("keystoreguid"));
                 }
                 logger.info("查询成功");
                 context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 0).put("data", list)));
@@ -329,6 +358,27 @@ public class MissionHttpVerticle extends AbstractVerticle {
         });
     }
 
+
+//    /**
+//     * 上传文件处理
+//     */
+//    private void uploadHandler_file(RoutingContext context) {
+//        String guid = context.getBodyAsJson().getString("guid").trim();
+//        String file = context.getBodyAsJson().getString("file").trim();
+//        JsonArray jsonArray = new JsonArray();
+//        Long date = new Date().getTime();
+//        jsonArray.add(guid).add(file).add(date);
+//        dbService.query(sql.get(SqlConstants.FILEINFO_INSERT), jsonArray, result -> {
+//            if (result.succeeded()) {
+//                logger.info("上传成功");
+//                context.response().end(Json.encodePrettily(new JsonObject().put("repcode", 3000).put("data", guid)));
+//            } else {
+//                logger.error("保存失败,请重新上传", result.cause());
+//                context.response().end(Json.encodePrettily(new JsonObject().put("repcode", 3001).put("data", "保存失败,请重新上传")));
+//            }
+//        });
+//
+//    }
 
     /**
      * 上传文件处理
@@ -355,7 +405,7 @@ public class MissionHttpVerticle extends AbstractVerticle {
                 dbService.query(sql.get(SqlConstants.FILEINFO_INSERT), jsonArray, result -> {
                     if (result.succeeded()) {
                         logger.info("上传成功");
-                        context.response().end(Json.encodePrettily(new JsonObject().put("repcode", "3000").put("data",guid).put("path", "http://192.168.1.144:8087/getFile?path=" + guid + "&name=" + finalFilename)));
+                        context.response().end(Json.encodePrettily(new JsonObject().put("repcode", "3000").put("data",new JsonObject().put("guid",guid)).put("path", domainName+"/getFile?path=" + guid + "&name=" + finalFilename)));
                     } else {
                         logger.error("保存失败,请重新上传", result.cause());
                         context.response().end(Json.encodePrettily(new JsonObject().put("repcode", "3001").put("data", "保存失败,请重新上传")));
@@ -367,7 +417,6 @@ public class MissionHttpVerticle extends AbstractVerticle {
                 context.response().end(Json.encodePrettily(new JsonObject().put("repcode", "3001").put("data", "保存失败,请重新上传")));
             }
         });
-
     }
 
 

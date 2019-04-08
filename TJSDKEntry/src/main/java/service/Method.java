@@ -18,8 +18,8 @@ public class Method {
         InputStream queriesInputStream = null;
         Properties queriesProps = new Properties();
         try {
-            //queriesInputStream=new FileInputStream("conf.properties");
-            queriesInputStream = this.getClass().getClassLoader().getResourceAsStream("conf.properties");
+            queriesInputStream=new FileInputStream("confTJSDK/conf.properties");
+            //queriesInputStream = this.getClass().getClassLoader().getResourceAsStream("conf.properties");
             queriesProps.load(queriesInputStream);
             queriesInputStream.close();
         } catch (IOException e) {
@@ -39,8 +39,8 @@ public class Method {
         InputStream queriesInputStream = null;
         Properties queriesProps = new Properties();
         try {
-            //queriesInputStream=new FileInputStream("sql.properties");
-            queriesInputStream = this.getClass().getClassLoader().getResourceAsStream("sql.properties");
+            queriesInputStream=new FileInputStream("confTJSDK/sql.properties");
+            //queriesInputStream = this.getClass().getClassLoader().getResourceAsStream("sql.properties");
             queriesProps.load(queriesInputStream);
             queriesInputStream.close();
         } catch (IOException e) {

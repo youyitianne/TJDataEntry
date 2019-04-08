@@ -39,13 +39,13 @@ public class MissionDatabaseServiceImp implements MissionDatabaseService{
             } else {
                 SQLConnection connection = ar.result();
                 connection.batch(lists, create -> {
-                    connection.close();
                     if (create.failed()) {
                         LOGGER.error("Database preparation err", create.cause());
                         readyHandler.handle(Future.failedFuture(create.cause()));
                     } else {
                         readyHandler.handle(Future. succeededFuture(this));
                     }
+                    connection.close();
                 });
             }
         });
