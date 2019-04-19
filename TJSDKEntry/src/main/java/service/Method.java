@@ -50,7 +50,7 @@ public class Method {
         sqlQueries.put(SqlConstants.PROJECT_CONFIG_INFORMATION_INSERT, queriesProps.getProperty("project_config_information_insert"));
         sqlQueries.put(SqlConstants.PROJECT_CONFIG_INFORMATION_LIST, queriesProps.getProperty("project_config_information_list"));
         sqlQueries.put(SqlConstants.PROJECT_CONFIG_PARAMTER_INSERT, queriesProps.getProperty("project_config_list_insert"));
-        sqlQueries.put(SqlConstants.PROJECT_CONFIG_PARAMTER_LIST, queriesProps.getProperty("project_config_list_list"));
+        sqlQueries.put(SqlConstants.PROJECT_CONFIG_PARAMTER_LIST, queriesProps.getProperty("project_config_paramter_list"));
         sqlQueries.put(SqlConstants.PROJECT_CONFIG_INFORMATION_UPDATE, queriesProps.getProperty("project_config_information_update"));
         sqlQueries.put(SqlConstants.PROJECT_CONFIG_PARAMTER_DELETE, queriesProps.getProperty("project_config_list_delete"));
         sqlQueries.put(SqlConstants.SDK_INFO_INSERT, queriesProps.getProperty("sdk_info_insert"));
@@ -68,6 +68,10 @@ public class Method {
         sqlQueries.put(SqlConstants.API_SDK_LIST, queriesProps.getProperty("api_sdk_list"));
         sqlQueries.put(SqlConstants.API_PROJECT_LIST_NEW, queriesProps.getProperty("api_project_list_new"));
         sqlQueries.put(SqlConstants.API_SDK_LIST_NEW, queriesProps.getProperty("api_sdk_list_new"));
+        //公司信息
+        sqlQueries.put(SqlConstants.ADD_COMPANY_INFO, queriesProps.getProperty("add_company_info"));
+        sqlQueries.put(SqlConstants.EDIT_COMPANY_INFO, queriesProps.getProperty("edit_company_info"));
+        sqlQueries.put(SqlConstants.LIST_COMPANY_INFO, queriesProps.getProperty("list_company_info"));
         return sqlQueries;
     }
 

@@ -1,5 +1,10 @@
 package http;
 
+import database.Method;
+import database.ResStoreDatabaseService;
+import database.ResStoreDatabaseVerticle;
+import database.SqlConstants;
+import http.qiniu.QiNiuService;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpMethod;
@@ -12,27 +17,32 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class resStoreHttpVerticle extends AbstractVerticle {
+    private Method method = new Method();
+    public static final String CONFIG_RES_QUEUE = "resStore.queue";
     Logger logger = LoggerFactory.getLogger(resStoreHttpVerticle.class);
     private static final String cachePath = "fileCache";
     private static final String rootPath = "Resource";
     private static final String secondPath = "res";
+    private ResStoreDatabaseService dbService;
+    QiNiuService qiNiuService = null;
+    HashMap<SqlConstants, String> sql = null;
 
 
     @Override
     public void start(Future<Void> startFuture) {
+        dbService = ResStoreDatabaseService.createProxy(vertx, CONFIG_RES_QUEUE);
+        sql = method.loadSqlQueries();
         Router router = Router.router(vertx);
-
+        qiNiuService = new QiNiuService();
         //跨域  start
         Set<String> allowHeaders = new HashSet<>();
         allowHeaders.add("x-requested-with");
@@ -55,7 +65,10 @@ public class resStoreHttpVerticle extends AbstractVerticle {
 
         router.route().handler(BodyHandler.create().setUploadsDirectory(rootPath + File.separator + cachePath));
 
-        //文件上传
+        //文件上传到七牛云
+        router.post("/qiniufile").handler(this::qiniufileuploadHandler);
+        router.get("/qiniufile").handler(this::getqiniufileHandler);
+        //文件上传到本地
         router.post("/file").handler(this::uploadHandler);
         router.get("/file").handler(this::getHandler);
         HashMap<ConfigConstants, String> conf = loadConfigQueries();
@@ -68,6 +81,95 @@ public class resStoreHttpVerticle extends AbstractVerticle {
             } else {
                 logger.error("Could not start a HTTP server", ar.cause());
                 startFuture.fail(ar.cause());
+            }
+        });
+    }
+
+    /**
+     * 获取本地七牛云上传记录
+     * @param context
+     */
+    private void getqiniufileHandler(RoutingContext context) {
+        dbService.listDatas(sql.get(SqlConstants.QINIUFILE_LIST), rs -> {
+            if (rs.succeeded()) {
+                SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                List<JsonObject> list=rs.result();
+                for (int i=0;i<list.size();i++){
+                    JsonObject jsonObject=list.get(i);
+                    String date1=jsonObject.getString("qiniu_file_date");
+                    jsonObject.put("date", sdf.format(new Date(Long.valueOf(date1))));
+                }
+                logger.info("获取七牛云上传记录成功");
+                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3000).put("data", rs.result())));
+            } else {
+                logger.error("获取七牛云上传记录失败", rs.cause());
+                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3001).put("data", rs.cause())));
+            }
+        });
+    }
+
+
+    /**
+     * 上传文件至七牛云
+     *
+     * @param context
+     */
+    private void qiniufileuploadHandler(RoutingContext context) {
+        Set<FileUpload> fileUploads = context.fileUploads();
+        String filename = "";
+        String uploadfilename = "";
+        for (FileUpload f : fileUploads) {
+            filename = f.fileName();   //文件原名  友盟3.xlsx
+            uploadfilename = f.uploadedFileName();      //文件缓存名    TJMission\file-uploads\711dcdb5-dec7-4ccb-b191-72696ea9a853
+            logger.info(filename);
+            logger.info(uploadfilename);
+        }
+        String finalUploadFilename = uploadfilename;
+        String finalFilename = filename;
+        String guid = UUID.randomUUID().toString();
+        logger.info(guid);
+        String md5 = "";
+        try {
+            md5 = DigestUtils.md5Hex(new FileInputStream(uploadfilename));
+        } catch (Exception e) {
+            logger.error("文件异常，计算md5失败", e);
+        }
+        String finalMD5 = md5;
+        dbService.fetchDatas(sql.get(SqlConstants.QINIUFILE_COUNT), new JsonArray().add(md5), countResult -> {
+            if (countResult.succeeded()) {
+                List<JsonObject> list = countResult.result();
+                if (list.get(0).getInteger("count") > 0) {
+                    qiniuSaveRecord(guid, finalMD5, finalFilename, context);
+                } else {
+                    String response = qiNiuService.upload(finalUploadFilename, finalMD5);
+                    if (response != null) {
+                        qiniuSaveRecord(guid, finalMD5, finalFilename, context);
+                    } else {
+                        context.response().setStatusCode(500).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3001).put("message", "上传至七牛云失败")));
+                    }
+                }
+            } else {
+                logger.error("查询本地记录失败",countResult.cause());
+                context.response().setStatusCode(500).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3001).put("message", "查询本地记录失败")));
+            }
+        });
+    }
+
+    /**
+     * 保存七牛云上传记录到本地
+     *
+     * @param guid          文件guid
+     * @param md5           文件md5
+     * @param finalFilename 原文件名
+     * @param context
+     */
+    public void qiniuSaveRecord(String guid, String md5, String finalFilename, RoutingContext context) {
+        dbService.query(sql.get(SqlConstants.QINIUFILE_INSERT), new JsonArray().add(guid).add(md5).add(new Date().getTime()).add(finalFilename).add("http://image.tomatojoy.cn/"+md5), result -> {
+            if (result.succeeded()) {
+                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3000).put("message", "上传至七牛云成功！")));
+            } else {
+                logger.error("保存七牛云上传记录到本地失败",result.cause());
+                context.response().setStatusCode(500).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3001).put("message", "上传至七牛云成功，本地记录保存失败！")));
             }
         });
     }

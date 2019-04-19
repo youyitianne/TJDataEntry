@@ -14,6 +14,9 @@ public class SqlStatement {
             "and\n" +
             " id not in (select max(id) from advertisement.userdata group by date,app_name,channel,version having count(*) > 1);";
 
+
+
+
     public static String DEL_ID_USER="delete from advertisement.userdata where id in ";
 
     public static String DEL_ID_ADVERTISEMENT="delete from advertisement.advertisingdata where id in ";

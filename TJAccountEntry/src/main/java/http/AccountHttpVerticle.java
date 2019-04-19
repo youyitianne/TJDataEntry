@@ -37,7 +37,7 @@ public class AccountHttpVerticle extends AbstractVerticle {
     public static final String CONFIG_ACCOUNTDB_QUEUE = "accountdb.queue";
     private Logger logger = LoggerFactory.getLogger(AccountHttpVerticle.class.getName());
     private AccountDatabaseService dbService;
-    private String accountDbQueue;
+   // private String accountDbQueue;
     private JWTAuth jwtAuth = null;
     private JDBCClient jdbcClient = null;
     private SessionStore store = null;
@@ -47,7 +47,7 @@ public class AccountHttpVerticle extends AbstractVerticle {
 
     @Override
     public void start(Future<Void> startFuture) throws Exception {
-        accountDbQueue = config().getString(CONFIG_ACCOUNTDB_QUEUE, "accountdb.queue");
+        //accountDbQueue = config().getString(CONFIG_ACCOUNTDB_QUEUE, "accountdb.queue");
         dbService = AccountDatabaseService.createProxy(vertx, CONFIG_ACCOUNTDB_QUEUE);
         Load load=new Load();
         HashMap<ConfigConstants, String> conf = load.loadConfQueries();

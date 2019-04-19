@@ -8,8 +8,6 @@
         <outputRelativeToContentRoot value="true" />
         <module name="DataUI" />
         <module name="TJDataEntry" />
-        <module name="TJResourceStoreEntry" />
-        <module name="TJShieldingSystem" />
       </profile>
       <profile name="Annotation profile for TJSDKEntry" enabled="true">
         <sourceOutputDir name="src/main/generated" />
@@ -35,6 +33,22 @@
         <processor name="io.vertx.codegen.CodeGenProcessor" />
         <module name="TJMission" />
       </profile>
+      <profile name="Annotation profile for TJShieldingSystem" enabled="true">
+        <sourceOutputDir name="src/main/generated" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <option name="outputDirectory" value="F:\workspace\TJServerKit\TJShieldingSystem/src/main" />
+        <processor name="io.vertx.codegen.CodeGenProcessor" />
+        <module name="TJShieldingSystem" />
+      </profile>
+      <profile name="Annotation profile for TJResourceStoreEntry" enabled="true">
+        <sourceOutputDir name="src/main/generated" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <option name="outputDirectory" value="F:\workspace\TJServerKit\TJResourceStoreEntry/src/main" />
+        <processor name="io.vertx.codegen.CodeGenProcessor" />
+        <module name="TJResourceStoreEntry" />
+      </profile>
       <profile name="Annotation profile for TJServerKit" enabled="true">
         <sourceOutputDir name="src/main/generated" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -53,8 +67,9 @@
       <module name="TJAccountEntry" options="-AoutputDirectory=F:\workspace\TJServerKit\TJAccountEntry/src/main" />
       <module name="TJMission" options="-AoutputDirectory=F:\workspace\TJServerKit\TJMission/src/main" />
       <module name="TJPayEntry" options="-AoutputDirectory=F:\workspace\TJServerKit\TJPayEntry/src/main" />
+      <module name="TJResourceStoreEntry" options="-AoutputDirectory=F:\workspace\TJServerKit\TJResourceStoreEntry/src/main" />
       <module name="TJSDKEntry" options="-AoutputDirectory=F:\workspace\TJServerKit\TJSDKEntry/src/main" />
-      <module name="TJShieldingSystem" options="" />
+      <module name="TJShieldingSystem" options="-AoutputDirectory=F:\workspace\TJServerKit\TJShieldingSystem/src/main" />
     </option>
   </component>
 </project>

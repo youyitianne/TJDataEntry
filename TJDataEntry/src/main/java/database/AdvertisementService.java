@@ -107,79 +107,78 @@ public class AdvertisementService {
      * @param del 删除语句
      * @return  Boolean
      */
-    public Future<Boolean> removeRepeat(JDBCClient client,String sel, String del) {
-        Future<Boolean> future = Future.future();
-        System.out.println(1);
-        client.query(sel, rs -> {
-            System.out.println(13);
-            if (rs.succeeded()) {
-                List<JsonObject> list = rs.result().getRows();
-                if (list.size() == 0) {
-                    future.complete(true);
-                } else {
-                    StringBuffer buffer = new StringBuffer();
-                    for (int i = 0; i < list.size(); i++) {
-                        if (i == 0) {
-                            buffer.append("(");
-                        }
-                        buffer.append(list.get(i).getValue("id"));
-                        if (i == (list.size() - 1)) {
-                            buffer.append(");");
-                        } else {
-                            buffer.append(",");
-                        }
-                    }
-                    String delete = del + buffer;
-                    System.out.println(2);
-                    client.update(delete, result -> {
-                        System.out.println(3);
-                        future.complete(true);
-                    });
-                }
-            } else {
-                future.complete(true);
-            }
-        });
-
-//        client.getConnection(conn->{
-//            if (conn.succeeded()){
-//                SQLConnection connection=conn.result();
-//                connection.query(sel, rs -> {
-//                    if (rs.succeeded()) {
-//                        List<JsonObject> list = rs.result().getRows();
-//                        if (list.size() == 0) {
-//                            future.complete(true);
-//                        } else {
-//                            StringBuffer buffer = new StringBuffer();
-//                            for (int i = 0; i < list.size(); i++) {
-//                                if (i == 0) {
-//                                    buffer.append("(");
-//                                }
-//                                buffer.append(list.get(i).getValue("id"));
-//                                if (i == (list.size() - 1)) {
-//                                    buffer.append(");");
-//                                } else {
-//                                    buffer.append(",");
-//                                }
-//                            }
-//                            String delete = del + buffer;
-//                            connection.update(delete, result -> {
-//                                connection.close();
-//                                future.complete(true);
-//                            });
+//    public Future<Boolean> removeRepeat(JDBCClient client,String sel, String del) {
+//        Future<Boolean> future = Future.future();
+//        System.out.println(1);
+//        client.query(sel, rs -> {
+//            System.out.println(13);
+//            if (rs.succeeded()) {
+//                List<JsonObject> list = rs.result().getRows();
+//                if (list.size() == 0) {
+//                    future.complete(true);
+//                } else {
+//                    StringBuffer buffer = new StringBuffer();
+//                    for (int i = 0; i < list.size(); i++) {
+//                        if (i == 0) {
+//                            buffer.append("(");
 //                        }
-//                    } else {
-//                        future.complete(true);
+//                        buffer.append(list.get(i).getValue("id"));
+//                        if (i == (list.size() - 1)) {
+//                            buffer.append(");");
+//                        } else {
+//                            buffer.append(",");
+//                        }
 //                    }
-//                });
-//
-//            }else {
-//
+//                    String delete = del + buffer;
+//                    System.out.println(2);
+//                    client.update(delete, result -> {
+//                        System.out.println(3);
+//                        future.complete(true);
+//                    });
+//                }
+//            } else {
+//                future.complete(true);
 //            }
 //        });
-
-        return future;
-    }
+//
+////        client.getConnection(conn->{
+////            if (conn.succeeded()){
+////                SQLConnection connection=conn.result();
+////                connection.query(sel, rs -> {
+////                    if (rs.succeeded()) {
+////                        List<JsonObject> list = rs.result().getRows();
+////                        if (list.size() == 0) {
+////                            future.complete(true);
+////                        } else {
+////                            StringBuffer buffer = new StringBuffer();
+////                            for (int i = 0; i < list.size(); i++) {
+////                                if (i == 0) {
+////                                    buffer.append("(");
+////                                }
+////                                buffer.append(list.get(i).getValue("id"));
+////                                if (i == (list.size() - 1)) {
+////                                    buffer.append(");");
+////                                } else {
+////                                    buffer.append(",");
+////                                }
+////                            }
+////                            String delete = del + buffer;
+////                            connection.update(delete, result -> {
+////                                connection.close();
+////                                future.complete(true);
+////                            });
+////                        }
+////                    } else {
+////                        future.complete(true);
+////                    }
+////                });
+////
+////            }else {
+////
+////            }
+////        });
+//        return future;
+//    }
 
     /**
      * 查找所有游戏名称
@@ -252,7 +251,7 @@ public class AdvertisementService {
     }
 
     /**
-     * 之星sql 无参数返回
+     * 执行sql 无参数返回
      */
     public Future<Boolean> queryNoResult(JDBCClient client,String sql) {
         Future<Boolean> future = Future.future();

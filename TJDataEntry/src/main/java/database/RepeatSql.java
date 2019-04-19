@@ -9,8 +9,7 @@ public class RepeatSql {
             "order by earned,id";
 
     public static final String GET_AD_REPEAT="select * from advertisement.advertisingdata a \n" +
-            "where \n" +
-            "a.earned !=0 and a.click!=0 and a.ecpm!=0 and \n" +
+            "where a.earned !=0 and a.click!=0 and a.ecpm!=0 and \n" +
             "(a.date,a.app_name,a.channel,a.advertising_type,a.ecpm,a.earned) in \n" +
             "(select date,app_name,channel,advertising_type,ecpm,earned from advertisement.advertisingdata group by date,app_name,channel,advertising_type,ecpm,earned having count(*) > 1) \n" +
             "and\n" +

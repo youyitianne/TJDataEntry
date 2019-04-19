@@ -1,5 +1,6 @@
 package http;
 
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import database.ConfigConstants;
 import database.SdkDatabaseService;
 import database.SqlConstants;
@@ -36,7 +37,8 @@ public class SdkHttpVerticle extends AbstractVerticle {
     private JWTAuthHandler jwtAuthHandler;
     private JWTAuth jwtAuth = null;
     private SdkOperationLog operationLog = new SdkOperationLog();
-    private static final String domainName="http://192.168.1.144:8087";
+    private static final String domainName = "http://192.168.1.101:8087";
+    private static String synchronize = "synchronize";
 
     @Override
     public void start(Future<Void> startFuture) {
@@ -90,7 +92,6 @@ public class SdkHttpVerticle extends AbstractVerticle {
         router.post("/api/projectconfig_pro").handler(this::projectconfigCreateHandler_pro);
         router.patch("/api/projectconfig/:id").handler(this::projectconfigUpdateHandler);
         router.get("/api/listtemplate").handler(this::listtemplateHandler);
-
         //sdk
         router.get("/api/sdk").handler(this::sdkListHandler);
         router.post("/api/sdk").handler(this::sdkCreateHandler);
@@ -98,6 +99,14 @@ public class SdkHttpVerticle extends AbstractVerticle {
         //发布记录
         router.get("/api/projectconfig_publish").handler(this::projectconfigListPublishHandler);
         router.post("/api/publish_delete").handler(this::publishDeleteHandler);
+        //分页查询
+        router.get("/api/sdk/limit").handler(this::sdkListLimitHandler);//分页
+        router.get("/api/projectconfig_publish/limit").handler(this::projectconfigListPublishLimitHandler);
+        router.get("/api/projectconfig/limit").handler(this::projectconfigListLimitHandler);
+        //公司信息
+        router.get("/api/companyInfo").handler(this::getCompanyInfoHandler);
+        router.post("/api/companyInfo").handler(this::postCompanyInfoHandler);
+        router.patch("/api/companyInfo").handler(this::patchCompanyInfoHandler);
 
         HashMap<ConfigConstants, String> conf = method.loadConfigQueries();
         sql = method.loadSqlQueries();
@@ -111,6 +120,420 @@ public class SdkHttpVerticle extends AbstractVerticle {
             } else {
                 logger.error("Could not start a HTTP server", ar.cause());
                 startFuture.fail(ar.cause());
+            }
+        });
+    }
+
+    /**
+     * 分页查询sdk模版列表
+     *
+     * @param context
+     */
+    private void sdkListLimitHandler(RoutingContext context) {
+        Integer limit = 0;
+        Integer page = 0;
+        String sdkName = context.request().getParam("sdkName");
+        String sdkMark = context.request().getParam("sdkMark");
+        try {
+            limit = Integer.valueOf(context.request().getParam("limit"));
+            page = Integer.valueOf(context.request().getParam("page"));
+        } catch (Exception e) {
+            logger.error("参数错误");
+            context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3001).put("data", "参数错误")));
+            return;
+        }
+        StringBuilder condition = new StringBuilder();
+
+        synchronized (synchronize) {
+            Boolean where_flag = true;
+            if (sdkName != null) {
+                if (where_flag = true) {
+                    condition.append(" where ");
+                    where_flag = false;
+                }
+                condition.append(" sdk_name like '%" + sdkName + "%' ");
+            }
+            if (sdkMark != null) {
+                if (where_flag = true) {
+                    condition.append(" where ");
+                    where_flag = false;
+                }
+                condition.append(" sdk_mark like '%" + sdkMark + "%' ");
+            }
+        }
+        StringBuilder limitsql = new StringBuilder();
+        limitsql.append("  limit " + (page - 1) * limit + "," + limit + ";");
+        dbService.listDatas("SELECT count(*) total FROM tjsdk.sdk_info " + condition, countResult -> {
+            if (countResult.succeeded()) {
+                Integer total = countResult.result().get(0).getInteger("total");
+                dbService.listDatas("SELECT * FROM tjsdk.sdk_info " + condition + limitsql, result -> {
+                    List<JsonObject> sdk_info = result.result();
+                    if (sdk_info.size() == 0) { //没找到表
+                        context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3000).put("total", total).put("data", new ArrayList<>())));
+                        return;
+                    }
+                    StringBuilder fetchParamJsonArray = new StringBuilder();
+                    fetchParamJsonArray.append("(");
+                    for (int i = 0; i < sdk_info.size(); i++) {
+                        fetchParamJsonArray.append("'" + sdk_info.get(i).getString("sdk_mark") + "'");
+                        if (i != sdk_info.size() - 1) {
+                            fetchParamJsonArray.append(",");
+                        } else {
+                            fetchParamJsonArray.append(")");
+                        }
+                    }
+                    logger.info("SELECT * FROM tjsdk.sdk_list where sdk_mark in " + fetchParamJsonArray);
+                    dbService.listDatas("SELECT * FROM tjsdk.sdk_list where sdk_mark in " + fetchParamJsonArray, result1 -> {
+                        if (result.succeeded() && result1.succeeded()) {
+                            List<JsonObject> sdk_list = result1.result();
+                            for (int i = 0; i < sdk_info.size(); i++) {
+                                String mark = sdk_info.get(i).getString("sdk_mark");
+                                JsonArray jsonArray = new JsonArray();
+                                Iterator<JsonObject> it = sdk_list.iterator();
+                                while (it.hasNext()) {
+                                    JsonObject jsonObject = it.next();
+                                    if (jsonObject.getString("sdk_mark").equals(mark)) {
+                                        jsonObject.put("key", Long.toHexString(new Date().getTime()));
+                                        jsonArray.add(jsonObject);
+                                        it.remove();
+                                    }
+                                }
+                                sdk_info.get(i).put("paramter", jsonArray);
+                            }
+                            Collections.reverse(sdk_info);
+                            context.response().setStatusCode(200).end(Json.encodePrettily(
+                                    new JsonObject().put("code", 20000).put("repcode", 3000).put("total", total).put("data", sdk_info)));
+                        } else {
+                            if (result.failed()) {
+                                logger.error("sdk_info 查询失败", result.cause());
+                            }
+                            if (result1.failed()) {
+                                logger.error("sdk_list 查询失败", result1.cause());
+                            }
+                            badRequest(context);
+                        }
+                    });
+                });
+            } else {
+                logger.error("查询总数失败", countResult.cause());
+                context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3001)));
+            }
+        });
+
+
+    }
+
+
+    //分页查询配置表发布记录
+    private void projectconfigListPublishLimitHandler(RoutingContext context) {
+        Integer limit = 0;
+        Integer page = 0;
+        String appName = context.request().getParam("appName");
+        String channelName = context.request().getParam("channelName");
+        String packageName = context.request().getParam("packageName");
+        try {
+            limit = Integer.valueOf(context.request().getParam("limit"));
+            page = Integer.valueOf(context.request().getParam("page"));
+        } catch (Exception e) {
+            logger.error("参数错误");
+            context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3001).put("data", "参数错误")));
+            return;
+        }
+        StringBuilder condition = new StringBuilder();
+        if (appName != null) {
+            condition.append("and app_name like '%" + appName + "%'");
+        }
+        if (channelName != null) {
+            condition.append("and channel_mark like '%" + channelName + "%'");
+        }
+        if (packageName != null) {
+            condition.append("and package_name like '%" + packageName + "%'");
+        }
+
+        StringBuilder limitsql = new StringBuilder();
+        limitsql.append("  limit " + (page - 1) * limit + "," + limit + ";");
+        logger.info("SELECT count(*) total  FROM  tjsdk.project_config_info where publish = 1 " + condition);
+        dbService.listDatas("SELECT count(*) total  FROM  tjsdk.project_config_info where publish = 1 " + condition, countResult -> {
+            if (countResult.succeeded()) {
+                Integer total = countResult.result().get(0).getInteger("total");
+                logger.info("SELECT *  FROM  tjsdk.project_config_info where publish = 1 " + condition + "  order by id desc  " + limitsql);
+                dbService.listDatas("SELECT *  FROM  tjsdk.project_config_info where publish = 1  " + condition + "  order by id desc  " + limitsql, result -> {
+                    List<JsonObject> sdk_information = result.result();
+                    if (sdk_information.size() == 0) { //没找到表
+                        context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3000).put("total", total).put("data", new ArrayList<>())));
+                        return;
+                    }
+                    StringBuilder fetchParamJsonArray = new StringBuilder();
+                    fetchParamJsonArray.append("(");
+                    for (int i = 0; i < sdk_information.size(); i++) {
+                        fetchParamJsonArray.append(sdk_information.get(i).getLong("date"));
+                        if (i != sdk_information.size() - 1) {
+                            fetchParamJsonArray.append(",");
+                        } else {
+                            fetchParamJsonArray.append(")");
+                        }
+                    }
+                    dbService.listDatas("SELECT * FROM `tjsdk`.`project_config_list` where date in " + fetchParamJsonArray.toString(), result1 -> {
+                        if (result.succeeded() && result1.succeeded()) {
+                            List<JsonObject> paramter = result1.result();
+                            for (int i = 0; i < sdk_information.size(); i++) {
+                                Long longdate = sdk_information.get(i).getLong("date");
+                                String app_name = sdk_information.get(i).getString("app_name");
+                                String channel_mark = sdk_information.get(i).getString("channel_mark");
+                                String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS").format(new Date(longdate));
+                                String date1 = new SimpleDateFormat("yyyy年MM月dd HH:mm:ss").format(new Date(longdate));
+                                sdk_information.get(i).put("date", date);
+                                sdk_information.get(i).put("date1", date1);
+                                sdk_information.get(i).put("timestamp", longdate);
+                                JsonArray jsonArray = new JsonArray();
+                                Iterator<JsonObject> it = paramter.iterator();
+                                while (it.hasNext()) {
+                                    JsonObject jsonObject = it.next();
+                                    if (jsonObject.getLong("date").equals(longdate)
+                                            && jsonObject.getString("app_name").equals(app_name)
+                                            && jsonObject.getString("channel_mark").equals(channel_mark)) {
+                                        jsonObject.put("key", Long.toHexString(new Date().getTime()));
+                                        jsonObject.put("mark", jsonObject.getString("param_name").split("-")[0]);
+
+                                        String[] name = jsonObject.getString("param_name").split("-");
+//                                jsonObject.put("param_name1", name[name.length - 1]);
+                                        String param_name1 = jsonObject.getString("param_name").substring(name[0].length() + 1).replace("-", "");
+                                        jsonObject.put("param_name1", param_name1);
+
+                                        jsonArray.add(jsonObject);
+                                        it.remove();
+                                    }
+                                }
+                                //JsonArray重新排序
+                                JsonArray newjsonarray = new JsonArray();
+                                JsonArray list1 = jsonArray;
+                                for (int j = 0; j < list1.size(); j++) {
+                                    Boolean flag = true;
+                                    if (newjsonarray.size() == 0) {
+                                        for (int x = 0; x < newjsonarray.size(); x++) {
+                                            if (newjsonarray.getJsonObject(x).getString("param_name").equals(list1.getJsonObject(j).getString("param_name"))) {
+                                                flag = false;
+                                            }
+                                        }
+                                    }
+                                    if (flag) {
+                                        JsonObject listjsonobject = list1.getJsonObject(j);
+                                        newjsonarray.add(listjsonobject);
+                                        String name = listjsonobject.getString("param_name").split("-")[0];
+                                        Iterator<Object> jsonarray = jsonArray.iterator();
+                                        while (jsonarray.hasNext()) {
+                                            JsonObject jsonObject = JsonObject.mapFrom(jsonarray.next());
+                                            String name1 = jsonObject.getString("param_name").split("-")[0];
+                                            if (name.equals(name1) && !listjsonobject.getString("param_name").equals(jsonObject.getString("param_name"))) {
+                                                newjsonarray.add(jsonObject);
+                                                jsonarray.remove();
+                                            }
+                                        }
+                                    }
+                                }
+                                sdk_information.get(i).put("paramter", newjsonarray);
+                            }
+                            context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3000).put("total", total).put("data", sdk_information)));
+                        } else {
+                            if (result1.failed()) {
+                                logger.error("SDK_PARAMTER_LIST 失败------》" + result1.cause().toString());
+                            }
+                            if (result.failed()) {
+                                logger.error("SDK_INFORMATION_LIST 失败------》" + result.cause().toString());
+                            }
+                            context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3001)));
+                        }
+                    });
+                });
+            } else {
+                logger.error("查询总数失败", countResult.cause());
+                context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3001)));
+            }
+        });
+
+    }
+
+    //分页查询配置表
+    private void projectconfigListLimitHandler(RoutingContext context) {
+        Integer limit = 0;
+        Integer page = 0;
+        String appName = context.request().getParam("appName");
+        String channelName = context.request().getParam("channelName");
+        String packageName = context.request().getParam("packageName");
+        try {
+            limit = Integer.valueOf(context.request().getParam("limit"));
+            page = Integer.valueOf(context.request().getParam("page"));
+        } catch (Exception e) {
+            logger.error("参数错误");
+            context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3001).put("data", "参数错误")));
+            return;
+        }
+        StringBuilder condition = new StringBuilder();
+        if (appName != null) {
+            condition.append("and app_name like '%" + appName + "%'");
+        }
+        if (channelName != null) {
+            condition.append("and channel_mark like '%" + channelName + "%'");
+        }
+        if (packageName != null) {
+            condition.append("and package_name like '%" + packageName + "%'");
+        }
+
+        StringBuilder limitsql = new StringBuilder();
+        limitsql.append("  limit " + (page - 1) * limit + "," + limit + ";");
+        logger.info("SELECT count(*) total  FROM  tjsdk.project_config_info where publish = 0 " + condition);
+        dbService.listDatas("SELECT count(*) total  FROM  tjsdk.project_config_info where publish = 0 " + condition, countResult -> {
+            if (countResult.succeeded()) {
+                Integer total = countResult.result().get(0).getInteger("total");
+                logger.info("SELECT *  FROM  tjsdk.project_config_info where publish = 0 " + condition + "  order by id desc  " + limitsql);
+                dbService.listDatas("SELECT *  FROM  tjsdk.project_config_info where publish = 0  " + condition + "  order by id desc  " + limitsql, result -> {
+                    List<JsonObject> sdk_information = result.result();
+                    if (sdk_information.size() == 0) { //没找到表
+                        context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3000).put("total", total).put("data", new ArrayList<>())));
+                        return;
+                    }
+                    StringBuilder fetchParamJsonArray = new StringBuilder();
+                    fetchParamJsonArray.append("(");
+                    for (int i = 0; i < sdk_information.size(); i++) {
+                        fetchParamJsonArray.append(sdk_information.get(i).getLong("date"));
+                        if (i != sdk_information.size() - 1) {
+                            fetchParamJsonArray.append(",");
+                        } else {
+                            fetchParamJsonArray.append(")");
+                        }
+                    }
+                    dbService.listDatas("SELECT * FROM `tjsdk`.`project_config_list` where date in " + fetchParamJsonArray.toString(), result1 -> {
+                        if (result.succeeded() && result1.succeeded()) {
+                            List<JsonObject> paramter = result1.result();
+                            for (int i = 0; i < sdk_information.size(); i++) {
+                                Long longdate = sdk_information.get(i).getLong("date");
+                                String app_name = sdk_information.get(i).getString("app_name");
+                                String channel_mark = sdk_information.get(i).getString("channel_mark");
+                                String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS").format(new Date(longdate));
+                                String date1 = new SimpleDateFormat("yyyy年MM月dd HH:mm:ss").format(new Date(longdate));
+                                sdk_information.get(i).put("date", date);
+                                sdk_information.get(i).put("date1", date1);
+                                sdk_information.get(i).put("timestamp", longdate);
+                                JsonArray jsonArray = new JsonArray();
+                                Iterator<JsonObject> it = paramter.iterator();
+                                while (it.hasNext()) {
+                                    JsonObject jsonObject = it.next();
+                                    if (jsonObject.getLong("date").equals(longdate)
+                                            && jsonObject.getString("app_name").equals(app_name)
+                                            && jsonObject.getString("channel_mark").equals(channel_mark)) {
+                                        jsonObject.put("key", Long.toHexString(new Date().getTime()));
+                                        jsonObject.put("mark", jsonObject.getString("param_name").split("-")[0]);
+
+                                        String[] name = jsonObject.getString("param_name").split("-");
+//                                jsonObject.put("param_name1", name[name.length - 1]);
+                                        String param_name1 = jsonObject.getString("param_name").substring(name[0].length() + 1).replace("-", "");
+                                        jsonObject.put("param_name1", param_name1);
+
+                                        jsonArray.add(jsonObject);
+                                        it.remove();
+                                    }
+                                }
+                                //JsonArray重新排序
+                                JsonArray newjsonarray = new JsonArray();
+                                JsonArray list1 = jsonArray;
+                                for (int j = 0; j < list1.size(); j++) {
+                                    Boolean flag = true;
+                                    if (newjsonarray.size() == 0) {
+                                        for (int x = 0; x < newjsonarray.size(); x++) {
+                                            if (newjsonarray.getJsonObject(x).getString("param_name").equals(list1.getJsonObject(j).getString("param_name"))) {
+                                                flag = false;
+                                            }
+                                        }
+                                    }
+                                    if (flag) {
+                                        JsonObject listjsonobject = list1.getJsonObject(j);
+                                        newjsonarray.add(listjsonobject);
+                                        String name = listjsonobject.getString("param_name").split("-")[0];
+                                        Iterator<Object> jsonarray = jsonArray.iterator();
+                                        while (jsonarray.hasNext()) {
+                                            JsonObject jsonObject = JsonObject.mapFrom(jsonarray.next());
+                                            String name1 = jsonObject.getString("param_name").split("-")[0];
+                                            if (name.equals(name1) && !listjsonobject.getString("param_name").equals(jsonObject.getString("param_name"))) {
+                                                newjsonarray.add(jsonObject);
+                                                jsonarray.remove();
+                                            }
+                                        }
+                                    }
+                                }
+                                sdk_information.get(i).put("paramter", newjsonarray);
+                            }
+                            context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3000).put("total", total).put("data", sdk_information)));
+                        } else {
+                            if (result1.failed()) {
+                                logger.error("SDK_PARAMTER_LIST 失败------》" + result1.cause().toString());
+                            }
+                            if (result.failed()) {
+                                logger.error("SDK_INFORMATION_LIST 失败------》" + result.cause().toString());
+                            }
+                            context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3001)));
+                        }
+                    });
+                });
+            } else {
+                logger.error("查询总数失败", countResult.cause());
+                context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3001)));
+            }
+        });
+
+    }
+
+    /**
+     * 获取公司信息
+     *
+     * @param context
+     */
+    private void getCompanyInfoHandler(RoutingContext context) {
+        dbService.listDatas(sql.get(SqlConstants.LIST_COMPANY_INFO), result -> {
+            if (result.succeeded()) {
+                logger.info("获取公司信息成功");
+                context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3000).put("data", result.result())));
+            } else {
+                logger.info("获取公司信息失败", result.cause());
+                context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3001)));
+            }
+        });
+    }
+
+    /**
+     * 添加公司信息
+     *
+     * @param context
+     */
+    private void postCompanyInfoHandler(RoutingContext context) {
+        String companyName = context.getBodyAsJson().getString("companyName");
+        String keystoreName = context.getBodyAsJson().getString("keystoreName");
+        dbService.query(sql.get(SqlConstants.ADD_COMPANY_INFO), new JsonArray().add(companyName).add(keystoreName), result -> {
+            if (result.succeeded()) {
+                logger.info("添加公司信息成功");
+                context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3000)));
+            } else {
+                logger.info("添加公司信息失败", result.cause());
+                context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3001)));
+            }
+        });
+    }
+
+    /**
+     * 编辑公司信息
+     *
+     * @param context
+     */
+    private void patchCompanyInfoHandler(RoutingContext context) {
+        Integer id = context.getBodyAsJson().getInteger("id");
+        String companyName = context.getBodyAsJson().getString("companyName");
+        String keystoreName = context.getBodyAsJson().getString("keystoreName");
+        dbService.query(sql.get(SqlConstants.EDIT_COMPANY_INFO), new JsonArray().add(companyName).add(keystoreName).add(id), result -> {
+            if (result.succeeded()) {
+                logger.info("编辑公司信息成功");
+                context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3000)));
+            } else {
+                logger.info("编辑公司信息失败", result.cause());
+                context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3001)));
             }
         });
     }
@@ -361,6 +784,7 @@ public class SdkHttpVerticle extends AbstractVerticle {
      * @param context
      */
     private void sdkListHandler(RoutingContext context) {
+
         dbService.listDatas(sql.get(SqlConstants.SDK_INFO_LIST), result -> {
             dbService.listDatas(sql.get(SqlConstants.SDK_LIST_LIST), result1 -> {
                 if (result.succeeded() && result1.succeeded()) {
@@ -469,9 +893,10 @@ public class SdkHttpVerticle extends AbstractVerticle {
         String versioncode_update_version = context.getBodyAsJson().getString("versioncode_update_version");
         String note = context.getBodyAsJson().getString("note");
         String sdkstatus = context.getBodyAsJson().getString("sdkstatus");
-        String icon=context.getBodyAsJson().getString("icon");
-        String splash=context.getBodyAsJson().getString("splash");
-        JsonObject keystore=context.getBodyAsJson().getJsonObject("keystore");
+        String icon = context.getBodyAsJson().getString("icon");
+        String splash = context.getBodyAsJson().getString("splash");
+        JsonObject keystore = context.getBodyAsJson().getJsonObject("keystore");
+        String publisher = context.getBodyAsJson().getString("publisher");
         System.out.println(keystore);
         logger.info(icon);
         logger.info(splash);
@@ -525,7 +950,8 @@ public class SdkHttpVerticle extends AbstractVerticle {
         try {
             sdk_information.add(timevalue).add(app_name).add(package_name).add(version_online_version).add(version_update_version).add(versioncode_online_version).add(versioncode_update_version).add(note)
                     .add(channel_mark).add(sdkstatus).add(checkbox).add(second_checkbox).add(icon).add(splash)
-                    .add(keystore.getString("filepath")).add(keystore.getString("keystorePass")).add(keystore.getString("keyaliasName")).add(keystore.getString("keyaliasPass")).add(id);
+                    .add(keystore.getString("filepath")).add(keystore.getString("keystorePass")).add(keystore.getString("keyaliasName")).add(keystore.getString("keyaliasPass"))
+                    .add(keystore.getString("MD5")).add(keystore.getString("SHA1")).add(keystore.getString("SHA256")).add(publisher).add(keystore.getString("companyName")).add(id);
             sdk_paramter_delete.add(timevalue).add(app_name).add(channel_mark);
         } catch (Exception e) {
             logger.error(e.toString());
@@ -584,18 +1010,18 @@ public class SdkHttpVerticle extends AbstractVerticle {
         String versioncode_online_version = context.getBodyAsJson().getString("versioncode_online_version");
         String versioncode_update_version = context.getBodyAsJson().getString("versioncode_update_version");
         String note = context.getBodyAsJson().getString("note");
-//        String publisher = context.getBodyAsJson().getString("publisher");
+        String publisher = context.getBodyAsJson().getString("publisher");
         String sdkstatus = context.getBodyAsJson().getString("sdkstatus");
         String publish = context.getBodyAsJson().getString("publish");
-        String icon=context.getBodyAsJson().getString("icon");
-        String splash=context.getBodyAsJson().getString("splash");
-        if (icon==null){
-            icon=null;
+        String icon = context.getBodyAsJson().getString("icon");
+        String splash = context.getBodyAsJson().getString("splash");
+        if (icon == null) {
+            icon = null;
         }
-        if (splash==null){
-            splash=null;
+        if (splash == null) {
+            splash = null;
         }
-        JsonObject keystore=context.getBodyAsJson().getJsonObject("keystore");
+        JsonObject keystore = context.getBodyAsJson().getJsonObject("keystore");
         System.out.println(keystore);
         logger.info(icon);
         logger.info(splash);
@@ -652,7 +1078,9 @@ public class SdkHttpVerticle extends AbstractVerticle {
             sdk_information.add(timevalue).add(app_name).add(package_name).add(version_online_version).add(version_update_version)
                     .add(versioncode_online_version).add(versioncode_update_version).add(channel_mark).add(sdkstatus).add(publish).add(checkbox).add(second_checkbox).add(note)
                     .add(icon).add(splash)
-                    .add(keystore.getString("filepath")).add(keystore.getString("keystorePass")).add(keystore.getString("keyaliasName")).add(keystore.getString("keyaliasPass"));
+                    .add(keystore.getString("filepath")).add(keystore.getString("keystorePass")).add(keystore.getString("keyaliasName")).add(keystore.getString("keyaliasPass"))
+                    .add(keystore.getString("MD5")).add(keystore.getString("SHA1")).add(keystore.getString("SHA256")).add(publisher)
+                    .add(keystore.getString("companyName"));
         } catch (Exception e) {
             logger.error(e.toString());
             badRequest(context);
@@ -682,6 +1110,7 @@ public class SdkHttpVerticle extends AbstractVerticle {
         }
     }
 
+
     /**
      * 创建项目配置
      *
@@ -690,21 +1119,24 @@ public class SdkHttpVerticle extends AbstractVerticle {
     private void projectconfigCreateHandler_pro(RoutingContext context) {
         String package_name = context.getBodyAsJson().getString("package_name").trim();
         String channel_mark = context.getBodyAsJson().getString("channel_mark").trim();
-        Long date=context.getBodyAsJson().getLong("date");
-        if (package_name==null||channel_mark==null||date==null){
+        String keystoreguid = context.getBodyAsJson().getString("keystoreguid").trim();
+
+        Long date = context.getBodyAsJson().getLong("date");
+        if (package_name == null || channel_mark == null || date == null) {
             badRequest(context);
             return;
         }
         JsonArray sdk_information = new JsonArray()
                 .add(date)
-                .add("暂无").add(package_name).add("暂无").add("暂无").add("暂无") .add("暂无")
-                .add(channel_mark).add(1).add(0).add("暂无").add("暂无").add("暂无").add("暂无").add("暂无").add("暂无").add("暂无").add("暂无").add("暂无");
+                .add("暂无").add(package_name).add("暂无").add("暂无").add("暂无").add("暂无")
+                .add(channel_mark).add(1).add(0).add("暂无").add("暂无").add("暂无").add("暂无").add("暂无").add(keystoreguid)
+                .add("暂无").add("暂无").add("暂无").add("暂无").add("暂无").add("暂无").add("未知").add("暂无");
         dbService.fetchDatas(sql.get(SqlConstants.PROJECT_CONFIG_INFORMATION_COUNT), new JsonArray().add(package_name).add(channel_mark), rs -> {
             if (rs.succeeded()) {
                 List<JsonObject> jsonObjects = rs.result();
                 if (jsonObjects.get(0).getInteger("count(*)").equals(0)) {
                     dbService.query(sql.get(SqlConstants.PROJECT_CONFIG_INFORMATION_INSERT), sdk_information, result -> {
-                        if (result.succeeded() ) {
+                        if (result.succeeded()) {
                             context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", "成功")));
                         } else {
                             if (result.failed()) {
@@ -934,25 +1366,27 @@ public class SdkHttpVerticle extends AbstractVerticle {
                     configtable.put("versionName", sdk_config.getString("version_update").trim());
                     configtable.put("versionCode", Integer.valueOf(sdk_config.getString("versioncode_update_version").trim()));
 
-                    if (!"暂无".equals(sdk_config.getString("icon").trim())){
-                        configtable.put("defaultIcon", domainName+"/file?path="+sdk_config.getString("icon").trim());
+                    if (!"暂无".equals(sdk_config.getString("icon").trim())) {
+                        configtable.put("defaultIcon", domainName + "/file?path=" + sdk_config.getString("icon").trim());
                     }
-                    if (!"暂无".equals(sdk_config.getString("splash").trim())){
-                        configtable.put("splashImage", domainName+"/file?path="+sdk_config.getString("splash").trim());
+                    if (!"暂无".equals(sdk_config.getString("splash").trim())) {
+                        configtable.put("splashImage", domainName + "/file?path=" + sdk_config.getString("splash").trim());
                     }
-                    if (!"暂无".equals(sdk_config.getString("keystorePath").trim())){
-                        configtable.put("keystorePath", domainName+"/file?path="+sdk_config.getString("keystorePath").trim());
+                    if (!"暂无".equals(sdk_config.getString("keystorePath").trim())) {
+                        configtable.put("keystorePath", domainName + "/file?path=" + sdk_config.getString("keystorePath").trim());
                     }
-                    if (!"暂无".equals(sdk_config.getString("keystorePass").trim())){
+                    if (!"暂无".equals(sdk_config.getString("keystorePass").trim())) {
                         configtable.put("keystorePass", sdk_config.getString("keystorePass").trim());
                     }
-                    if (!"暂无".equals(sdk_config.getString("keyaliasName").trim())){
+                    if (!"暂无".equals(sdk_config.getString("keyaliasName").trim())) {
                         configtable.put("keyaliasName", sdk_config.getString("keyaliasName").trim());
                     }
-                    if (!"暂无".equals(sdk_config.getString("keyaliasPass").trim())){
+                    if (!"暂无".equals(sdk_config.getString("keyaliasPass").trim())) {
                         configtable.put("keyaliasPass", sdk_config.getString("keyaliasPass").trim());
                     }
-
+                    if (!"暂无".equals(sdk_config.getString("companyName").trim())) {
+                        configtable.put("companyName", sdk_config.getString("companyName").trim());
+                    }
 
 
                     JsonObject success = new JsonObject();

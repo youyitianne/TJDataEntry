@@ -82,10 +82,10 @@ public class HttpMethodClient {
             params.add(new BasicNameValuePair(key, value));
         }
         try {
-            httpPost.setEntity(new UrlEncodedFormEntity(params));
+            httpPost.setEntity(new UrlEncodedFormEntity(params,"UTF-8"));
         } catch (Exception e) {
+            logger.error("post请求设置参数失败",e);
         }
-
         //response
         HttpResponse response = null;
         String temp = null;
@@ -94,6 +94,7 @@ public class HttpMethodClient {
             HttpEntity entity = response.getEntity();
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 temp = EntityUtils.toString(entity, "UTF-8");
+                logger.info(temp);
                 return temp;
             }
         } catch (Exception e) {
@@ -125,9 +126,9 @@ public class HttpMethodClient {
                 params.add(new BasicNameValuePair(key, value));
             }
             try {
-                httpput.setEntity(new UrlEncodedFormEntity(params));
+                httpput.setEntity(new UrlEncodedFormEntity(params,"UTF-8"));
             } catch (Exception e) {
-                logger.error("put请求设置参数" + e);
+                logger.error("put请求设置参数失败" + e);
                 e.printStackTrace();
             }
         }

@@ -1,5 +1,6 @@
 package http;
 
+import com.mchange.v2.holders.SynchronizedBooleanHolder;
 import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import database.AdvertisementService;
 import database.ConfigConstants;
@@ -27,6 +28,7 @@ import io.vertx.ext.web.handler.*;
 import io.vertx.ext.web.sstore.LocalSessionStore;
 import io.vertx.ext.web.sstore.SessionStore;
 import jdk.nashorn.internal.ir.LiteralNode;
+import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +65,7 @@ public class HttpServerVerticle extends AbstractVerticle {
     private JWTAuth jwtAuth = null;
     private String operationfilename = "";
     private DataOperationLog operationLog = new DataOperationLog();
+    private String synchronize = "synchronize";
 
     @Override
     public void start(Future<Void> startFuture) {
@@ -121,9 +124,9 @@ public class HttpServerVerticle extends AbstractVerticle {
         //查询重复数据
         router.get("/repeat/get").handler(this::getrepeatHandler);
         //默认删除重复方法
-        router.get("/delRepeatDefault").handler(this::delrepeatDefaultHandler);
+        //router.get("/delRepeatDefault").handler(this::delrepeatDefaultHandler);
         //手动删除重复
-        router.post("/delRepeat").handler(this::delrepeatHandler);
+        //router.post("/delRepeat").handler(this::delrepeatHandler);
         //文件上传
         router.post("/fileupload").handler(this::uploadHandler);
         //api获取友盟数据
@@ -156,17 +159,20 @@ public class HttpServerVerticle extends AbstractVerticle {
         router.get("/appdata/:starttime/:endtime").handler(this::appDataHandler);
         //channel相关
         router.get("/channel").handler(this::findChannel);
+        router.get("/channel/limit").handler(this::findChannelLimit);//分页
         router.post("/channel").handler(this::addChannel);
         router.patch("/channel/:id").handler(this::updateChannel);
         router.delete("/channel/:id").handler(this::delChannel);
         //app相关
         router.get("/app").handler(this::findApp);
+        router.get("/app/limit").handler(this::findAppLimit);//分页
         router.get("/projectList").handler(this::findProjectListHandler);
         router.post("/app").handler(this::addApp);
         router.patch("/app/:id").handler(this::updateApp);
         router.delete("/app/:id").handler(this::delApp);
         //project相关
         router.get("/project").handler(this::findProject);
+        router.get("/project/limit").handler(this::findProjectLimit);//分页
         router.post("/project").handler(this::addProject);
         router.patch("/project/:id").handler(this::updateProject);
         router.delete("/project/:id").handler(this::delProject);
@@ -244,45 +250,47 @@ public class HttpServerVerticle extends AbstractVerticle {
      *
      * @param context
      */
-    private void delrepeatHandler(RoutingContext context) {
-        JsonArray jsonArray = context.getBodyAsJson().getJsonArray("data");
-        List<JsonArray> list = new ArrayList<>();
-        for (int i = 0; i < jsonArray.size(); i++) {
-            logger.info("del--------->" + jsonArray.getJsonObject(i).toString());
-            JsonObject jsonObject = jsonArray.getJsonObject(i);
-            JsonArray jsonArray1 = new JsonArray();
-            jsonArray1.add(jsonObject.getInteger("id"));
-            list.add(jsonArray1);
-        }
-        StringBuilder builder = new StringBuilder();
-        if (list.size() < 35000) {
-            for (int i = 0; i < list.size(); i++) {
-                if (i == 0) {
-                    builder.append("(");
-                }
-                builder.append(list.get(i));
-                if (i == list.size() - 1) {
-                    builder.append(")");
-                } else {
-                    builder.append(",");
-                }
-            }
-        } else {
-            context.response().end(Json.encodePrettily(new JsonObject().put("code", 20001)));
-            return;
-        }
-        logger.info("手动删除重复数据---->"+builder.toString());
-        String sql = RepeatSql.DEL_ADLIST_ONE + builder.toString();
-        //delete from advertisement.advertisingdata where id =
-        advertisementService.queryNoResult(jdbcClient, sql).setHandler(res -> {
-            if (res.succeeded()) {
-                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000)));
-            } else {
-                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20001)));
-            }
-        });
-
-    }
+//    private void delrepeatHandler(RoutingContext context) {
+//        JsonArray jsonArray = context.getBodyAsJson().getJsonArray("data");
+//        List<JsonArray> list = new ArrayList<>();
+//        for (int i = 0; i < jsonArray.size(); i++) {
+//            logger.info("del--------->" + jsonArray.getJsonObject(i).toString());
+//            JsonObject jsonObject = jsonArray.getJsonObject(i);
+//            JsonArray jsonArray1 = new JsonArray();
+//            jsonArray1.add(jsonObject.getInteger("id"));
+//            list.add(jsonArray1);
+//        }
+//        StringBuilder builder = new StringBuilder();
+//        if (list.size() < 35000) {
+//            for (int i = 0; i < list.size(); i++) {
+//                if (i==0){
+//                    System.out.println(list);
+//                }
+//                if (i == 0) {
+//                    builder.append("(");
+//                }
+//                builder.append(list.get(i));
+//                if (i == list.size() - 1) {
+//                    builder.append(")");
+//                } else {
+//                    builder.append(",");
+//                }
+//            }
+//        } else {
+//            context.response().end(Json.encodePrettily(new JsonObject().put("code", 20001)));
+//            return;
+//        }
+//        logger.info("手动删除重复数据---->"+builder.toString());
+//        String sql = RepeatSql.DEL_ADLIST_ONE + builder.toString();
+//        //delete from advertisement.advertisingdata where id =
+//        advertisementService.queryNoResult(jdbcClient, sql).setHandler(res -> {
+//            if (res.succeeded()) {
+//                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000)));
+//            } else {
+//                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20001)));
+//            }
+//        });
+//    }
 
     /**
      * 获取重复数据
@@ -304,21 +312,21 @@ public class HttpServerVerticle extends AbstractVerticle {
      *
      * @param context
      */
-    private void delrepeatDefaultHandler(RoutingContext context) {
-        advertisementService.removeRepeat(jdbcClient, RepeatSql.GET_AD_REPEAT, RepeatSql.DEL_ADLIST).setHandler(res -> {
-            if (res.succeeded()) {
-                advertisementService.removeRepeat(jdbcClient, RepeatSql.GET_USER_REPEAT1, RepeatSql.DEL_USERDATA).setHandler(res1 -> {
-                    if (res1.succeeded()) {
-                        context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000)));
-                    } else {
-                        context.response().end(Json.encodePrettily(new JsonObject().put("code", 20001)));
-                    }
-                });
-            } else {
-                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20001)));
-            }
-        });
-    }
+//    private void delrepeatDefaultHandler(RoutingContext context) {
+//        advertisementService.removeRepeat(jdbcClient, RepeatSql.GET_AD_REPEAT, RepeatSql.DEL_ADLIST).setHandler(res -> {
+//            if (res.succeeded()) {
+//                advertisementService.removeRepeat(jdbcClient, RepeatSql.GET_USER_REPEAT1, RepeatSql.DEL_USERDATA).setHandler(res1 -> {
+//                    if (res1.succeeded()) {
+//                        context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000)));
+//                    } else {
+//                        context.response().end(Json.encodePrettily(new JsonObject().put("code", 20001)));
+//                    }
+//                });
+//            } else {
+//                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20001)));
+//            }
+//        });
+//    }
 
     /**
      * 处理获取友盟数据(应用单选)
@@ -658,12 +666,12 @@ public class HttpServerVerticle extends AbstractVerticle {
             }
         }
         switch (channel) {
-            case "友盟":
-                this.uploadUserDataHandler(context);
-                break;
-            case "友盟1":
-                this.uploadNewUserDataHandler(context);
-                break;
+//            case "友盟":
+//                this.uploadUserDataHandler(context);
+//                break;
+//            case "友盟1":
+//                this.uploadNewUserDataHandler(context);
+//                break;
             case "友盟3":
                 this.uploadUmengHandler(context);
                 break;
@@ -685,9 +693,9 @@ public class HttpServerVerticle extends AbstractVerticle {
             case "三星":
                 this.uploadChannelAdDataHandler(context, 6);
                 break;
-            case "联想":
-                this.uploadChannelAdDataHandler(context, 7);
-                break;
+//            case "联想":
+//                this.uploadChannelAdDataHandler(context, 7);
+//                break;
             case "九游":
                 this.uploadChannelAdDataHandler(context, 8);
                 break;
@@ -835,6 +843,10 @@ public class HttpServerVerticle extends AbstractVerticle {
                                 StringBuilder builder = new StringBuilder();
                                 if (value.size() < 35000) {
                                     for (int i = 0; i < value.size(); i++) {
+                                        if (i == 0) {
+                                            System.out.println(value);
+                                        }
+
                                         JsonArray jsonArray = value.get(i);
                                         Integer date = jsonArray.getInteger(0);
                                         String app_name = jsonArray.getString(1);
@@ -862,19 +874,22 @@ public class HttpServerVerticle extends AbstractVerticle {
                                     serviceError(context, Json.encodePrettily(new JsonObject().put("data", "用户数据去重失败")));
                                     return;
                                 }
-                                logger.info("用户数据处理 友盟---->"+builder.toString());
+                                builder.append(" ON DUPLICATE KEY UPDATE date=VALUES(date),app_name =VALUES(app_name),channel =VALUES(channel);");
+                                logger.info("用户数据处理 友盟---->" + builder.toString());
 //insert into advertisement.userdata (date,app_name,channel,dnu,dau,startup_time,single_use_time,retention,version) values (?,?,?,?,?,?,?,?,?),()
                                 advertisementService.queryNoResult(jdbcClient, SqlStatement.INSERT_USER + builder.toString()).setHandler(result -> {
-
                                     if (result.succeeded()) {
-                                        advertisementService.removeRepeat(jdbcClient, SqlStatement.REPEAT_ID_USER, SqlStatement.DEL_ID_USER).setHandler(result1 -> {
-                                            if (result1.succeeded()) {
-                                                operationSuccess(context, new JsonObject().put("data", finnalfilename + "     数据已成功上传，并未发现异常~"));
-                                            } else {
-                                                logger.error("用户数据去重失败------->" + result1.cause());
-                                                serviceError(context, Json.encodePrettily(new JsonObject().put("data", "用户数据去重失败")));
-                                            }
-                                        });
+                                        operationSuccess(context, new JsonObject().put("data", finnalfilename + "     数据已成功上传，并未发现异常~"));
+
+//                                        advertisementService.removeRepeat(jdbcClient, SqlStatement.REPEAT_ID_USER, SqlStatement.DEL_ID_USER).setHandler(result1 -> {
+//                                            if (result1.succeeded()) {
+//                                                operationSuccess(context, new JsonObject().put("data", finnalfilename + "     数据已成功上传，并未发现异常~"));
+//                                            } else {
+//                                                logger.error("用户数据去重失败------->" + result1.cause());
+//                                                serviceError(context, Json.encodePrettily(new JsonObject().put("data", "用户数据去重失败")));
+//                                            }
+//                                        });
+
                                     } else {
                                         logger.error("用户数据插入失败------->" + result.cause());
                                         serviceError(context, Json.encodePrettily(new JsonObject().put("data", "用户数据插入失败")));
@@ -929,6 +944,9 @@ public class HttpServerVerticle extends AbstractVerticle {
                                 StringBuilder builder = new StringBuilder();
                                 if (value.size() < 35000) {
                                     for (int i = 0; i < value.size(); i++) {
+                                        if (i == 0) {
+                                            System.out.println(value);
+                                        }
                                         JsonArray jsonArray = value.get(i);
                                         Object date = jsonArray.getValue(0);
                                         Object app_name = jsonArray.getValue(1);
@@ -948,18 +966,21 @@ public class HttpServerVerticle extends AbstractVerticle {
                                     serviceError(context, Json.encodePrettily(new JsonObject().put("data", "用户数据去重失败")));
                                     return;
                                 }
-                                logger.info("用户数据处理 友盟1---->"+builder.toString());
+                                logger.info("用户数据处理 友盟1---->" + builder.toString());
 
+                                builder.append(" ON DUPLICATE KEY UPDATE date=VALUES(date),app_name =VALUES(app_name),channel =VALUES(channel);");
                                 advertisementService.queryNoResult(jdbcClient, SqlStatement.INSERT_USER + builder).setHandler(result -> {
                                     if (result.succeeded()) {
-                                        advertisementService.removeRepeat(jdbcClient, SqlStatement.REPEAT_ID_USER, SqlStatement.DEL_ID_USER).setHandler(result1 -> {
-                                            if (result1.succeeded()) {
-                                                operationSuccess(context, new JsonObject().put("data", finnalfilename + "   数据已成功上传，并未发现异常~"));
-                                            } else {
-                                                logger.error("用户数据去重失败------->" + result1.cause());
-                                                serviceError(context, Json.encodePrettily(new JsonObject().put("data", "用户数据去重失败")));
-                                            }
-                                        });
+                                        operationSuccess(context, new JsonObject().put("data", finnalfilename + "   数据已成功上传，并未发现异常~"));
+
+//                                        advertisementService.removeRepeat(jdbcClient, SqlStatement.REPEAT_ID_USER, SqlStatement.DEL_ID_USER).setHandler(result1 -> {
+//                                            if (result1.succeeded()) {
+//                                                operationSuccess(context, new JsonObject().put("data", finnalfilename + "   数据已成功上传，并未发现异常~"));
+//                                            } else {
+//                                                logger.error("用户数据去重失败------->" + result1.cause());
+//                                                serviceError(context, Json.encodePrettily(new JsonObject().put("data", "用户数据去重失败")));
+//                                            }
+//                                        });
                                     } else {
                                         logger.error("用户数据插入失败------->" + result.cause());
                                         serviceError(context, Json.encodePrettily(new JsonObject().put("data", "用户数据插入失败")));
@@ -1190,6 +1211,9 @@ public class HttpServerVerticle extends AbstractVerticle {
                                 StringBuilder builder = new StringBuilder();
                                 if (adlist.size() < 35000) {
                                     for (int i = 0; i < adlist.size(); i++) {
+                                        if (i == 0) {
+                                            System.out.println(adlist);
+                                        }
                                         JsonArray jsonArray = adlist.get(i);
                                         Integer date = jsonArray.getInteger(0);
                                         String app_name = jsonArray.getString(1);
@@ -1225,19 +1249,22 @@ public class HttpServerVerticle extends AbstractVerticle {
                                     logger.error("广告数据过多");
                                     serviceError(context, Json.encodePrettily(new JsonObject().put("data", "广告数据过多。")));
                                 }
-                                logger.info("联想数据处理---->"+builder.toString());
+                                logger.info("联想数据处理---->" + builder.toString());
+                                builder.append(" ON DUPLICATE KEY UPDATE date=VALUES(date),note =VALUES(note),platform =VALUES(platform);");
 
 //insert into advertisement.advertisingdata (date,app_name,channel,advertising_type,earned,click_rate,ecpm,impression,click,fill_rate,platform,note,sdk_name) values (?,?,?,?,?,?,?,?,?,?,?,?,?)
                                 advertisementService.queryNoResult(jdbcClient, SqlStatement.INSERT_ADVERTISEMENT + builder).setHandler(result1 -> {
                                     if (result1.succeeded()) {
-                                        advertisementService.removeRepeat(jdbcClient, SqlStatement.REPEAT_ID_ADVERTISEMENT, SqlStatement.DEL_ID_ADVERTISEMENT).setHandler(result2 -> {
-                                            if (result2.succeeded()) {
-                                                context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("data", message)));
-                                            } else {
-                                                logger.error("广告数据格式有错误,去重失败------->" + result2.cause().toString());
-                                                serviceError(context, Json.encodePrettily(new JsonObject().put("data", "请联系管理员。")));
-                                            }
-                                        });
+                                        context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("data", message)));
+
+//                                        advertisementService.removeRepeat(jdbcClient, SqlStatement.REPEAT_ID_ADVERTISEMENT, SqlStatement.DEL_ID_ADVERTISEMENT).setHandler(result2 -> {
+//                                            if (result2.succeeded()) {
+//                                                context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("data", message)));
+//                                            } else {
+//                                                logger.error("广告数据格式有错误,去重失败------->" + result2.cause().toString());
+//                                                serviceError(context, Json.encodePrettily(new JsonObject().put("data", "请联系管理员。")));
+//                                            }
+//                                        });
                                     } else {
                                         logger.error("广告数据格式有错误,插入失败------->" + result.cause().toString());
                                         serviceError(context, Json.encodePrettily(new JsonObject().put("data", "广告数据格式有错误")));
@@ -1489,7 +1516,7 @@ public class HttpServerVerticle extends AbstractVerticle {
                         if (jsonArrayList.size() < 35000) {
                             for (int i = 0; i < jsonArrayList.size(); i++) {
                                 JsonArray jsonArray = jsonArrayList.get(i);
-                                if (i==0){
+                                if (i == 0) {
                                     System.out.println(jsonArray);
                                 }
                                 Integer date = jsonArray.getInteger(0);
@@ -1518,20 +1545,23 @@ public class HttpServerVerticle extends AbstractVerticle {
                             serviceError(context, Json.encodePrettily(new JsonObject().put("data", "用户数据去重失败")));
                             return;
                         }
-                        logger.info(" 友盟数据处理 友盟3---->"+SqlStatement.INSERT_USER +builder.toString());
+                        logger.info(" 友盟数据处理 友盟3---->" + SqlStatement.INSERT_USER + builder.toString());
+                        builder.append(" ON DUPLICATE KEY UPDATE date=VALUES(date),app_name =VALUES(app_name),channel =VALUES(channel);");
+
 //insert into advertisement.userdata (date,app_name,channel,dnu,dau,startup_time,single_use_time,retention,version) values
                         advertisementService.queryNoResult(jdbcClient, SqlStatement.INSERT_USER + builder).setHandler(result -> {
                             if (result.succeeded()) {
-                                advertisementService.removeRepeat(jdbcClient, SqlStatement.REPEAT_ID_USER, SqlStatement.DEL_ID_USER).setHandler(result1 -> {
-                                    System.out.println(4);
-
-                                    if (result1.succeeded()) {
-                                        operationSuccess(context, new JsonObject().put("data", finnalfilename + "数据已成功上传，并未发现异常~"));
-                                    } else {
-                                        logger.error("用户数据去重失败------->" + result1.cause());
-                                        serviceError(context, Json.encodePrettily(new JsonObject().put("data", "用户数据去重失败")));
-                                    }
-                                });
+                                operationSuccess(context, new JsonObject().put("data", finnalfilename + "数据已成功上传，并未发现异常~"));
+//                                advertisementService.removeRepeat(jdbcClient, SqlStatement.REPEAT_ID_USER, SqlStatement.DEL_ID_USER).setHandler(result1 -> {
+//                                    System.out.println(4);
+//
+//                                    if (result1.succeeded()) {
+//                                        operationSuccess(context, new JsonObject().put("data", finnalfilename + "数据已成功上传，并未发现异常~"));
+//                                    } else {
+//                                        logger.error("用户数据去重失败------->" + result1.cause());
+//                                        serviceError(context, Json.encodePrettily(new JsonObject().put("data", "用户数据去重失败")));
+//                                    }
+//                                });
                             } else {
                                 logger.error("用户数据插入失败------->" + result.cause());
                                 serviceError(context, Json.encodePrettily(new JsonObject().put("data", "用户数据插入失败")));
@@ -1565,6 +1595,9 @@ public class HttpServerVerticle extends AbstractVerticle {
         StringBuilder builder = new StringBuilder();
         if (jsonArrayList.size() < 35000) {
             for (int i = 0; i < jsonArrayList.size(); i++) {
+                if (i == 0) {
+                    System.out.println(jsonArrayList);
+                }
                 JsonArray jsonArray = jsonArrayList.get(i);
                 Integer date = jsonArray.getInteger(0);
                 String app_name = jsonArray.getString(1);
@@ -1579,7 +1612,7 @@ public class HttpServerVerticle extends AbstractVerticle {
                 String platform = jsonArray.getString(10);
                 String note = jsonArray.getString(11);
                 String sdk_name = jsonArray.getString(12);
-                builder.append("(" + date
+                builder.append("(" + date + ","
                         + "'" + app_name + "',"
                         + "'" + channel + "',"
                         + "'" + advertising_type + "',"
@@ -1600,18 +1633,21 @@ public class HttpServerVerticle extends AbstractVerticle {
             logger.error("广告数据过多");
             serviceError(context, Json.encodePrettily(new JsonObject().put("data", "广告数据过多。")));
         }
-        logger.info(" 在广告数据插入数据库前筛选处理 ---->"+builder.toString());
+        logger.info(" 在广告数据插入数据库前筛选处理 ---->" + builder.toString());
+        builder.append(" ON DUPLICATE KEY UPDATE date=VALUES(date),note =VALUES(note),platform =VALUES(platform);");
 //insert into advertisement.advertisingdata (date,app_name,channel,advertising_type,earned,click_rate,ecpm,impression,click,fill_rate,platform,note,sdk_name) values
         advertisementService.queryNoResult(jdbcClient, SqlStatement.INSERT_ADVERTISEMENT + builder).setHandler(result -> {
             if (result.succeeded()) {
-                advertisementService.removeRepeat(jdbcClient, SqlStatement.REPEAT_ID_ADVERTISEMENT, SqlStatement.DEL_ID_ADVERTISEMENT).setHandler(result2 -> {
-                    if (result2.succeeded()) {
-                        context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("data", message)));
-                    } else {
-                        logger.error("广告数据格式有错误,去重失败------->" + result2.cause().toString());
-                        serviceError(context, Json.encodePrettily(new JsonObject().put("data", "请联系管理员。")));
-                    }
-                });
+
+                context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("data", message)));
+//                advertisementService.removeRepeat(jdbcClient, SqlStatement.REPEAT_ID_ADVERTISEMENT, SqlStatement.DEL_ID_ADVERTISEMENT).setHandler(result2 -> {
+//                    if (result2.succeeded()) {
+//                        context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("data", message)));
+//                    } else {
+//                        logger.error("广告数据格式有错误,去重失败------->" + result2.cause().toString());
+//                        serviceError(context, Json.encodePrettily(new JsonObject().put("data", "请联系管理员。")));
+//                    }
+//                });
 
 
             } else {
@@ -2991,6 +3027,57 @@ public class HttpServerVerticle extends AbstractVerticle {
         });
     }
 
+
+    /**
+     * API获取渠道
+     * 分页
+     *
+     * @param context
+     */
+    private void findChannelLimit(RoutingContext context) {
+        Integer limit = 0;
+        Integer page = 0;
+        try {
+            limit = Integer.valueOf(context.request().getParam("limit"));
+            page = Integer.valueOf(context.request().getParam("page"));
+        } catch (Exception e) {
+            context.response().end(Json.encodePrettily(new JsonObject().put("data", "缺少参数")));
+            return;
+        }
+        StringBuilder limitsql = new StringBuilder();
+        limitsql.append("  limit " + (page - 1) * limit + "," + limit + ";");
+        String channelName = context.request().getParam("channelName");
+        StringBuilder condition = new StringBuilder();
+        synchronized (synchronize) {
+            Boolean where_flag = true;
+            if (channelName != null) {
+                if (where_flag = true) {
+                    condition.append(" where ");
+                    where_flag = false;
+                }
+                condition.append(" name like '%" + channelName + "%' ");
+            }
+        }
+        advertisementService.query(jdbcClient, "SELECT count(*) total FROM advertisement.channel " + condition).setHandler(countResult -> {
+            if (countResult.succeeded()) {
+                Integer total = countResult.result().get(0).getInteger("total");
+                advertisementService.query(jdbcClient, "SELECT * FROM advertisement.channel " + condition + " order by id desc " + limitsql).setHandler(conn -> {
+                    if (conn.succeeded()) {
+                        List<JsonObject> jsonObjects = conn.result();
+                        JsonObject json = new JsonObject().put("code", 20000).put("repcode",3000).put("total",total).put("data", jsonObjects);
+                        context.response().setStatusCode(200).end(Json.encodePrettily(json));
+                    } else {
+                        logger.error("在数据库中查找渠道数据时发生错误------->" + conn.cause());
+                        serviceError(context, Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
+                    }
+                });
+            } else {
+                logger.error("获取游戏count出错", countResult.cause());
+                serviceError(context, Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
+            }
+        });
+    }
+
     /**
      * API添加游戏
      *
@@ -3100,6 +3187,66 @@ public class HttpServerVerticle extends AbstractVerticle {
                 context.response().setStatusCode(200).end(Json.encodePrettily(json));
             } else {
                 logger.error("在数据库中查找数据时发生错误------->" + conn.cause());
+                serviceError(context, Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
+            }
+        });
+    }
+
+    /**
+     * API获取应用列表
+     * 分页
+     *
+     * @param context
+     */
+    private void findAppLimit(RoutingContext context) {
+        Integer limit = 0;
+        Integer page = 0;
+        try {
+            limit = Integer.valueOf(context.request().getParam("limit"));
+            page = Integer.valueOf(context.request().getParam("page"));
+        } catch (Exception e) {
+            context.response().end(Json.encodePrettily(new JsonObject().put("data", "缺少参数")));
+            return;
+        }
+        StringBuilder limitsql = new StringBuilder();
+        limitsql.append("  limit " + (page - 1) * limit + "," + limit + ";");
+        String appName = context.request().getParam("appName");
+        String projectName = context.request().getParam("projectName");
+        StringBuilder condition = new StringBuilder();
+        synchronized (synchronize) {
+            Boolean where_flag = true;
+            if (appName != null) {
+                if (where_flag = true) {
+                    condition.append(" where ");
+                    where_flag = false;
+                }
+                condition.append(" name like '%" + appName + "%' ");
+            }
+            if (projectName != null) {
+                if (where_flag = true) {
+                    condition.append(" where ");
+                    where_flag = false;
+                }
+                condition.append(" project like '%" + projectName + "%' ");
+            }
+        }
+        advertisementService.query(jdbcClient, "SELECT count(*) total FROM advertisement.appname " + condition).setHandler(countResult -> {
+            if (countResult.succeeded()) {
+                Integer total = countResult.result().get(0).getInteger("total");
+                advertisementService.query(jdbcClient, "SELECT * FROM advertisement.appname " + condition + " order by id desc " + limitsql).setHandler(conn -> {
+                    if (conn.succeeded()) {
+                        List<JsonObject> jsonObjects = conn.result();
+                        JsonObject json = new JsonObject().put("code", 20000).put("repcode", 3000).put("total", total).put("data", jsonObjects);
+                        logger.info("获取app成功");
+                        context.response().setStatusCode(200).end(Json.encodePrettily(json));
+                    } else {
+                        logger.error("在数据库中查找数据时发生错误------->" + conn.cause());
+                        serviceError(context, Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
+                    }
+                });
+
+            } else {
+                logger.error("获取游戏count出错", countResult.cause());
                 serviceError(context, Json.encodePrettily(new JsonObject().put("data", "获取数据失败请联系管理员")));
             }
         });
@@ -3328,6 +3475,9 @@ public class HttpServerVerticle extends AbstractVerticle {
                     advertisementService.update(jdbcClient, SqlStatement.INSERT_PROJECT, insert).setHandler(rs1 -> {
                         StringBuilder builder = new StringBuilder();
                         for (int i = 0; i < jsonArrays.size(); i++) {
+                            if (i == 0) {
+                                System.out.println(jsonArrays);
+                            }
                             JsonArray jsonArray = jsonArrays.get(i);
                             String projectName = jsonArray.getString(0);
                             String packageName = jsonArray.getString(1);
@@ -3338,7 +3488,7 @@ public class HttpServerVerticle extends AbstractVerticle {
                             }
                         }
 
-                        logger.info(" API添加游戏 ---->"+builder.toString());
+                        logger.info(" API添加游戏 ---->" + builder.toString());
                         //INSERT INTO `advertisement`.`project_list`(`project_name`,`package_name`,`channel`)VALUES
                         advertisementService.queryNoResult(jdbcClient, SqlStatement.INSERT_PROJECT_LIST + builder).setHandler(rs2 -> {
                             if (rs1.succeeded() && rs2.succeeded()) {
@@ -3411,6 +3561,9 @@ public class HttpServerVerticle extends AbstractVerticle {
 
             StringBuilder builder = new StringBuilder();
             for (int i = 0; i < jsonArrays.size(); i++) {
+                if (i == 0) {
+                    System.out.println(jsonArrays);
+                }
                 JsonArray one = jsonArrays.get(i);
                 String projectName = one.getString(0);
                 String packageName = one.getString(1);
@@ -3420,7 +3573,7 @@ public class HttpServerVerticle extends AbstractVerticle {
                     builder.append(",");
                 }
             }
-            logger.info(" API更新游戏 ---->"+builder.toString());
+            logger.info(" API更新游戏 ---->" + builder.toString());
             //INSERT INTO `advertisement`.`project_list`(`project_name`,`package_name`,`channel`)VALUES
             advertisementService.queryNoResult(jdbcClient, SqlStatement.INSERT_PROJECT_LIST + builder).setHandler(result2 -> {
                 advertisementService.update(jdbcClient, SqlStatement.UPDATE_PROJECT, jsonArray).setHandler(result3 -> {
@@ -3442,7 +3595,7 @@ public class HttpServerVerticle extends AbstractVerticle {
     }
 
     /**
-     * API获取游戏
+     * 获取项目列表
      *
      * @param context
      */
@@ -3466,7 +3619,8 @@ public class HttpServerVerticle extends AbstractVerticle {
                         project.get(i).put("applist", jsonObjects);
                     }
                     Collections.reverse(project);
-                    context.response().putHeader("Content-Type", "application/javascript; charset=UTF-8").setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", project)));
+                    context.response().putHeader("Content-Type", "application/javascript; charset=UTF-8")
+                            .setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", project)));
                 } else {
                     if (result1.failed()) {
                         logger.error("查询数据库时发生错误------->" + result1.cause());
@@ -3477,6 +3631,98 @@ public class HttpServerVerticle extends AbstractVerticle {
                     serviceError(context, Json.encodePrettily(new JsonObject().put("data", "刷新试试")));
                 }
             });
+        });
+    }
+
+
+    /**
+     * 获取项目列表
+     * 分页
+     *
+     * @param context
+     */
+    private void findProjectLimit(RoutingContext context) {
+        Integer limit = 0;
+        Integer page = 0;
+        try {
+            limit = Integer.valueOf(context.request().getParam("limit"));
+            page = Integer.valueOf(context.request().getParam("page"));
+        } catch (Exception e) {
+            context.response().end(Json.encodePrettily(new JsonObject().put("data", "缺少参数")));
+            return;
+        }
+        StringBuilder limitsql = new StringBuilder();
+        limitsql.append("  limit " + (page - 1) * limit + "," + limit + ";");
+        String projectName = context.request().getParam("projectName");
+        StringBuilder condition = new StringBuilder();
+        synchronized (synchronize) {
+            Boolean where_flag = true;
+            if (projectName != null) {
+                if (where_flag = true) {
+                    condition.append(" where ");
+                    where_flag = false;
+                }
+                condition.append(" project_name like '%" + projectName + "%' ");
+            }
+        }
+        StringBuilder countSQL = new StringBuilder();
+        countSQL.append("SELECT count(*) total FROM advertisement.project " + condition);
+        logger.info("countsql  :", countSQL);
+        advertisementService.query(jdbcClient, countSQL.toString()).setHandler(countResult -> {
+            if (countResult.succeeded()) {
+                Integer total = countResult.result().get(0).getInteger("total");
+                logger.info("SELECT * FROM advertisement.project" + condition + limitsql);
+                advertisementService.query(jdbcClient, "SELECT * FROM advertisement.project" + condition + " order by id desc " + limitsql).setHandler(result1 -> {
+                    List<JsonObject> project = result1.result();
+                    if (project.size() == 0) { //没找到表
+                        context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3000).put("total", total).put("data", new ArrayList<>())));
+                        return;
+                    }
+                    StringBuilder fetchParamJsonArray = new StringBuilder();
+                    fetchParamJsonArray.append(" (");
+                    for (int i = 0; i < project.size(); i++) {
+                        fetchParamJsonArray.append("'" + project.get(i).getString("project_name") + "'");
+                        if (i != project.size() - 1) {
+                            fetchParamJsonArray.append(",");
+                        } else {
+                            fetchParamJsonArray.append(") ");
+                        }
+                    }
+                    logger.info("SELECT * FROM advertisement.project");
+                    advertisementService.query(jdbcClient, "SELECT * FROM advertisement.project_list where project_name in " + fetchParamJsonArray).setHandler(result2 -> {
+                        if (result1.succeeded() && result2.succeeded()) {
+                            List<JsonObject> projectlist = result2.result();
+                            for (int i = 0; i < project.size(); i++) {
+                                List<JsonObject> jsonObjects = new ArrayList<>();
+                                String project_name = project.get(i).getString("project_name");
+                                Iterator it = projectlist.iterator();
+                                while (it.hasNext()) {
+                                    JsonObject jsonObject = JsonObject.mapFrom(it.next());
+                                    if (project_name.equals(jsonObject.getString("project_name"))) {
+                                        jsonObjects.add(jsonObject);
+                                        it.remove();
+                                    }
+                                }
+                                project.get(i).put("applist", jsonObjects);
+                            }
+                            context.response().putHeader("Content-Type", "application/javascript; charset=UTF-8")
+                                    .setStatusCode(200)
+                                    .end(Json.encodePrettily(new JsonObject().put("code", 20000)
+                                            .put("repcode", 3000).put("total", total).put("data", project)));
+                        } else {
+                            if (result1.failed()) {
+                                logger.error("查询数据库时发生错误------->" + result1.cause());
+                            }
+                            if (result2.failed()) {
+                                logger.error("查询数据库时发生错误------->" + result2.cause());
+                            }
+                            serviceError(context, Json.encodePrettily(new JsonObject().put("data", "刷新试试")));
+                        }
+                    });
+                });
+            } else {
+                logger.error("项目列表分页统计总数失败", countResult.cause());
+            }
         });
     }
 }

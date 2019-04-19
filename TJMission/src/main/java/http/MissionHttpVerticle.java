@@ -40,7 +40,7 @@ public class MissionHttpVerticle extends AbstractVerticle {
     private HashMap<SqlConstants, String> sql;
     private Method method = new Method();
     private static final String rootPath = "TJMission";
-    private static final String domainName = "http://192.168.1.144:8087";
+    private static final String domainName = "http://192.168.1.101:8087";
 
 
     @Override
@@ -84,14 +84,15 @@ public class MissionHttpVerticle extends AbstractVerticle {
         router.route().handler(SessionHandler.create(LocalSessionStore.create(vertx)));
 
         //文件上传
-        router.get("/file").handler(this::getHandler);
-        router.post("/file").handler(this::uploadHandler_file);
-        router.get("/fileInfo").handler(this::listHandler);
-        router.post("/keystore").handler(this::uploadHandler_keystore);
-        router.get("/keystoreInfo").handler(this::listHandler_keystore);
-        router.get("/getFile").handler(this::downLoadHandler1);
-        router.delete("/delFile").handler(this::delHandler);
-        router.patch("/updateKeystore").handler(this::updateKeystoreHandler);
+        router.get("/file").handler(this::getHandler);//预览
+        router.post("/file").handler(this::uploadHandler_file);//上传
+        router.get("/fileInfo").handler(this::listHandler);//文件列表
+        router.get("/fileInfo/limit").handler(this::listLimitHandler);//文件列表     分页
+        router.post("/keystore").handler(this::uploadHandler_keystore);//上传keystore
+        router.get("/keystoreInfo").handler(this::listHandler_keystore);//展示keystore信息
+        router.get("/getFile").handler(this::downLoadHandler1);//下载文件
+        router.delete("/delFile").handler(this::delHandler);//删除文件
+        router.patch("/updateKeystore").handler(this::updateKeystoreHandler);//更新keystore
 
         HashMap<ConfigConstants, String> conf = method.loadConfigQueries();
         sql = method.loadSqlQueries();
@@ -125,8 +126,6 @@ public class MissionHttpVerticle extends AbstractVerticle {
             context.response().putHeader("Content-Type", "text/plain; charset=utf-8").end(Json.encodePrettily(new JsonObject().put("message", "路径错误")));
         }
     }
-
-
 //    /**
 //     *  keystore上传处理
 //     *
@@ -157,7 +156,6 @@ public class MissionHttpVerticle extends AbstractVerticle {
 //            }
 //        });
 //    }
-
 
     /**
      * keystore上传处理
@@ -217,15 +215,28 @@ public class MissionHttpVerticle extends AbstractVerticle {
         String keystorePass = context.getBodyAsJson().getString("keystorePass");
         String keyaliasName = context.getBodyAsJson().getString("keyaliasName");
         String keyaliasPass = context.getBodyAsJson().getString("keyaliasPass");
+        String MD5 = context.getBodyAsJson().getString("MD5");
+        String SHA1 = context.getBodyAsJson().getString("SHA1");
+        String SHA256 = context.getBodyAsJson().getString("SHA256");
         logger.info(fileguid);
         logger.info(keystorePass);
         logger.info(keyaliasName);
         logger.info(keyaliasPass);
-        if (fileguid == null || keystorePass == null || keyaliasName == null || keyaliasPass == null) {
+        logger.info(MD5);
+        logger.info(SHA1);
+        logger.info(SHA256);
+        if (fileguid == null || keystorePass == null || keyaliasName == null || keyaliasPass == null || MD5 == null || SHA1 == null || SHA256 == null) {
             context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3001).put("data", "参数不完整！")));
             return;
         }
-        dbService.query(sql.get(SqlConstants.KEYSTORE_UPDATE), new JsonArray().add(keystorePass).add(keyaliasName).add(keyaliasPass).add(fileguid), result -> {
+        dbService.query(sql.get(SqlConstants.KEYSTORE_UPDATE), new JsonArray()
+                .add(keystorePass)
+                .add(keyaliasName)
+                .add(keyaliasPass)
+                .add(MD5)
+                .add(SHA1)
+                .add(SHA256)
+                .add(fileguid), result -> {
             if (result.succeeded()) {
                 logger.info("添加成功");
                 context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3000).put("data", "添加成功")));
@@ -314,7 +325,6 @@ public class MissionHttpVerticle extends AbstractVerticle {
             if (result.succeeded()) {
                 List<JsonObject> list = result.result();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                System.out.println(list);
                 for (int i = 0; i < list.size(); i++) {
                     String date = list.get(i).getString("date");
                     Date date1 = new Date();
@@ -327,6 +337,53 @@ public class MissionHttpVerticle extends AbstractVerticle {
             } else {
                 logger.error("查询失败，刷新试试", result.cause());
                 context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 1).put("data", "查询失败,刷新试试！")));
+            }
+        });
+    }
+
+    /**
+     * 获取所有上传文件信息
+     * 分页
+     *
+     * @param context
+     */
+    private void listLimitHandler(RoutingContext context) {
+        Integer limit = 0;
+        Integer page = 0;
+        try {
+            limit = Integer.valueOf(context.request().getParam("limit"));
+            page = Integer.valueOf(context.request().getParam("page"));
+        } catch (Exception e) {
+            logger.error("参数错误");
+            context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3001).put("data", "参数错误")));
+            return;
+        }
+        StringBuilder limitsql = new StringBuilder();
+        limitsql.append("  limit " + (page - 1) * limit + "," + limit + ";");
+        dbService.listDatas("SELECT count(*) total FROM mission.fileinfo", countResult -> {
+            if (countResult.succeeded()) {
+                Integer total = countResult.result().get(0).getInteger("total");
+                dbService.listDatas("SELECT * FROM mission.fileinfo order by date desc " + limitsql, result -> {
+                    if (result.succeeded()) {
+                        List<JsonObject> list = result.result();
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        for (int i = 0; i < list.size(); i++) {
+                            String date = list.get(i).getString("date");
+                            Date date1 = new Date();
+                            date1.setTime(Long.valueOf(date));
+                            list.get(i).put("date1", sdf.format(date1));
+                            list.get(i).put("path", domainName + "/getFile?path=" + list.get(i).getString("fileguid"));
+                        }
+                        logger.info("查询成功");
+                        context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3000).put("total", total).put("data", list)));
+                    } else {
+                        logger.error("查询失败，刷新试试", result.cause());
+                        context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3001).put("data", "查询失败,刷新试试！")));
+                    }
+                });
+            } else {
+                logger.error("查询总数失败", countResult.cause());
+                context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3001)));
             }
         });
     }
@@ -405,7 +462,7 @@ public class MissionHttpVerticle extends AbstractVerticle {
                 dbService.query(sql.get(SqlConstants.FILEINFO_INSERT), jsonArray, result -> {
                     if (result.succeeded()) {
                         logger.info("上传成功");
-                        context.response().end(Json.encodePrettily(new JsonObject().put("repcode", "3000").put("data",new JsonObject().put("guid",guid)).put("path", domainName+"/getFile?path=" + guid + "&name=" + finalFilename)));
+                        context.response().end(Json.encodePrettily(new JsonObject().put("repcode", "3000").put("data", new JsonObject().put("guid", guid)).put("path", domainName + "/getFile?path=" + guid + "&name=" + finalFilename)));
                     } else {
                         logger.error("保存失败,请重新上传", result.cause());
                         context.response().end(Json.encodePrettily(new JsonObject().put("repcode", "3001").put("data", "保存失败,请重新上传")));
