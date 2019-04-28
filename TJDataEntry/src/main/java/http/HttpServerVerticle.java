@@ -1,17 +1,13 @@
 package http;
 
-import com.mchange.v2.holders.SynchronizedBooleanHolder;
-import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import database.AdvertisementService;
 import database.ConfigConstants;
 import database.RepeatSql;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
-import io.vertx.core.Vertx;
 import io.vertx.core.file.FileSystem;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
-import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -26,9 +22,6 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.*;
 import io.vertx.ext.web.sstore.LocalSessionStore;
-import io.vertx.ext.web.sstore.SessionStore;
-import jdk.nashorn.internal.ir.LiteralNode;
-import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,13 +39,10 @@ import service.pubmethod.Judgement;
 import service.pubmethod.Transform;
 
 import java.io.File;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 
 public class HttpServerVerticle extends AbstractVerticle {
@@ -1636,6 +1626,9 @@ public class HttpServerVerticle extends AbstractVerticle {
         logger.info(" 在广告数据插入数据库前筛选处理 ---->" + builder.toString());
         builder.append(" ON DUPLICATE KEY UPDATE date=VALUES(date),note =VALUES(note),platform =VALUES(platform);");
 //insert into advertisement.advertisingdata (date,app_name,channel,advertising_type,earned,click_rate,ecpm,impression,click,fill_rate,platform,note,sdk_name) values
+        System.out.println("++++++++++++++");
+        System.out.println(SqlStatement.INSERT_ADVERTISEMENT + builder);
+        System.out.println("++++++++++++++");
         advertisementService.queryNoResult(jdbcClient, SqlStatement.INSERT_ADVERTISEMENT + builder).setHandler(result -> {
             if (result.succeeded()) {
 
@@ -3064,7 +3057,7 @@ public class HttpServerVerticle extends AbstractVerticle {
                 advertisementService.query(jdbcClient, "SELECT * FROM advertisement.channel " + condition + " order by id desc " + limitsql).setHandler(conn -> {
                     if (conn.succeeded()) {
                         List<JsonObject> jsonObjects = conn.result();
-                        JsonObject json = new JsonObject().put("code", 20000).put("repcode",3000).put("total",total).put("data", jsonObjects);
+                        JsonObject json = new JsonObject().put("code", 20000).put("repcode", 3000).put("total", total).put("data", jsonObjects);
                         context.response().setStatusCode(200).end(Json.encodePrettily(json));
                     } else {
                         logger.error("在数据库中查找渠道数据时发生错误------->" + conn.cause());
@@ -3460,7 +3453,7 @@ public class HttpServerVerticle extends AbstractVerticle {
         for (int i = 0; i < applist.size(); i++) {
             JsonArray jsonArray = new JsonArray();
             JsonObject jsonObject = applist.getJsonObject(i);
-            jsonArray.add(project_name).add(jsonObject.getString("package_name")).add(jsonObject.getString("channel"));
+            jsonArray.add(project_name).add(jsonObject.getString("package_name")).add(jsonObject.getString("channel")).add(jsonObject.getString("sdkguid"));
             jsonArrays.add(jsonArray);
         }
         JsonArray insert = new JsonArray();
@@ -3473,31 +3466,37 @@ public class HttpServerVerticle extends AbstractVerticle {
                 Integer count = list.get(0).getInteger("count(*)");
                 if (count == 0) {
                     advertisementService.update(jdbcClient, SqlStatement.INSERT_PROJECT, insert).setHandler(rs1 -> {
-                        StringBuilder builder = new StringBuilder();
-                        for (int i = 0; i < jsonArrays.size(); i++) {
-                            if (i == 0) {
-                                System.out.println(jsonArrays);
-                            }
-                            JsonArray jsonArray = jsonArrays.get(i);
-                            String projectName = jsonArray.getString(0);
-                            String packageName = jsonArray.getString(1);
-                            String channel = jsonArray.getString(2);
-                            builder.append("('" + projectName + "','" + packageName + "','" + channel + "')");
-                            if (i != jsonArrays.size() - 1) {
-                                builder.append(",");
-                            }
-                        }
-
-                        logger.info(" API添加游戏 ---->" + builder.toString());
-                        //INSERT INTO `advertisement`.`project_list`(`project_name`,`package_name`,`channel`)VALUES
-                        advertisementService.queryNoResult(jdbcClient, SqlStatement.INSERT_PROJECT_LIST + builder).setHandler(rs2 -> {
-                            if (rs1.succeeded() && rs2.succeeded()) {
-                                context.response().setStatusCode(201).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", "ok")));
+                        if (rs1.succeeded()) {
+                            if (jsonArrays.size() != 0) {
+                                StringBuilder builder = new StringBuilder();
+                                for (int i = 0; i < jsonArrays.size(); i++) {
+                                    JsonArray jsonArray = jsonArrays.get(i);
+                                    String projectName = jsonArray.getString(0);
+                                    String packageName = jsonArray.getString(1);
+                                    String channel = jsonArray.getString(2);
+                                    String sdkguid = jsonArray.getString(3);
+                                    builder.append("('" + projectName + "','" + packageName + "','" + channel+ "','" + sdkguid + "')");
+                                    if (i != jsonArrays.size() - 1) {
+                                        builder.append(",");
+                                    }
+                                }
+                                logger.info(" API添加游戏 ---->" + builder.toString());
+                                //INSERT INTO `advertisement`.`project_list`(`project_name`,`package_name`,`channel`)VALUES
+                                advertisementService.queryNoResult(jdbcClient, SqlStatement.INSERT_PROJECT_LIST + builder).setHandler(rs2 -> {
+                                    if (rs1.succeeded() && rs2.succeeded()) {
+                                        context.response().setStatusCode(201).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", "ok")));
+                                    } else {
+                                        logger.error("在数据库中插入数据时发生错误------->" + rs2.cause());
+                                        serviceError(context, Json.encodePrettily(new JsonObject().put("data", "请重新添加")));
+                                    }
+                                });
                             } else {
-                                logger.error("在数据库中插入数据时发生错误------->" + rs1.cause());
-                                serviceError(context, Json.encodePrettily(new JsonObject().put("data", "请重新添加")));
+                                context.response().setStatusCode(201).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", "ok")));
                             }
-                        });
+                        } else {
+                            logger.error("在数据库中插入数据时发生错误------->" + rs1.cause());
+                            serviceError(context, Json.encodePrettily(new JsonObject().put("data", "请重新添加")));
+                        }
                     });
                 } else {
                     logger.error("项目名重复");
@@ -3552,7 +3551,7 @@ public class HttpServerVerticle extends AbstractVerticle {
         for (int i = 0; i < applist.size(); i++) {
             JsonArray jsonArray = new JsonArray();
             JsonObject jsonObject = applist.getJsonObject(i);
-            jsonArray.add(project_name).add(jsonObject.getString("package_name")).add(jsonObject.getString("channel"));
+            jsonArray.add(project_name).add(jsonObject.getString("package_name")).add(jsonObject.getString("channel")).add(jsonObject.getString("sdkguid"));
             jsonArrays.add(jsonArray);
         }
         JsonArray jsonArray = new JsonArray();
@@ -3568,28 +3567,43 @@ public class HttpServerVerticle extends AbstractVerticle {
                 String projectName = one.getString(0);
                 String packageName = one.getString(1);
                 String channel = one.getString(2);
-                builder.append("('" + projectName + "','" + packageName + "','" + channel + "')");
+                String sdkguid = one.getString(3);
+                builder.append("('" + projectName + "','" + packageName + "','" + channel+ "','" + sdkguid + "')");
                 if (i != jsonArrays.size() - 1) {
                     builder.append(",");
                 }
             }
             logger.info(" API更新游戏 ---->" + builder.toString());
             //INSERT INTO `advertisement`.`project_list`(`project_name`,`package_name`,`channel`)VALUES
-            advertisementService.queryNoResult(jdbcClient, SqlStatement.INSERT_PROJECT_LIST + builder).setHandler(result2 -> {
-                advertisementService.update(jdbcClient, SqlStatement.UPDATE_PROJECT, jsonArray).setHandler(result3 -> {
-                    if (result1.succeeded() && result2.succeeded() && result3.succeeded()) {
+            advertisementService.update(jdbcClient, SqlStatement.UPDATE_PROJECT, jsonArray).setHandler(result3 -> {
+                if (result3.succeeded()) {
+                    if (jsonArrays.size()==0){
                         context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
-                    } else {
-                        if (result1.failed()) {
-                            logger.error("数据库发生错误------->" + result1.cause());
-                        } else if (result2.failed()) {
-                            logger.error("数据库发生错误------->" + result2.cause());
-                        } else if (result3.failed()) {
-                            logger.error("数据库发生错误------->" + result3.cause());
-                        }
-                        serviceError(context, Json.encodePrettily(new JsonObject().put("data", "刷新试试")));
+                        return;
                     }
-                });
+
+                    advertisementService.queryNoResult(jdbcClient, SqlStatement.INSERT_PROJECT_LIST + builder).setHandler(result2 -> {
+                        if (result2.succeeded()) {
+                            if (result1.succeeded() && result3.succeeded()) {
+                                context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
+                            } else {
+                                if (result1.failed()) {
+                                    logger.error("数据库发生错误------->" + result1.cause());
+                                }
+                                serviceError(context, Json.encodePrettily(new JsonObject().put("data", "刷新试试")));
+                            }
+                        } else {
+                            logger.error("数据库发生错误------->" + result2.cause());
+                            serviceError(context, Json.encodePrettily(new JsonObject().put("data", "刷新试试")));
+                        }
+
+                    });
+
+
+                } else {
+                    logger.error("数据库发生错误------->" + result3.cause());
+                    serviceError(context, Json.encodePrettily(new JsonObject().put("data", "刷新试试")));
+                }
             });
         });
     }

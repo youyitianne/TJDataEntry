@@ -17,6 +17,9 @@ public interface ResStoreDatabaseService {
     ResStoreDatabaseService query(String sqlQuery, JsonArray jsonArray, Handler<AsyncResult<Void>> resultHandler);
 
     @Fluent
+    ResStoreDatabaseService queryWithoutParam(String sqlQuery, Handler<AsyncResult<Void>> resultHandler);
+
+    @Fluent
     ResStoreDatabaseService fetchDatas(String sqlQuery, JsonArray jsonArray, Handler<AsyncResult<List<JsonObject>>> resultHandler);
 
     @Fluent

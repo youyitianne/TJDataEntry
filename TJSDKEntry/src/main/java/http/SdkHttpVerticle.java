@@ -88,9 +88,9 @@ public class SdkHttpVerticle extends AbstractVerticle {
         router.get("/onesdkapi").handler(this::getSDKHandler);
         //项目配置表
         router.get("/api/projectconfig/:starttime/:endtime").handler(this::projectconfigListHandler);
-        router.post("/api/projectconfig").handler(this::projectconfigCreateHandler);
+        router.post("/api/projectconfig").handler(this::projectconfigCreateHandler1);
         router.post("/api/projectconfig_pro").handler(this::projectconfigCreateHandler_pro);
-        router.patch("/api/projectconfig/:id").handler(this::projectconfigUpdateHandler);
+        router.patch("/api/projectconfig/:id").handler(this::projectconfigUpdateHandler1);
         router.get("/api/listtemplate").handler(this::listtemplateHandler);
         //sdk
         router.get("/api/sdk").handler(this::sdkListHandler);
@@ -147,16 +147,18 @@ public class SdkHttpVerticle extends AbstractVerticle {
         synchronized (synchronize) {
             Boolean where_flag = true;
             if (sdkName != null) {
-                if (where_flag = true) {
+                if (where_flag == true) {
                     condition.append(" where ");
                     where_flag = false;
                 }
                 condition.append(" sdk_name like '%" + sdkName + "%' ");
             }
             if (sdkMark != null) {
-                if (where_flag = true) {
+                if (where_flag == true) {
                     condition.append(" where ");
                     where_flag = false;
+                }else {
+                    condition.append(" and ");
                 }
                 condition.append(" sdk_mark like '%" + sdkMark + "%' ");
             }
@@ -985,6 +987,124 @@ public class SdkHttpVerticle extends AbstractVerticle {
     }
 
     /**
+     * 更新项目配置
+     *
+     * @param context
+     */
+    private void projectconfigUpdateHandler1(RoutingContext context) {
+        JsonArray sdk_information = new JsonArray();
+        JsonArray sdk_paramter_delete = new JsonArray();
+        List<JsonArray> paramters = new ArrayList<>();
+        String id = context.request().getParam("id");
+        String time = context.getBodyAsJson().getString("timevalue");
+        Long timevalue = 0L;
+        try {
+            timevalue = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS").parse(time)).getTime();
+        } catch (Exception e) {
+            logger.error(e.toString());
+            badRequest(context);
+        }
+        String app_name = context.getBodyAsJson().getString("app_name");
+        String package_name = context.getBodyAsJson().getString("package_name");
+        String channel_mark = context.getBodyAsJson().getString("channel_mark");
+        String version_online_version = context.getBodyAsJson().getString("version_online_version");
+        String version_update_version = context.getBodyAsJson().getString("version_update_version");
+        String versioncode_online_version = context.getBodyAsJson().getString("versioncode_online_version");
+        String versioncode_update_version = context.getBodyAsJson().getString("versioncode_update_version");
+        String note = context.getBodyAsJson().getString("note");
+        String sdkstatus = context.getBodyAsJson().getString("sdkstatus");
+        String icon = context.getBodyAsJson().getString("icon");
+        String splash = context.getBodyAsJson().getString("splash");
+        JsonObject keystore = context.getBodyAsJson().getJsonObject("keystore");
+        String publisher = context.getBodyAsJson().getString("publisher");
+        System.out.println(keystore);
+        logger.info(icon);
+        logger.info(splash);
+        JsonObject jsonObject = context.getBodyAsJson().getJsonObject("form");
+        JsonArray form = jsonObject.getJsonArray("domains");
+        JsonArray select = jsonObject.getJsonArray("select");
+        form = form.addAll(select);
+        StringBuilder param = new StringBuilder();
+        for (int i = 0; i < form.size(); i++) {
+            String param_name = form.getJsonObject(i).getString("param_name");
+            String param_value = form.getJsonObject(i).getString("param");
+            String param_note = form.getJsonObject(i).getString("sdk_type");
+            JsonArray array = new JsonArray();
+            try {
+                param.append("(" + timevalue + ",'" + app_name + "','" + channel_mark + "','" + param_name + "','" + param_value + "','" + param_note + "')");
+                if (i != form.size() - 1) {
+                    param.append(",");
+                }
+            } catch (Exception e) {
+                logger.error(e.toString());
+                badRequest(context);
+            }
+            paramters.add(i, array);
+        }
+        JsonArray checked = context.getBodyAsJson().getJsonArray("checked");
+        StringBuilder checkbox = new StringBuilder();
+        if (checked.size() > 0) {
+            for (int i = 0; i < checked.size(); i++) {
+                checkbox.append(checked.getString(i));
+                if (i != checked.size() - 1) {
+                    checkbox.append(",");
+                }
+            }
+        } else {
+            checkbox.append("暂无");
+        }
+
+        JsonArray second_checked = context.getBodyAsJson().getJsonArray("second_checked");
+        StringBuilder second_checkbox = new StringBuilder();
+        if (second_checked.size() > 0) {
+            for (int i = 0; i < second_checked.size(); i++) {
+                second_checkbox.append(second_checked.getString(i));
+                if (i != second_checked.size() - 1) {
+                    second_checkbox.append(",");
+                }
+            }
+        } else {
+            second_checkbox.append("暂无");
+        }
+        try {
+            sdk_information.add(timevalue).add(app_name).add(package_name).add(version_online_version).add(version_update_version).add(versioncode_online_version).add(versioncode_update_version).add(note)
+                    .add(channel_mark).add(sdkstatus).add(checkbox).add(second_checkbox).add(icon).add(splash)
+                    .add(keystore.getString("filepath")).add(keystore.getString("keystorePass")).add(keystore.getString("keyaliasName")).add(keystore.getString("keyaliasPass"))
+                    .add(keystore.getString("MD5")).add(keystore.getString("SHA1")).add(keystore.getString("SHA256")).add(publisher).add(keystore.getString("companyName")).add(id);
+            sdk_paramter_delete.add(timevalue).add(app_name).add(channel_mark);
+        } catch (Exception e) {
+            logger.error(e.toString());
+            badRequest(context);
+            return;
+        }
+        dbService.query(sql.get(SqlConstants.PROJECT_CONFIG_INFORMATION_UPDATE), sdk_information, result -> {
+            dbService.query(sql.get(SqlConstants.PROJECT_CONFIG_PARAMTER_DELETE), sdk_paramter_delete, result1 -> {
+                if (result1.succeeded()) {
+                    dbService.queryWithoutParam("INSERT INTO `tjsdk`.`project_config_list`(`date`,`app_name`,`channel_mark`,`param_name`,`param`,`sdk_type`)VALUES " + param
+                            , result2 -> {
+                                if (result.succeeded() && result2.succeeded()) {
+                                    context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
+                                } else {
+                                    if (result.failed()) {
+                                        logger.error("SDK_INFORMATION_UPDATE 更新失败-------》" + result.cause().toString());
+                                    }
+                                    if (result2.failed()) {
+                                        logger.error("SDK_PARAMTER_INSERT 插入失败-------》" + result2.cause().toString());
+                                    }
+                                    badRequest(context);
+                                }
+                            });
+                } else {
+                    if (result1.failed()) {
+                        logger.error("SDK_PARAMTER_DELETE 删除失败-------》" + result1.cause().toString());
+                    }
+                    badRequest(context);
+                }
+            });
+        });
+    }
+
+    /**
      * 展示项目配置
      *
      * @param context
@@ -993,12 +1113,130 @@ public class SdkHttpVerticle extends AbstractVerticle {
         list(sql.get(SqlConstants.PROJECT_CONFIG_INFORMATION_LIST), sql.get(SqlConstants.PROJECT_CONFIG_PARAMTER_LIST), context);
     }
 
+//    /**
+//     * 发布项目配置
+//     *
+//     * @param context
+//     */
+//    private void projectconfigCreateHandler(RoutingContext context) {
+//        JsonArray sdk_information = new JsonArray();
+//        List<JsonArray> paramters = new ArrayList<>();
+//        Long timevalue = context.getBodyAsJson().getLong("timevalue");
+//        String app_name = context.getBodyAsJson().getString("app_name");
+//        String package_name = context.getBodyAsJson().getString("package_name").trim();
+//        String channel_mark = context.getBodyAsJson().getString("channel_mark").trim();
+//        String version_online_version = context.getBodyAsJson().getString("version_online_version");
+//        String version_update_version = context.getBodyAsJson().getString("version_update_version");
+//        String versioncode_online_version = context.getBodyAsJson().getString("versioncode_online_version");
+//        String versioncode_update_version = context.getBodyAsJson().getString("versioncode_update_version");
+//        String note = context.getBodyAsJson().getString("note");
+//        String publisher = context.getBodyAsJson().getString("publisher");
+//        String sdkstatus = context.getBodyAsJson().getString("sdkstatus");
+//        String publish = context.getBodyAsJson().getString("publish");
+//        String icon = context.getBodyAsJson().getString("icon");
+//        String splash = context.getBodyAsJson().getString("splash");
+//        if (icon == null) {
+//            icon = null;
+//        }
+//        if (splash == null) {
+//            splash = null;
+//        }
+//        JsonObject keystore = context.getBodyAsJson().getJsonObject("keystore");
+//        System.out.println(keystore);
+//        logger.info(icon);
+//        logger.info(splash);
+//
+//        JsonObject jsonObject = context.getBodyAsJson().getJsonObject("form");
+//        JsonArray select = jsonObject.getJsonArray("select");
+//        JsonArray form = jsonObject.getJsonArray("domains");
+//        if (select != null) {
+//            form = form.addAll(select);
+//        }
+//        for (int i = 0; i < form.size(); i++) {
+//            String param_name = form.getJsonObject(i).getString("param_name");
+//            String param_value = form.getJsonObject(i).getString("param");
+//            String param_note = form.getJsonObject(i).getString("sdk_type");
+//            JsonArray array = new JsonArray();
+//            try {
+//                array.add(timevalue)
+//                        .add(app_name)
+//                        .add(channel_mark)
+//                        .add(param_name)
+//                        .add(param_value)
+//                        .add(param_note);
+//            } catch (Exception e) {
+//                logger.error(e.toString());
+//                badRequest(context);
+//            }
+//            paramters.add(i, array);
+//        }
+//        JsonArray checked = context.getBodyAsJson().getJsonArray("checked");
+//        StringBuilder checkbox = new StringBuilder();
+//        if (checked.size() > 0) {
+//            for (int i = 0; i < checked.size(); i++) {
+//                checkbox.append(checked.getString(i));
+//                if (i != checked.size() - 1) {
+//                    checkbox.append(",");
+//                }
+//            }
+//        } else {
+//            checkbox.append("暂无");
+//        }
+//        JsonArray second_checked = context.getBodyAsJson().getJsonArray("second_checked");
+//        StringBuilder second_checkbox = new StringBuilder();
+//        if (second_checked.size() > 0) {
+//            for (int i = 0; i < second_checked.size(); i++) {
+//                second_checkbox.append(second_checked.getString(i));
+//                if (i != second_checked.size() - 1) {
+//                    second_checkbox.append(",");
+//                }
+//            }
+//        } else {
+//            second_checkbox.append("暂无");
+//        }
+//        try {
+//            sdk_information.add(timevalue).add(app_name).add(package_name).add(version_online_version).add(version_update_version)
+//                    .add(versioncode_online_version).add(versioncode_update_version).add(channel_mark).add(sdkstatus).add(publish).add(checkbox).add(second_checkbox).add(note)
+//                    .add(icon).add(splash)
+//                    .add(keystore.getString("filepath")).add(keystore.getString("keystorePass")).add(keystore.getString("keyaliasName")).add(keystore.getString("keyaliasPass"))
+//                    .add(keystore.getString("MD5")).add(keystore.getString("SHA1")).add(keystore.getString("SHA256")).add(publisher)
+//                    .add(keystore.getString("companyName"));
+//        } catch (Exception e) {
+//            logger.error(e.toString());
+//            badRequest(context);
+//        }
+//        logger.info("SDK 配置表发布 start---");
+//
+//        if (publish.equals("1")) {
+//            dbService.query(sql.get(SqlConstants.PROJECT_CONFIG_INFORMATION_INSERT), sdk_information, result -> {
+//                dbService.batch("INSERT INTO `tjsdk`.`project_config_list`(`date`,`app_name`,`channel_mark`,`param_name`,`param`,`sdk_type`)VALUES(?,?,?,?,?,?)"
+//                        , paramters, result1 -> {
+//                            if (result.succeeded() && result1.succeeded()) {
+//                                logger.info("SDK 配置表发布成功");
+//                                context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", "成功")));
+//                            } else {
+//                                if (result.failed()) {
+//                                    logger.error("sdk_information 插入失败", result1.cause());
+//                                }
+//                                if (result1.failed()) {
+//                                    logger.error("paramters 插入失败", result.cause());
+//                                }
+//                                badRequest(context);
+//                            }
+//                        });
+//            });
+//        } else {
+//
+//            context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", "失败")));
+//        }
+//    }
+
     /**
      * 发布项目配置
      *
      * @param context
      */
-    private void projectconfigCreateHandler(RoutingContext context) {
+    private void projectconfigCreateHandler1(RoutingContext context) {
         JsonArray sdk_information = new JsonArray();
         List<JsonArray> paramters = new ArrayList<>();
         Long timevalue = context.getBodyAsJson().getLong("timevalue");
@@ -1032,18 +1270,17 @@ public class SdkHttpVerticle extends AbstractVerticle {
         if (select != null) {
             form = form.addAll(select);
         }
+        StringBuilder param = new StringBuilder();
         for (int i = 0; i < form.size(); i++) {
             String param_name = form.getJsonObject(i).getString("param_name");
             String param_value = form.getJsonObject(i).getString("param");
             String param_note = form.getJsonObject(i).getString("sdk_type");
             JsonArray array = new JsonArray();
             try {
-                array.add(timevalue)
-                        .add(app_name)
-                        .add(channel_mark)
-                        .add(param_name)
-                        .add(param_value)
-                        .add(param_note);
+                param.append("(" + timevalue + ",'" + app_name + "','" + channel_mark + "','" + param_name + "','" + param_value + "','" + param_note + "')");
+                if (i != form.size() - 1) {
+                    param.append(",");
+                }
             } catch (Exception e) {
                 logger.error(e.toString());
                 badRequest(context);
@@ -1080,7 +1317,7 @@ public class SdkHttpVerticle extends AbstractVerticle {
                     .add(icon).add(splash)
                     .add(keystore.getString("filepath")).add(keystore.getString("keystorePass")).add(keystore.getString("keyaliasName")).add(keystore.getString("keyaliasPass"))
                     .add(keystore.getString("MD5")).add(keystore.getString("SHA1")).add(keystore.getString("SHA256")).add(publisher)
-                    .add(keystore.getString("companyName"));
+                    .add(keystore.getString("companyName")).add(UUID.randomUUID().toString());
         } catch (Exception e) {
             logger.error(e.toString());
             badRequest(context);
@@ -1089,20 +1326,21 @@ public class SdkHttpVerticle extends AbstractVerticle {
 
         if (publish.equals("1")) {
             dbService.query(sql.get(SqlConstants.PROJECT_CONFIG_INFORMATION_INSERT), sdk_information, result -> {
-                dbService.batch(sql.get(SqlConstants.PROJECT_CONFIG_PARAMTER_INSERT), paramters, result1 -> {
-                    if (result.succeeded() && result1.succeeded()) {
-                        logger.info("SDK 配置表发布成功");
-                        context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", "成功")));
-                    } else {
-                        if (result.failed()) {
-                            logger.error("sdk_information 插入失败", result1.cause());
-                        }
-                        if (result1.failed()) {
-                            logger.error("paramters 插入失败", result.cause());
-                        }
-                        badRequest(context);
-                    }
-                });
+                dbService.queryWithoutParam("INSERT INTO `tjsdk`.`project_config_list`(`date`,`app_name`,`channel_mark`,`param_name`,`param`,`sdk_type`)VALUES " + param
+                        , result1 -> {
+                            if (result.succeeded() && result1.succeeded()) {
+                                logger.info("SDK 配置表发布成功");
+                                context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("data", "成功")));
+                            } else {
+                                if (result.failed()) {
+                                    logger.error("sdk_information 插入失败", result1.cause());
+                                }
+                                if (result1.failed()) {
+                                    logger.error("paramters 插入失败", result.cause());
+                                }
+                                badRequest(context);
+                            }
+                        });
             });
         } else {
 
@@ -1120,7 +1358,7 @@ public class SdkHttpVerticle extends AbstractVerticle {
         String package_name = context.getBodyAsJson().getString("package_name").trim();
         String channel_mark = context.getBodyAsJson().getString("channel_mark").trim();
         String keystoreguid = context.getBodyAsJson().getString("keystoreguid").trim();
-
+        String guid=context.getBodyAsJson().getString("sdkguid").trim();
         Long date = context.getBodyAsJson().getLong("date");
         if (package_name == null || channel_mark == null || date == null) {
             badRequest(context);
@@ -1130,7 +1368,7 @@ public class SdkHttpVerticle extends AbstractVerticle {
                 .add(date)
                 .add("暂无").add(package_name).add("暂无").add("暂无").add("暂无").add("暂无")
                 .add(channel_mark).add(1).add(0).add("暂无").add("暂无").add("暂无").add("暂无").add("暂无").add(keystoreguid)
-                .add("暂无").add("暂无").add("暂无").add("暂无").add("暂无").add("暂无").add("未知").add("暂无");
+                .add("暂无").add("暂无").add("暂无").add("暂无").add("暂无").add("暂无").add("未知").add("暂无").add(guid);
         dbService.fetchDatas(sql.get(SqlConstants.PROJECT_CONFIG_INFORMATION_COUNT), new JsonArray().add(package_name).add(channel_mark), rs -> {
             if (rs.succeeded()) {
                 List<JsonObject> jsonObjects = rs.result();
@@ -1150,8 +1388,6 @@ public class SdkHttpVerticle extends AbstractVerticle {
                 }
             }
         });
-
-
     }
 
 
@@ -1365,7 +1601,6 @@ public class SdkHttpVerticle extends AbstractVerticle {
                     configtable.put("channel", sdk_config.getString("channel_mark").trim());
                     configtable.put("versionName", sdk_config.getString("version_update").trim());
                     configtable.put("versionCode", Integer.valueOf(sdk_config.getString("versioncode_update_version").trim()));
-
                     if (!"暂无".equals(sdk_config.getString("icon").trim())) {
                         configtable.put("defaultIcon", domainName + "/file?path=" + sdk_config.getString("icon").trim());
                     }
@@ -1387,12 +1622,9 @@ public class SdkHttpVerticle extends AbstractVerticle {
                     if (!"暂无".equals(sdk_config.getString("companyName").trim())) {
                         configtable.put("companyName", sdk_config.getString("companyName").trim());
                     }
-
-
                     JsonObject success = new JsonObject();
                     success.put("basic", configtable);
                     Iterator<JsonObject> it = paramter.iterator();
-
                     while (it.hasNext()) {
                         JsonObject jsonObject = it.next();
                         if (date.equals(jsonObject.getInteger("date")) && channel.equals(jsonObject.getString("channel_mark"))) {
@@ -1423,6 +1655,17 @@ public class SdkHttpVerticle extends AbstractVerticle {
                             }
                         }
                     }
+                    //
+                    if (!"暂无".equals(sdk_config.getString("checked"))){
+                        String checked = sdk_config.getString("checked");
+                        String[] checkedBox = checked.split(",");
+                        for (int i = 0; i < checkedBox.length; i++) {
+                            if (success.getJsonObject(checkedBox[i]) == null) {
+                                success.put(checkedBox[i],new JsonObject());
+                            }
+                        }
+                    }
+
                     context.response().putHeader("Content-Type", "text/plain; charset=utf-8").end(Json.encodePrettily(success));
                 } else {
                     if (result1.failed()) {

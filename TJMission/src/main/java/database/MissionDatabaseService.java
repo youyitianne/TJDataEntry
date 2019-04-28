@@ -16,6 +16,9 @@ public interface MissionDatabaseService {
     MissionDatabaseService query(String sqlQuery, JsonArray jsonArray, Handler<AsyncResult<Void>> resultHandler);
 
     @Fluent
+    MissionDatabaseService queryWithoutParam(String sqlQuery, Handler<AsyncResult<Void>> resultHandler);
+
+    @Fluent
     MissionDatabaseService fetchDatas(String sqlQuery,JsonArray jsonArray, Handler<AsyncResult<List<JsonObject>>> resultHandler);
 
     @Fluent

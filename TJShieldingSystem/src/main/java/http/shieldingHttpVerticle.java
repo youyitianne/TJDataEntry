@@ -32,8 +32,8 @@ public class shieldingHttpVerticle extends AbstractVerticle {
     private Logger logger = LoggerFactory.getLogger(shieldingHttpVerticle.class.getName());
     private Method method = new Method();
     HttpMethodClient client = new HttpMethodClient();
-    String domainName = "192.168.1.101:8085";
-    //String domainName = "console.tomatojoy.cn";
+    //String domainName = "192.168.1.101:8085";
+    String domainName = "console.tomatojoy.cn";
     private JWTAuthHandler jwtAuthHandler;
     private JWTAuth jwtAuth = null;
     private RedDatabaseService dbService;

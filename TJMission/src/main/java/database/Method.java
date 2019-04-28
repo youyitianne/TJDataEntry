@@ -31,6 +31,7 @@ public class Method {
         sqlQueries.put(ConfigConstants.DATABASE_USER, queriesProps.getProperty("user"));
         sqlQueries.put(ConfigConstants.DATABASE_PASSWORD, queriesProps.getProperty("password"));
         sqlQueries.put(ConfigConstants.HTTP_PORT, queriesProps.getProperty("http_port"));
+        sqlQueries.put(ConfigConstants.DOWNLOAD_CACHE_PATH, queriesProps.getProperty("download_cache_path"));
         return sqlQueries;
     }
 

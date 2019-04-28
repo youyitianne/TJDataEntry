@@ -17,6 +17,9 @@ public interface SdkDatabaseService {
     SdkDatabaseService query(String sqlQuery, JsonArray jsonArray, Handler<AsyncResult<Void>> resultHandler);
 
     @Fluent
+    SdkDatabaseService queryWithoutParam(String sqlQuery,  Handler<AsyncResult<Void>> resultHandler);
+
+    @Fluent
     SdkDatabaseService fetchDatas(String sqlQuery,JsonArray jsonArray, Handler<AsyncResult<List<JsonObject>>> resultHandler);
 
     @Fluent

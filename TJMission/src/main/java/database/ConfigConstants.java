@@ -7,4 +7,5 @@ public enum ConfigConstants {
     DATABASE_USER,
     DATABASE_PASSWORD,
     HTTP_PORT,
+    DOWNLOAD_CACHE_PATH
 }

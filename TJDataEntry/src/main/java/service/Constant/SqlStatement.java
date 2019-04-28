@@ -120,14 +120,11 @@ public class SqlStatement {
             "where date >= ? and date <= ?;";
     public static String SELECT_MONDATA=" SELECT sum(`userdata`.`dau`) sumdau,sum(`userdata`.`dnu`) sumdnu FROM  `advertisement`.`userdata` where date >= ? and date < ?;";
 
-
-
     public static String INSERT_PROJECT="INSERT INTO `advertisement`.`project`(`project_name`,`preheat`,`schedule`,`compete_good`,`version_plan`,`note`)VALUES(?,?,?,?,?,?);";
 
     public static String REPEAT_PROJECT="SELECT count(*) FROM advertisement.project where project_name= ? ;";
 
-    public static String INSERT_PROJECT_LIST="INSERT INTO `advertisement`.`project_list`(`project_name`,`package_name`,`channel`)VALUES ";
-    //public static String INSERT_PROJECT_LIST="INSERT INTO `advertisement`.`project_list`(`project_name`,`package_name`,`channel`)VALUES(?,?,?);";
+    public static String INSERT_PROJECT_LIST="INSERT INTO `advertisement`.`project_list`(`project_name`,`package_name`,`channel`,`sdkguid`)VALUES ";
 
     public static String SELECT_PROJECT="SELECT * FROM advertisement.project;";
 

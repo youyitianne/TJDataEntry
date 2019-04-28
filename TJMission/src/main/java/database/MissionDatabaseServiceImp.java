@@ -30,6 +30,8 @@ public class MissionDatabaseServiceImp implements MissionDatabaseService{
     }
 
 
+
+
     public MissionDatabaseServiceImp(List<String> lists, JDBCClient dbClient, Handler<AsyncResult<MissionDatabaseService>> readyHandler) {
         this.dbClient = dbClient;
         dbClient.getConnection(ar -> {
@@ -54,6 +56,19 @@ public class MissionDatabaseServiceImp implements MissionDatabaseService{
     @Override
     public MissionDatabaseService query(String sqlQuery, JsonArray jsonArray, Handler<AsyncResult<Void>> resultHandler) {
         dbClient.updateWithParams(sqlQuery, jsonArray, res -> {
+            if (res.succeeded()) {
+                resultHandler.handle(Future.succeededFuture());
+            } else {
+                LOGGER.error("Database query error", res.cause());
+                resultHandler.handle(Future.failedFuture(res.cause()));
+            }
+        });
+        return this;
+    }
+
+    @Override
+    public MissionDatabaseService queryWithoutParam(String sqlQuery, Handler<AsyncResult<Void>> resultHandler) {
+        dbClient.update(sqlQuery, res -> {
             if (res.succeeded()) {
                 resultHandler.handle(Future.succeededFuture());
             } else {

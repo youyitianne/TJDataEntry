@@ -123,6 +123,10 @@ public class ResStoreDatabaseServiceVertxProxyHandler extends ProxyHandler {
           service.query((java.lang.String)json.getValue("sqlQuery"), (io.vertx.core.json.JsonArray)json.getValue("jsonArray"), createHandler(msg));
           break;
         }
+        case "queryWithoutParam": {
+          service.queryWithoutParam((java.lang.String)json.getValue("sqlQuery"), createHandler(msg));
+          break;
+        }
         case "fetchDatas": {
           service.fetchDatas((java.lang.String)json.getValue("sqlQuery"), (io.vertx.core.json.JsonArray)json.getValue("jsonArray"), createListHandler(msg));
           break;

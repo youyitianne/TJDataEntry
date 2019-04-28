@@ -65,6 +65,19 @@ public class SdkDatabaseServiceImpl implements SdkDatabaseService{
     }
 
     @Override
+    public SdkDatabaseService queryWithoutParam(String sqlQuery, Handler<AsyncResult<Void>> resultHandler) {
+        dbClient.query(sqlQuery, res -> {
+            if (res.succeeded()) {
+                resultHandler.handle(Future.succeededFuture());
+            } else {
+                LOGGER.error("Database query error", res.cause());
+                resultHandler.handle(Future.failedFuture(res.cause()));
+            }
+        });
+        return this;
+    }
+
+    @Override
     public SdkDatabaseService fetchDatas(String sqlQuery, JsonArray jsonArray, Handler<AsyncResult<List<JsonObject>>> resultHandler) {
         dbClient.queryWithParams(sqlQuery,jsonArray, queryResult -> {
             if (queryResult.succeeded()) {

@@ -29,6 +29,18 @@ public class ResStoreDatabaseServiceImp implements ResStoreDatabaseService{
         return this;
     }
 
+    @Override
+    public ResStoreDatabaseService queryWithoutParam(String sqlQuery, Handler<AsyncResult<Void>> resultHandler) {
+        dbClient.update(sqlQuery, res -> {
+            if (res.succeeded()) {
+                resultHandler.handle(Future.succeededFuture());
+            } else {
+                LOGGER.error("Database query error", res.cause());
+                resultHandler.handle(Future.failedFuture(res.cause()));
+            }
+        });
+        return this;
+    }
 
     public ResStoreDatabaseServiceImp(List<String> lists, JDBCClient dbClient, Handler<AsyncResult<ResStoreDatabaseService>> readyHandler) {
         this.dbClient = dbClient;
