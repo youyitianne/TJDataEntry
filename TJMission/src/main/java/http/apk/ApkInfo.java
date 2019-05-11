@@ -79,11 +79,50 @@ public class ApkInfo {
      */
     private String launchableActivity;
 
+    /**
+     * MD5
+     */
+    private String MD5;
+
+    /**
+     * SHA1
+     */
+    private String SHA1;
+
+    /**
+     * SHA256
+     */
+    private String SHA256;
+
     public ApkInfo() {
         this.usesPermissions = new ArrayList<String>();
         this.applicationIcons = new HashMap<String, String>();
         this.impliedFeatures = new ArrayList<ImpliedFeature>();
         this.features = new ArrayList<String>();
+    }
+
+    public String getMD5() {
+        return MD5;
+    }
+
+    public void setMD5(String MD5) {
+        this.MD5 = MD5;
+    }
+
+    public String getSHA1() {
+        return SHA1;
+    }
+
+    public void setSHA1(String SHA1) {
+        this.SHA1 = SHA1;
+    }
+
+    public String getSHA256() {
+        return SHA256;
+    }
+
+    public void setSHA256(String SHA256) {
+        this.SHA256 = SHA256;
     }
 
     /**
@@ -272,7 +311,7 @@ public class ApkInfo {
 
 
 
-    @Override
+        @Override
     public String toString() {
         return "ApkInfo [versionCode=" + versionCode + ",\n versionName="
                 + versionName + ",\n packageName=" + packageName
@@ -282,6 +321,11 @@ public class ApkInfo {
                 + ",\n applicationLable=" + applicationLable
                 + ",\n applicationIcons=" + applicationIcons
                 + ",\n applicationIcon=" + applicationIcon
+
+                + ",\n MD5=" + MD5
+                + ",\n SHA1=" + SHA1
+                + ",\n SHA256=" + SHA256
+
                 + ",\n impliedFeatures=" + impliedFeatures + ",\n features="
                 + features + ",\n launchableActivity=" + launchableActivity + "\n]";
     }
@@ -293,4 +337,7 @@ public class ApkInfo {
     public void setLaunchableActivity(String launchableActivity) {
         this.launchableActivity = launchableActivity;
     }
+
+
+
 }

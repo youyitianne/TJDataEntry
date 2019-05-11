@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.Method;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -37,7 +38,7 @@ public class SdkHttpVerticle extends AbstractVerticle {
     private JWTAuthHandler jwtAuthHandler;
     private JWTAuth jwtAuth = null;
     private SdkOperationLog operationLog = new SdkOperationLog();
-    private static final String domainName = "http://192.168.1.101:8087";
+    private static final String domainName = "http://filehost.tomatojoy.com";
     private static String synchronize = "synchronize";
 
     @Override
@@ -121,6 +122,36 @@ public class SdkHttpVerticle extends AbstractVerticle {
                 logger.error("Could not start a HTTP server", ar.cause());
                 startFuture.fail(ar.cause());
             }
+        });
+
+        //启动定时器
+        try {
+            logger.info("启动定时器start-------");
+            timer();
+            logger.info("启动定时器end---------");
+        }catch (Exception e){
+            logger.error("定时器出错-------------\n",e);
+        }
+    }
+
+
+    /**
+     * 定时器
+     * @throws Exception
+     */
+    private void timer() throws Exception{
+        //6小时执行一次   1000L * 60 * 60 * 6
+        vertx.setPeriodic(1000L * 60 * 60 * 6, id -> {
+            logger.info("触发定时器，删除缓存文件，保持数据库连接----------");
+            dbService.listDatas("SELECT count(*) FROM advertisement.project;", sqlResult -> {
+                if (sqlResult.succeeded()){
+                    logger.info("数据库访问成功------------");
+                }
+                if (sqlResult.failed()) {
+                    logger.error("访问数据库失败",sqlResult.cause());
+                }
+                logger.info("定时器完成----------");
+            });
         });
     }
 
@@ -677,9 +708,10 @@ public class SdkHttpVerticle extends AbstractVerticle {
                         JsonObject template = new JsonObject();
                         String mark = sdk_info.get(i).getString("sdk_mark");
                         String name = sdk_info.get(i).getString("sdk_name");
+                        String sdk_version=sdk_info.get(i).getString("sdk_version");
                         template.put("keymark", mark);
 //                        sdk_Template_Name_List.add(mark);
-                        sdk_Template_Name_List.add(new JsonObject().put("mark", mark).put("name", name));
+                        sdk_Template_Name_List.add(new JsonObject().put("mark", mark).put("name", name).put("sdk_version",sdk_version));
                         JsonArray sdkform = new JsonArray();
                         Iterator<JsonObject> it = sdk_list.iterator();
                         while (it.hasNext()) {
@@ -997,6 +1029,9 @@ public class SdkHttpVerticle extends AbstractVerticle {
         List<JsonArray> paramters = new ArrayList<>();
         String id = context.request().getParam("id");
         String time = context.getBodyAsJson().getString("timevalue");
+
+
+
         Long timevalue = 0L;
         try {
             timevalue = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS").parse(time)).getTime();

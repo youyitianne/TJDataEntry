@@ -37,11 +37,11 @@ public class FileUtil {
      * @return 返回下载文件
      */
     @SuppressWarnings("finally")
-    public static File downloadFile(String guid, String downloadDir) {
+    public static File downloadFile(String guid, String downloadDir,String urlPath) {
         File file = null;
         try {
             // 统一资源
-            URL url = new URL("http://192.168.1.144:8091/file?path=" + guid);
+            URL url = new URL(urlPath + guid);
             // 连接类的父类，抽象类
             URLConnection urlConnection = url.openConnection();
             // http的连接类
@@ -98,27 +98,27 @@ public class FileUtil {
 
     }
 
-    /**
-     * 测试
-     *
-     * @param args
-     */
-    public static void main(String[] args) throws IOException {
-//        // 指定资源地址，下载文件测试
-//        downloadFile("502f7077-1080-41ec-b781-d720fada4742", "G:\\新建文件夹 (2)\\download"+File.separator);
-
-        File file = new File("G:\\新建文件夹 (2)\\1"+File.separator+"app_icon.png");
-        Map<String, Object> param = new HashMap<String, Object>();
-        String res = FileUtil.postFile("http://192.168.1.144:8091/file", param, file);
-        System.out.println(res);
-        JSONObject result = JSONObject.parseObject(res);
-        if ("3000".equals(result.getString("repcode"))) {
-            //file.delete();//删除本地文件
-            String iconguid=result.getJSONObject("data").getString("guid");
-            System.out.println(iconguid);
-        }
-
-    }
+//    /**
+//     * 测试
+//     *
+//     * @param args
+//     */
+//    public static void main(String[] args) throws IOException {
+////        // 指定资源地址，下载文件测试
+////        downloadFile("502f7077-1080-41ec-b781-d720fada4742", "G:\\新建文件夹 (2)\\download"+File.separator);
+//
+//        File file = new File("G:\\新建文件夹 (2)\\1"+File.separator+"app_icon.png");
+//        Map<String, Object> param = new HashMap<String, Object>();
+//        String res = FileUtil.postFile("http://192.168.1.144:8091/file", param, file);
+//        System.out.println(res);
+//        JSONObject result = JSONObject.parseObject(res);
+//        if ("3000".equals(result.getString("repcode"))) {
+//            //file.delete();//删除本地文件
+//            String iconguid=result.getJSONObject("data").getString("guid");
+//            System.out.println(iconguid);
+//        }
+//
+//    }
 
     public static String postFile(String url, Map<String, Object> param, File file) throws ClientProtocolException, IOException {
         String res = null;

@@ -187,7 +187,57 @@ public class HttpServerVerticle extends AbstractVerticle {
                 startFuture.fail(ar.cause());
             }
         });
+
+        //启动定时器
+        try {
+            logger.info("启动定时器start-------");
+            timer();
+            logger.info("启动定时器end---------");
+        }catch (Exception e){
+            logger.error("定时器出错-------------\n",e);
+        }
+
     }
+
+
+    /**
+     * 定时器
+     * @throws Exception
+     */
+    private void timer() throws Exception{
+        //6小时执行一次   1000L * 60 * 60 * 6
+        vertx.setPeriodic(1000L * 60 * 60 * 6, id -> {
+            logger.info("触发定时器，删除缓存文件，保持数据库连接----------");
+            advertisementService.query(jdbcClient,"SELECT count(*) FROM advertisement.project;").setHandler(sqlResult -> {
+                if (sqlResult.succeeded()){
+                    logger.info("数据库访问成功------------");
+                }
+                if (sqlResult.failed()) {
+                    logger.error("访问数据库失败",sqlResult.cause());
+                }
+                File directory=new File("TJDataEntry" + File.separator + "file-uploads");
+                logger.info("缓存目录----------"+"TJDataEntry" + File.separator + "file-uploads");
+                if (!directory.exists()||!directory.isDirectory()){
+                    logger.info("清空缓存文件失败，文件夹不存在----------");
+                    return;
+                }
+                String [] subfiles=directory.list();
+                for (int i=0;i<subfiles.length;i++){
+                    File file=new File(directory+File.separator+subfiles[i]);
+                    if (file.exists()&&!file.isDirectory()){
+                        file.delete();
+                    }else {
+                        logger.info(directory+File.separator+subfiles[i]+"未删除-------");
+                    }
+                }
+                logger.info("定时器完成----------");
+            });
+        });
+    }
+
+
+
+
 
     /**
      * 日志
@@ -1491,6 +1541,9 @@ public class HttpServerVerticle extends AbstractVerticle {
                                     jsonArray.add(" " + innerlist.get(j));  //mysql 5.7.23 存入00:00:00  数据时前两位值改变
                                 } else if (j == 1) {
                                     if (Judgement.matchName(innerlist.get(1).toString(), matchinglist.get(0)).equals("未知")) {
+                                        System.out.println("++++++++++++++");
+                                        System.out.println( matchinglist.get(0));
+                                        System.out.println("++++++++++++++");
                                         operationSuccess(context, new JsonObject().put("data", finnalfilename + "数据解析失败，(" + innerlist.get(1).toString() + ")发现异常命名~"));
                                         return;
                                     }
@@ -2826,16 +2879,6 @@ public class HttpServerVerticle extends AbstractVerticle {
         List<String> channellist = new ArrayList<>();
         List<String> adtypelist = new ArrayList<>();
         List<String> game_marklist = new ArrayList<>();
-        Boolean sqllists = CacheList.AD_TYPE == null || CacheList.APP_NAME == null || CacheList.APP_MARK == null || CacheList.CHANNEL == null;
-        if (!sqllists) {
-            List<List<String>> constantlists = new ArrayList<>();
-            constantlists.add(0, CacheList.APP_NAME);
-            constantlists.add(1, CacheList.CHANNEL);
-            constantlists.add(2, CacheList.AD_TYPE);
-            constantlists.add(3, CacheList.APP_MARK);
-            future.complete(constantlists);
-            return future;
-        }
         advertisementService.query(jdbcClient, SqlStatement.SELECT_GAME_NAME).setHandler(game -> {
             if (game.succeeded()) {
                 List<JsonObject> jsonObjects = game.result();
@@ -3044,7 +3087,7 @@ public class HttpServerVerticle extends AbstractVerticle {
         synchronized (synchronize) {
             Boolean where_flag = true;
             if (channelName != null) {
-                if (where_flag = true) {
+                if (where_flag == true) {
                     condition.append(" where ");
                     where_flag = false;
                 }
@@ -3072,22 +3115,23 @@ public class HttpServerVerticle extends AbstractVerticle {
     }
 
     /**
-     * API添加游戏
+     * API添加应用
      *
      * @param context
      */
     private void addApp(RoutingContext context) {
-        String name = context.request().getParam("name");
-        String system = context.request().getParam("system");
-        String icon = context.request().getParam("icon");
-        String project = context.request().getParam("project");
-        if (name == null || system == null || icon == null || project == null || name.length() == 0 || system.length() == 0 || icon.length() == 0 || project.length() == 0) {
+        String name = context.getBodyAsJson().getString("name");
+        String system = context.getBodyAsJson().getString("system");
+        String icon = context.getBodyAsJson().getString("icon");
+        String project_guid = context.getBodyAsJson().getString("project_guid");//实际为project_guid
+        if (name == null || system == null || icon == null || project_guid == null || name.length() == 0 || system.length() == 0 || icon.length() == 0 || project_guid.length() == 0) {
+
             badRequest(context);
             return;
         }
-        advertisementService.update(jdbcClient, SqlStatement.INSERT_APP, new JsonArray().add(name).add(system).add(icon).add(project)).setHandler(rs -> {
+        advertisementService.update(jdbcClient, SqlStatement.INSERT_APP, new JsonArray().add(name).add(system).add(icon).add(project_guid)).setHandler(rs -> {
             if (rs.succeeded()) {
-                CacheOpertion.removeCacheLists();
+                logger.info("添加应用成功");
                 context.response().setStatusCode(201).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
             } else {
                 logger.error("在数据库中插入数据时发生错误------->" + rs.cause());
@@ -3097,7 +3141,7 @@ public class HttpServerVerticle extends AbstractVerticle {
     }
 
     /**
-     * API删除游戏
+     * API删除应用
      *
      * @param context
      */
@@ -3121,36 +3165,23 @@ public class HttpServerVerticle extends AbstractVerticle {
     }
 
     /**
-     * API更新游戏
+     * API更新应用
      *
      * @param context
      */
     private void updateApp(RoutingContext context) {
-        String name = "";
-        String system = "";
-        String icon = "";
-        String project = "";
-        Integer id = -1;
-        try {
-            id = Integer.valueOf(context.request().getParam("id"));
-            name = context.getBodyAsJson().getString("name");
-            system = context.getBodyAsJson().getString("system");
-            icon = context.getBodyAsJson().getString("icon");
-            project = context.getBodyAsJson().getString("project");
-        } catch (Exception e) {
-            id = Integer.valueOf(context.request().getParam("id"));
-            name = context.request().getParam("name");
-            system = context.request().getParam("system");
-            icon = context.request().getParam("icon");
-            project = context.request().getParam("project");
-        }
-        if (name == null || system == null || icon == null || project == null || name.length() == 0 || system.length() == 0 || icon.length() == 0 || project.length() == 0 || id == -1) {
+        Integer id = Integer.valueOf(context.request().getParam("id"));
+        String name = context.getBodyAsJson().getString("name");
+        String system = context.getBodyAsJson().getString("system");
+        String icon = context.getBodyAsJson().getString("icon");
+        String project_guid = context.getBodyAsJson().getString("project_guid");
+        if (name == null || system == null || icon == null || project_guid == null || name.length() == 0 || system.length() == 0 || icon.length() == 0 || project_guid.length() == 0 || id == -1) {
             badRequest(context);
             return;
         }
-        advertisementService.update(jdbcClient, SqlStatement.UPDATE_APP, new JsonArray().add(name).add(system).add(icon).add(project).add(id)).setHandler(rs -> {
+        advertisementService.update(jdbcClient, SqlStatement.UPDATE_APP, new JsonArray().add(name).add(system).add(icon).add(project_guid).add(id)).setHandler(rs -> {
             if (rs.succeeded()) {
-                CacheOpertion.removeCacheLists();
+                logger.info("更新应用成功");
                 context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
             } else {
                 logger.error("在数据库中查找渠道数据时发生错误------->" + rs.cause());
@@ -3160,23 +3191,16 @@ public class HttpServerVerticle extends AbstractVerticle {
     }
 
     /**
-     * API获取游戏
+     * API获取应用
      *
      * @param context
      */
     private void findApp(RoutingContext context) {
-        if (CacheList.APP_NAME_JSON != null) {
-            List<JsonObject> jsonObjects = CacheList.APP_NAME_JSON;
-            JsonObject json = new JsonObject().put("code", 20000).put("data", jsonObjects);
-            context.response().setStatusCode(200).end(Json.encodePrettily(json));
-            return;
-        }
         advertisementService.query(jdbcClient, SqlStatement.SELECT_APP).setHandler(conn -> {
             if (conn.succeeded()) {
                 List<JsonObject> jsonObjects = conn.result();
                 Collections.reverse(jsonObjects);
                 JsonObject json = new JsonObject().put("code", 20000).put("data", jsonObjects);
-                CacheList.APP_NAME_JSON = jsonObjects;
                 context.response().setStatusCode(200).end(Json.encodePrettily(json));
             } else {
                 logger.error("在数据库中查找数据时发生错误------->" + conn.cause());
@@ -3209,24 +3233,27 @@ public class HttpServerVerticle extends AbstractVerticle {
         synchronized (synchronize) {
             Boolean where_flag = true;
             if (appName != null) {
-                if (where_flag = true) {
+                if (where_flag == true) {
                     condition.append(" where ");
                     where_flag = false;
                 }
-                condition.append(" name like '%" + appName + "%' ");
+                condition.append(" a.name like '%" + appName + "%' ");
             }
             if (projectName != null) {
-                if (where_flag = true) {
+                if (where_flag == true) {
                     condition.append(" where ");
                     where_flag = false;
+                }else {
+                    condition.append(" and ");
                 }
-                condition.append(" project like '%" + projectName + "%' ");
+                condition.append(" b.project_name like '%" + projectName + "%' ");
             }
         }
-        advertisementService.query(jdbcClient, "SELECT count(*) total FROM advertisement.appname " + condition).setHandler(countResult -> {
+        advertisementService.query(jdbcClient, "SELECT count(a.id) total FROM advertisement.appname a left join `advertisement`.`project` b on a.project_guid = b.project_guid " + condition).setHandler(countResult -> {
+            System.out.println("SELECT count(a.id) total FROM advertisement.appname a left join `advertisement`.`project` b on a.project_guid = b.project_guid " + condition);
             if (countResult.succeeded()) {
                 Integer total = countResult.result().get(0).getInteger("total");
-                advertisementService.query(jdbcClient, "SELECT * FROM advertisement.appname " + condition + " order by id desc " + limitsql).setHandler(conn -> {
+                advertisementService.query(jdbcClient, "SELECT a.id,a.name,a.system,a.icon,a.project_guid,b.project_name FROM advertisement.appname a left join `advertisement`.`project` b on a.project_guid = b.project_guid " + condition + " order by id desc " + limitsql).setHandler(conn -> {
                     if (conn.succeeded()) {
                         List<JsonObject> jsonObjects = conn.result();
                         JsonObject json = new JsonObject().put("code", 20000).put("repcode", 3000).put("total", total).put("data", jsonObjects);
@@ -3246,12 +3273,12 @@ public class HttpServerVerticle extends AbstractVerticle {
     }
 
     /**
-     * API获取游戏
+     * API获取项目
      *
      * @param context
      */
     private void findProjectListHandler(RoutingContext context) {
-        advertisementService.query(jdbcClient, SqlStatement.SELECT_APP).setHandler(conn -> {
+        advertisementService.query(jdbcClient, SqlStatement.SELECT_APP1).setHandler(conn -> {
             if (conn.succeeded()) {
                 List<JsonObject> jsonObjects = conn.result();
                 List<JsonObject> list = new ArrayList<>();
@@ -3282,7 +3309,6 @@ public class HttpServerVerticle extends AbstractVerticle {
             }
         });
     }
-
 
     /**
      * 资源列表获取游戏
@@ -3437,11 +3463,12 @@ public class HttpServerVerticle extends AbstractVerticle {
     }
 
     /**
-     * API添加游戏
+     * API添加项目
      *
      * @param context
      */
     private void addProject(RoutingContext context) {
+        String guid = UUID.randomUUID().toString();
         String project_name = context.getBodyAsJson().getString("project_name");
         String preheat = context.getBodyAsJson().getString("preheat");
         String schedule = context.getBodyAsJson().getString("schedule");
@@ -3457,7 +3484,7 @@ public class HttpServerVerticle extends AbstractVerticle {
             jsonArrays.add(jsonArray);
         }
         JsonArray insert = new JsonArray();
-        insert.add(project_name).add(preheat).add(schedule).add(compete_good).add(version_plan).add(note);
+        insert.add(project_name).add(preheat).add(schedule).add(compete_good).add(version_plan).add(note).add(guid);
         JsonArray repeat = new JsonArray();
         repeat.add(project_name);
         advertisementService.findDatasWithParams(jdbcClient, SqlStatement.REPEAT_PROJECT, repeat).setHandler(result -> {
@@ -3471,11 +3498,11 @@ public class HttpServerVerticle extends AbstractVerticle {
                                 StringBuilder builder = new StringBuilder();
                                 for (int i = 0; i < jsonArrays.size(); i++) {
                                     JsonArray jsonArray = jsonArrays.get(i);
-                                    String projectName = jsonArray.getString(0);
+                                    //String projectName = jsonArray.getString(0);
                                     String packageName = jsonArray.getString(1);
                                     String channel = jsonArray.getString(2);
                                     String sdkguid = jsonArray.getString(3);
-                                    builder.append("('" + projectName + "','" + packageName + "','" + channel+ "','" + sdkguid + "')");
+                                    builder.append("('" + guid + "','" + packageName + "','" + channel + "','" + sdkguid + "')");
                                     if (i != jsonArrays.size() - 1) {
                                         builder.append(",");
                                     }
@@ -3510,14 +3537,14 @@ public class HttpServerVerticle extends AbstractVerticle {
     }
 
     /**
-     * API删除游戏
+     * API删除项目
      *
      * @param context
      */
     private void delProject(RoutingContext context) {
         String id = context.request().getParam("id");
-        String project_name = context.getBodyAsJson().getString("project_name");
-        advertisementService.update(jdbcClient, SqlStatement.DELETE_PROJECT_LIST, new JsonArray().add(project_name)).setHandler(result1 -> {
+        String project_guid = context.getBodyAsJson().getString("project_guid");
+        advertisementService.update(jdbcClient, SqlStatement.DELETE_PROJECT_LIST, new JsonArray().add(project_guid)).setHandler(result1 -> {
             advertisementService.update(jdbcClient, SqlStatement.DELETE_PROJECT, new JsonArray().add(id)).setHandler(result2 -> {
                 if (result1.succeeded() && result2.succeeded()) {
                     context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
@@ -3534,7 +3561,7 @@ public class HttpServerVerticle extends AbstractVerticle {
     }
 
     /**
-     * API更新游戏
+     * API更新项目
      *
      * @param context
      */
@@ -3546,6 +3573,7 @@ public class HttpServerVerticle extends AbstractVerticle {
         String compete_good = context.getBodyAsJson().getString("compete_good");
         String version_plan = context.getBodyAsJson().getString("version_plan");
         String note = context.getBodyAsJson().getString("note");
+        String project_guid = context.getBodyAsJson().getString("project_guid");
         JsonArray applist = context.getBodyAsJson().getJsonArray("applist");
         List<JsonArray> jsonArrays = new ArrayList<>();
         for (int i = 0; i < applist.size(); i++) {
@@ -3556,7 +3584,7 @@ public class HttpServerVerticle extends AbstractVerticle {
         }
         JsonArray jsonArray = new JsonArray();
         jsonArray.add(project_name).add(preheat).add(schedule).add(compete_good).add(version_plan).add(note).add(id);
-        advertisementService.update(jdbcClient, SqlStatement.DELETE_PROJECT_LIST, new JsonArray().add(project_name)).setHandler(result1 -> {
+        advertisementService.update(jdbcClient, SqlStatement.DELETE_PROJECT_LIST, new JsonArray().add(project_guid)).setHandler(result1 -> {
 
             StringBuilder builder = new StringBuilder();
             for (int i = 0; i < jsonArrays.size(); i++) {
@@ -3564,11 +3592,11 @@ public class HttpServerVerticle extends AbstractVerticle {
                     System.out.println(jsonArrays);
                 }
                 JsonArray one = jsonArrays.get(i);
-                String projectName = one.getString(0);
+                //String projectName = one.getString(0);
                 String packageName = one.getString(1);
                 String channel = one.getString(2);
                 String sdkguid = one.getString(3);
-                builder.append("('" + projectName + "','" + packageName + "','" + channel+ "','" + sdkguid + "')");
+                builder.append("('" + project_guid + "','" + packageName + "','" + channel + "','" + sdkguid + "')");
                 if (i != jsonArrays.size() - 1) {
                     builder.append(",");
                 }
@@ -3577,11 +3605,10 @@ public class HttpServerVerticle extends AbstractVerticle {
             //INSERT INTO `advertisement`.`project_list`(`project_name`,`package_name`,`channel`)VALUES
             advertisementService.update(jdbcClient, SqlStatement.UPDATE_PROJECT, jsonArray).setHandler(result3 -> {
                 if (result3.succeeded()) {
-                    if (jsonArrays.size()==0){
+                    if (jsonArrays.size() == 0) {
                         context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000)));
                         return;
                     }
-
                     advertisementService.queryNoResult(jdbcClient, SqlStatement.INSERT_PROJECT_LIST + builder).setHandler(result2 -> {
                         if (result2.succeeded()) {
                             if (result1.succeeded() && result3.succeeded()) {
@@ -3672,7 +3699,7 @@ public class HttpServerVerticle extends AbstractVerticle {
         synchronized (synchronize) {
             Boolean where_flag = true;
             if (projectName != null) {
-                if (where_flag = true) {
+                if (where_flag == true) {
                     condition.append(" where ");
                     where_flag = false;
                 }
@@ -3703,11 +3730,13 @@ public class HttpServerVerticle extends AbstractVerticle {
                         }
                     }
                     logger.info("SELECT * FROM advertisement.project");
-                    advertisementService.query(jdbcClient, "SELECT * FROM advertisement.project_list where project_name in " + fetchParamJsonArray).setHandler(result2 -> {
+                    advertisementService.query(jdbcClient, "SELECT b.project_name,a.id,a.project_guid,a.package_name,a.channel,a.sdkguid,c.app_name " +
+                            "FROM advertisement.project_list a left join `advertisement`.`project` b on a.project_guid=b.project_guid left join `tjsdk`.`project_config_info` c on a.sdkguid=c.sdkguid where b.project_name in " + fetchParamJsonArray).setHandler(result2 -> {
                         if (result1.succeeded() && result2.succeeded()) {
                             List<JsonObject> projectlist = result2.result();
                             for (int i = 0; i < project.size(); i++) {
                                 List<JsonObject> jsonObjects = new ArrayList<>();
+
                                 String project_name = project.get(i).getString("project_name");
                                 Iterator it = projectlist.iterator();
                                 while (it.hasNext()) {
@@ -3718,6 +3747,7 @@ public class HttpServerVerticle extends AbstractVerticle {
                                     }
                                 }
                                 project.get(i).put("applist", jsonObjects);
+                                project.get(i).put("pid", "P"+project.get(i).getInteger("id"));
                             }
                             context.response().putHeader("Content-Type", "application/javascript; charset=UTF-8")
                                     .setStatusCode(200)

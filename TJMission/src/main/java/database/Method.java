@@ -47,9 +47,6 @@ public class Method {
             logger.error("read databasecon.properties failed " + e);
         }
         HashMap<SqlConstants, String> sqlQueries = new HashMap<>();
-        sqlQueries.put(SqlConstants.FILEINFO_INSERT, queriesProps.getProperty("fileinfo_insert"));
-        sqlQueries.put(SqlConstants.FILEINFO_LIST, queriesProps.getProperty("fileinfo_list"));
-        sqlQueries.put(SqlConstants.FILEINFO_DEL, queriesProps.getProperty("fileinfo_del"));
         sqlQueries.put(SqlConstants.KEYSTORE_LIST, queriesProps.getProperty("keystore_list"));
         sqlQueries.put(SqlConstants.KEYSTORE_UPDATE, queriesProps.getProperty("keystore_update"));
         sqlQueries.put(SqlConstants.KEYSTORE_INSERT, queriesProps.getProperty("keystore_insert"));

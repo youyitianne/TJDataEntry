@@ -1,6 +1,7 @@
 package http;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import database.ConfigConstants;
@@ -8,9 +9,11 @@ import database.Method;
 import database.MissionDatabaseService;
 import database.SqlConstants;
 import http.Util.DeleteUtil;
+import http.Util.httpUtil;
 import http.apk.ApkInfo;
 import http.apk.ApkUtil;
 import http.apk.IconUtil;
+import http.apk.keystoreUtil;
 import http.filetransmit.FileUtil;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
@@ -45,10 +48,15 @@ public class MissionHttpVerticle extends AbstractVerticle {
     private HashMap<SqlConstants, String> sql;
     private Method method = new Method();
     private static final String rootPath = "TJMission";
-    private static final String domainName = "http://192.168.1.144:8091";
     private static final String synchronize = "";//锁
-    private static final String ResourcePath = "http://192.168.1.144:8091/file?path=";
-    private String download_cache_path="";
+//    private static final String ResourcePath = "http://192.168.1.144:8091/file?path=";
+//    private static final String uploadResourceUrl = "http://192.168.1.144:8091/file";
+//    private static final String ResourceBasicPath = "http://192.168.1.144:8091";
+
+    private static final String ResourceBasicPath = "http://filehost.tomatojoy.com";
+    private static final String ResourcePath = "http://filehost.tomatojoy.com/file?path=";
+    private static final String uploadResourceUrl = "http://filehost.tomatojoy.com/file";
+    private String download_cache_path = "G:" + File.separator + "newfile" + File.separator + "1" + File.separator;
 
 
     @Override
@@ -92,8 +100,6 @@ public class MissionHttpVerticle extends AbstractVerticle {
         router.route().handler(CookieHandler.create());
         router.route().handler(SessionHandler.create(LocalSessionStore.create(vertx)));
 
-        router.get("/fileInfo").handler(this::listHandler);//文件列表
-        router.get("/fileInfo/limit").handler(this::listLimitHandler);//文件列表     分页
         router.post("/keystore").handler(this::uploadHandler_keystore);//上传keystore
         router.get("/keystoreInfo").handler(this::listHandler_keystore);//展示keystore信息
         router.patch("/updateKeystore").handler(this::updateKeystoreHandler);//更新keystore
@@ -105,14 +111,11 @@ public class MissionHttpVerticle extends AbstractVerticle {
         router.post("/apkInfo").handler(this::getApkInfoHandler);//解析apk
         router.post("/onlineAPK").handler(this::setOnlineAPKHandler);//设置上线包
 
-        router.get("/addsdkguid").handler(this::addSDKGuidHandler);
-        router.get("/addsdkguid1").handler(this::addSDKGuidHandler1);
-        router.get("/addsdkguid2").handler(this::addSDKGuidHandler2);
-        router.get("/syncFile").handler(this::syncFileHandler);
-
         HashMap<ConfigConstants, String> conf = method.loadConfigQueries();
         sql = method.loadSqlQueries();
-        download_cache_path=conf.get(ConfigConstants.DOWNLOAD_CACHE_PATH);
+
+        //download_cache_path=conf.get(ConfigConstants.DOWNLOAD_CACHE_PATH);
+
         Integer portNumber = Integer.valueOf(conf.get(ConfigConstants.HTTP_PORT));
         HttpServer httpServer = vertx.createHttpServer();
         httpServer.requestHandler(router::accept).listen(portNumber, ar -> {
@@ -124,31 +127,77 @@ public class MissionHttpVerticle extends AbstractVerticle {
                 startFuture.fail(ar.cause());
             }
         });
+
+        //启动定时器
+        try {
+            logger.info("启动定时器start-------");
+            timer();
+            logger.info("启动定时器end---------");
+        } catch (Exception e) {
+            logger.error("定时器出错-------------\n", e);
+        }
+    }
+
+    /**
+     * 定时器
+     *
+     * @throws Exception
+     */
+    private void timer() throws Exception {
+        //6小时执行一次   1000L * 60 * 60 * 6
+        vertx.setPeriodic(1000L * 60 * 60 * 6, id -> {
+            logger.info("触发定时器，删除缓存文件，保持数据库连接----------");
+            dbService.listDatas("SELECT count(*) FROM advertisement.project;", sqlResult -> {
+                if (sqlResult.succeeded()) {
+                    logger.info("数据库访问成功------------");
+                }
+                if (sqlResult.failed()) {
+                    logger.error("访问数据库失败", sqlResult.cause());
+                }
+                File directory = new File(download_cache_path);
+                logger.info("缓存目录----------" + download_cache_path);
+                if (!directory.exists() || !directory.isDirectory()) {
+                    logger.info("清空缓存文件失败，文件夹不存在----------");
+                    return;
+                }
+                String[] subfiles = directory.list();
+                for (int i = 0; i < subfiles.length; i++) {
+                    File file = new File(directory + File.separator + subfiles[i]);
+                    if (file.exists()) {
+                        file.delete();
+                    } else {
+                        logger.info(directory + File.separator + subfiles[i] + "不存在-------");
+                    }
+                }
+                logger.info("定时器完成----------");
+            });
+        });
     }
 
     /**
      * 设置apk为上线包
+     *
      * @param context
      */
     private void setOnlineAPKHandler(RoutingContext context) {
-        String apkguid=context.getBodyAsJson().getString("apkguid");
-        String sdkguid=context.getBodyAsJson().getString("sdkguid");
-        String online=context.getBodyAsJson().getString("online");
-        dbService.queryWithoutParam("UPDATE `mission`.`apk_file_info` SET `online` = '0' WHERE `sdkguid` = '"+sdkguid+"';",resetResult->{
-            if (resetResult.succeeded()){
-                if ("0".equals(online)){
-                    Service3000(context,"");
+        String apkguid = context.getBodyAsJson().getString("apkguid");
+        String sdkguid = context.getBodyAsJson().getString("sdkguid");
+        String online = context.getBodyAsJson().getString("online");
+        dbService.queryWithoutParam("UPDATE `mission`.`apk_file_info` SET `online` = '0' WHERE `sdkguid` = '" + sdkguid + "';", resetResult -> {
+            if (resetResult.succeeded()) {
+                if ("0".equals(online)) {
+                    Service3000(context, "");
                     return;
                 }
-                dbService.queryWithoutParam("UPDATE `mission`.`apk_file_info` SET `online` = '1' WHERE `apkguid` = '"+apkguid+"';",setResult->{
-                    if (setResult.succeeded()){
-                        Service3000(context,"");
-                    }else {
-                        Service3001(context,setResult.cause().toString());
+                dbService.queryWithoutParam("UPDATE `mission`.`apk_file_info` SET `online` = '1' WHERE `apkguid` = '" + apkguid + "';", setResult -> {
+                    if (setResult.succeeded()) {
+                        Service3000(context, "");
+                    } else {
+                        Service3001(context, setResult.cause().toString());
                     }
                 });
-            }else {
-                Service3001(context,resetResult.cause().toString());
+            } else {
+                Service3001(context, resetResult.cause().toString());
             }
         });
     }
@@ -171,103 +220,6 @@ public class MissionHttpVerticle extends AbstractVerticle {
         });
     }
 
-    private void syncFileHandler(RoutingContext context) {
-        dbService.listDatas("SELECT * FROM mission.fileinfo;", listResult -> {
-            if (listResult.succeeded()) {
-                List<JsonObject> jsonObjectList = listResult.result();
-                List<JsonArray> jsonArrayList = new ArrayList<>();
-                for (int i = 0; i < jsonObjectList.size(); i++) {
-                    if (jsonObjectList.get(i).getString("filemd5") == null) {
-                        jsonArrayList.add(new JsonArray()
-                                .add(jsonObjectList.get(i).getString("fileguid"))
-                                .add(jsonObjectList.get(i).getString("date"))
-                                .add(jsonObjectList.get(i).getString("fileguid")));
-                    }
-                }
-                dbService.batch("UPDATE `mission`.`fileinfo` SET `filemd5` = ?,`lastModifiedDate` = ? WHERE `fileguid` = ?;", jsonArrayList, batchResult -> {
-                    if (batchResult.succeeded()) {
-                        context.response().end("123");
-                    } else {
-                        logger.error("batch错误", batchResult.cause());
-                        context.response().end(batchResult.cause().toString());
-                    }
-                });
-            } else {
-                logger.error("list错误", listResult.cause());
-                context.response().end(listResult.cause().toString());
-            }
-        });
-    }
-
-    private void addSDKGuidHandler2(RoutingContext context) {
-        dbService.listDatas("SELECT a.apkguid,a.time,a.packageName,a.channelName,a.fileName,b.sdkguid FROM mission.apk_file_info a join " +
-                        "advertisement.project_list b on a.packageName=b.package_name and a.channelName = b.channel;",
-                listResult -> {
-                    if (listResult.succeeded()) {
-                        List<JsonObject> list = listResult.result();
-                        List<JsonArray> jsonArrayList = new ArrayList<>();
-                        for (int i = 0; i < list.size(); i++) {
-                            jsonArrayList.add(new JsonArray().add(list.get(i).getString("sdkguid")).add(list.get(i).getString("apkguid")));
-                        }
-                        dbService.batch("UPDATE `mission`.`apk_file_info` SET `sdkguid` = ? WHERE `apkguid` = ?;", jsonArrayList, batchResult -> {
-                            if (batchResult.succeeded()) {
-                                context.response().end("12345");
-                            } else {
-                                logger.error("", batchResult.cause());
-                            }
-                        });
-                    } else {
-                        logger.error("", listResult.cause());
-                    }
-                });
-    }
-
-    private void addSDKGuidHandler1(RoutingContext context) {
-        dbService.listDatas("SELECT a.`id`,a.`project_name`,a.`package_name`,a.`channel`,b.sdkguid " +
-                        "FROM `advertisement`.`project_list` a join tjsdk.project_config_info b on a.package_name=b.package_name and a.channel = b.channel_mark and b.publish = 0;",
-                listResult -> {
-                    if (listResult.succeeded()) {
-                        List<JsonObject> list = listResult.result();
-                        List<JsonArray> jsonArrayList = new ArrayList<>();
-                        for (int i = 0; i < list.size(); i++) {
-                            jsonArrayList.add(new JsonArray().add(list.get(i).getString("sdkguid")).add(list.get(i).getInteger("id")));
-                        }
-                        dbService.batch("UPDATE `advertisement`.`project_list` SET `sdkguid` = ? WHERE `id` = ?;", jsonArrayList, batchResult -> {
-                            if (batchResult.succeeded()) {
-                                context.response().end("12345");
-                            } else {
-                                logger.error("", batchResult.cause());
-                            }
-                        });
-                    } else {
-                        logger.error("", listResult.cause());
-                    }
-                });
-    }
-
-    private void addSDKGuidHandler(RoutingContext context) {
-        dbService.listDatas("select id,sdkguid FROM tjsdk.project_config_info;", listResult -> {
-            if (listResult.succeeded()) {
-                List<JsonObject> list = listResult.result();
-                List<JsonArray> jsonArrayList = new ArrayList<>();
-                for (int i = 0; i < list.size(); i++) {
-                    if (list.get(i).getString("sdkguid") == null) {
-                        jsonArrayList.add(new JsonArray().add(UUID.randomUUID().toString()).add(list.get(i).getInteger("id")));
-                    }
-                }
-                dbService.batch("update tjsdk.project_config_info set sdkguid=? where id = ?;", jsonArrayList, batchResult -> {
-                    if (batchResult.succeeded()) {
-                        context.response().end("12345");
-                    } else {
-                        logger.error("", batchResult.cause());
-                    }
-                });
-            } else {
-                logger.error("", listResult.cause());
-            }
-        });
-    }
-
     /**
      * 解析apk包
      *
@@ -275,49 +227,80 @@ public class MissionHttpVerticle extends AbstractVerticle {
      */
     private void getApkInfoHandler(RoutingContext context) {
         String apkguid = context.getBodyAsJson().getString("apkguid");
-        try {
-            String runtime = System.getProperty("user.dir");
-            File apkfile = FileUtil.downloadFile(apkguid, download_cache_path+ File.separator);
-            if (!apkfile.exists()) {
-                //不存在
-                //下载文件失败
-                logger.info("下载文件失败");
-                Service3001(context, "下载文件失败");
-                return;
-            }
-            String demo = runtime + File.separator + "Resource" + File.separator + "res" + File.separator + apkguid;
-            ApkInfo apkInfo = new ApkUtil().getApkInfo(apkfile.getPath());
-            if (apkInfo == null) {
-                Service3001(context, "非法apk");
-                return;
-            }
-            //生成临时图片名称，防止重复
-            String iconCacheGUID = UUID.randomUUID().toString();
-            //icon路径
-            String icon = apkInfo.getApplicationIcon();
-            String saveRootDirectory = download_cache_path + File.separator;
+        vertx.executeBlocking(doBlockingHandler -> {
+            try {
+                File apkfile = FileUtil.downloadFile(apkguid, download_cache_path + File.separator, ResourcePath);
+                if (!apkfile.exists()) {
+                    //不存在
+                    //下载文件失败
+                    logger.info("下载文件失败");
+                    Service3001(context, "下载文件失败");
+                    return;
+                }
+                if (apkfile.exists()) {
+                    logger.info("+++++++++++++++++");
+                    logger.info(apkfile.getName());
+                    logger.info(apkfile.getAbsolutePath());
+                    logger.info("下载的文件路径++++++++++++++" + apkfile.getPath());
+                }
+                ApkInfo apkInfo = new ApkUtil().getApkInfo(apkfile.getPath());
+                if (apkInfo == null) {
+                    Service3001(context, "非法apk");
+                    return;
+                }
+                //生成临时图片名称，防止重复
+                String iconCacheGUID = UUID.randomUUID().toString();
+                //icon路径
+                String icon = apkInfo.getApplicationIcon();
+                String saveRootDirectory = download_cache_path + File.separator;
+                //提取icon，放置save目录
+                new IconUtil().zipFileRead(icon, apkfile.getPath(), saveRootDirectory, iconCacheGUID);
+                //解析icon路径
+                String iconpath = saveRootDirectory + iconCacheGUID;
+                File iconFile = new File(iconpath);
+                Map<String, Object> param = new HashMap<String, Object>();
+                String res = FileUtil.postFile(uploadResourceUrl, param, iconFile);
+                System.out.println(res);
+                JSONObject result = JSONObject.parseObject(res);
+                String RSA_guid = UUID.randomUUID().toString();
+                //解析RSA
+                new IconUtil().zipFileReadRSA(apkfile.getPath(), saveRootDirectory, RSA_guid);
+                String rsapath = saveRootDirectory + RSA_guid;
+                File rsaFile = new File(rsapath);
 
-            new IconUtil().zipFileRead(icon, apkfile.getPath(), saveRootDirectory, iconCacheGUID);
-            //解析icon路径
-            String iconpath = saveRootDirectory + iconCacheGUID;
-            File file = new File(iconpath);
-            Map<String, Object> param = new HashMap<String, Object>();
-            String res = FileUtil.postFile("http://192.168.1.144:8091/file", param, file);
-            System.out.println(res);
-            JSONObject result = JSONObject.parseObject(res);
-            if ("3000".equals(result.getString("repcode"))) {
-                //file.delete();//删除本地文件
-                String iconguid = result.getJSONObject("data").getString("guid");
-                System.out.println(iconguid);
-                logger.info("apk解析成功:\n" + apkInfo);
-                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3000).put("data", new JsonObject().put("icon", iconguid).put("basic", JsonObject.mapFrom(apkInfo)))));
-            } else {
-                Service3001(context, "保存icon失败");
+                String osName = System.getProperty("os.name");
+                System.out.println(osName);
+                String [] cmds=null;
+                if (osName.startsWith("Mac OS")) {
+                    // 苹果
+                } else if (osName.startsWith("Windows")) {
+                    // windows
+                    cmds = new String[]{"cmd", "/c", "keytool -printcert -file " + rsaFile.getPath()};
+                } else {
+                    // unix or linux
+                    cmds=new String[]{"/bin/sh","-c","keytool -printcert -file "+rsaFile.getPath()};
+                }
+
+                ApkInfo finalApkinfo = apkInfo;
+                finalApkinfo = new keystoreUtil().execCMD(cmds, finalApkinfo);
+
+                if ("3000".equals(result.getString("repcode"))) {
+                    //file.delete();//删除本地文件
+                    String iconguid = result.getJSONObject("data").getString("guid");
+                    System.out.println(iconguid);
+                    logger.info("apk解析成功:\n" + finalApkinfo);
+                    context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3000).put("data", new JsonObject().put("icon", iconguid).put("basic", JsonObject.mapFrom(finalApkinfo)))));
+                } else {
+                    Service3001(context, "保存icon失败");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Service3001(context, e.toString());
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Service3001(context, e.toString());
-        }
+        }, blockingHandler -> {
+
+        });
+
     }
 
 
@@ -353,7 +336,7 @@ public class MissionHttpVerticle extends AbstractVerticle {
                 dbService.queryWithoutParam("DELETE FROM `mission`.`apk_parsing_info` WHERE apkguid = '" + apkguid + "';", apkPasingInfoResult -> {
                     if (apkFileInfoResult.succeeded()) {
                         try {
-                            String response = DeleteUtil.doGetClient("http://192.168.1.144:8091/file?path=" + apkguid);
+                            String response = DeleteUtil.doGetClient(ResourcePath + apkguid);
                             JSONObject jsonObject = JSONObject.parseObject(response);
                             if (jsonObject.getInteger("repcode") == 3000) {
                                 context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3000)));
@@ -402,28 +385,62 @@ public class MissionHttpVerticle extends AbstractVerticle {
             if (countResult.succeeded()) {
                 Integer total = countResult.result().get(0).getInteger("total");
                 logger.info("SELECT * FROM mission.apk_file_info " + condition + " order by time desc " + limitsql);
-                dbService.listDatas("SELECT a.apkguid,a.sdkguid,a.online,b.filename,b.date time,\n" +
+                dbService.listDatas("SELECT a.apkguid,a.sdkguid,a.online," +
                         "c.applicationLable,c.features,c.impliedFeatures,c.launchableActivity,\n" +
                         "c.minSdkVersion,c.basic_packageName,c.sdkVersion,c.targetSdkVersion,\n" +
                         "c.usesPermissions,c.versionCode,c.versionName,c.localIconPath\n" +
-                        "FROM mission.apk_file_info a left join mission.fileinfo b on a.apkguid=b.fileguid left join `mission`.`apk_parsing_info` c on a.apkguid = c.apkguid " + condition + " order by time desc " + limitsql, listResult -> {
+                        ",c.MD5,c.SHA1,c.SHA256 " +
+                        "FROM mission.apk_file_info a left join `mission`.`apk_parsing_info` c on a.apkguid = c.apkguid " + condition + limitsql, listResult -> {
                     if (listResult.succeeded()) {
                         Date date = new Date();
                         List<JsonObject> list = listResult.result();
-                        for (int i = 0; i < list.size(); i++) {
+                        JsonArray jsonArray=new JsonArray();
+                        for (int i=0;i<list.size();i++){
+                            jsonArray.add(list.get(i).getString("apkguid"));
+                        }
+                        vertx.executeBlocking(doBlocking->{
+                            JsonObject fileguidList=new JsonObject();
+                            fileguidList.put("fileguidList",jsonArray);
+                            String response=null;
+                            try {
+                                response=new httpUtil().doPost(ResourceBasicPath+"/fileInfo",fileguidList.toString());
+                            }catch (Exception e){
+                                logger.error("获取文件信息失败------->"+e);
+                            }
+                            if (response!=null){
+                                System.out.println(response);
+                                JSON json=JSON.parseObject(response);
+                                JSONArray jsonArray1=((JSONObject) json).getJSONArray("data");
+                                for (int i=0;i<jsonArray1.size();i++){
+                                   JSONObject fileJson=jsonArray1.getJSONObject(i);
+                                    for (int j = 0; j < list.size(); j++) {
+                                        JsonObject jsonObject=list.get(j);
+                                        if (jsonObject.getString("apkguid").equals(fileJson.getString("fileguid"))){
+                                            list.get(j).put("filename",fileJson.getString("filename"));
+                                            list.get(j).put("time",fileJson.get("date"));
+                                            break;
+                                        }
+                                   }
+                                }
+                            }
+                            System.out.println(list);
+                            for (int i = 0; i < list.size(); i++) {
                             Long time = 0L;
                             if (list.get(i).getString("time") != null) {
                                 time = Long.valueOf(list.get(i).getString("time"));
                             }
-                            String path = "";
-                            if (list.get(i).getString("localIconPath") != null) {
-                                path = ResourcePath + list.get(i).getString("localIconPath");
+                                String path = "";
+                                if (list.get(i).getString("localIconPath") != null) {
+                                    path = ResourcePath + list.get(i).getString("localIconPath");
+                                }
+                                  date.setTime(time);
+                                list.get(i).put("date", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
+                                list.get(i).put("iconPath", path);
                             }
-                            date.setTime(time);
-                            list.get(i).put("date", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
-                            list.get(i).put("iconPath", path);
-                        }
-                        context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3000).put("total", total).put("data", list)));
+                            context.response().setStatusCode(200).putHeader("Content-Type","text/html;charset=UTF-8").end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3000).put("total", total).put("data", list)));
+                        },BlockingHandler->{
+
+                        });
                     } else {
                         logger.error("查询失败", listResult.cause());
                         context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3001)));
@@ -447,6 +464,9 @@ public class MissionHttpVerticle extends AbstractVerticle {
         String sdkguid = context.getBodyAsJson().getString("sdkguid");
         JsonObject basic = context.getBodyAsJson().getJsonObject("basic");
         String localIconPath = context.getBodyAsJson().getString("localIconPath");
+        System.out.println("++++++++++++++++++++++++");
+        System.out.println(basic);
+        System.out.println("++++++++++++++++++++++++");
         //应用程序标签
         String applicationLable = basic.getString("applicationLable");
         //特性
@@ -467,15 +487,22 @@ public class MissionHttpVerticle extends AbstractVerticle {
         String usesPermissions = basic.getJsonArray("usesPermissions").toString();
         //版本号
         String versionCode = basic.getString("versionCode");
-        //班额本名
+        //版本名
         String versionName = basic.getString("versionName");
+        //MD5
+        String MD5 = basic.getString("md5");
+        //SHA1
+        String SHA1 = basic.getString("sha1");
+        //SHA256
+        String SHA256 = basic.getString("sha256");
+
         StringBuilder basic_sql = new StringBuilder();
         basic_sql.append("('" + apkguid + "','" + applicationLable + "','" + features + "','" + impliedFeatures + "','" + launchableActivity + "','" + minSdkVersion + "','" + basic_packageName + "','" + sdkVersion + "'," +
-                "'" + targetSdkVersion + "','" + usesPermissions + "','" + versionCode + "','" + versionName + "','" + localIconPath + "')");
+                "'" + targetSdkVersion + "','" + usesPermissions + "','" + versionCode + "','" + versionName + "','" + localIconPath + "','" + MD5 + "','" + SHA1 + "','" + SHA256 + "')");
 
         dbService.queryWithoutParam("INSERT INTO `mission`.`apk_parsing_info`\n" +
                 "(`apkguid`,`applicationLable`,`features`,`impliedFeatures`,`launchableActivity`,`minSdkVersion`,`basic_packageName`,`sdkVersion`,\n" +
-                "`targetSdkVersion`,`usesPermissions`,`versionCode`,`versionName`,`localIconPath`)\n" +
+                "`targetSdkVersion`,`usesPermissions`,`versionCode`,`versionName`,`localIconPath`,`MD5`,`SHA1`,`SHA256`)\n" +
                 "VALUES " + basic_sql.toString(), queryResult -> {
             if (queryResult.succeeded()) {
                 dbService.query("INSERT INTO `mission`.`apk_file_info`(`apkguid`,`sdkguid`)VALUES(?,?)", new JsonArray()
@@ -562,79 +589,6 @@ public class MissionHttpVerticle extends AbstractVerticle {
     }
 
     /**
-     * 获取所有上传文件信息
-     *
-     * @param context
-     */
-    private void listHandler(RoutingContext context) {
-        dbService.listDatas(sql.get(SqlConstants.FILEINFO_LIST), result -> {
-            if (result.succeeded()) {
-                List<JsonObject> list = result.result();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                for (int i = 0; i < list.size(); i++) {
-                    String date = list.get(i).getString("date");
-                    Date date1 = new Date();
-                    date1.setTime(Long.valueOf(date));
-                    list.get(i).put("date1", sdf.format(date1));
-                    list.get(i).put("path", domainName + "/file?path=" + list.get(i).getString("fileguid"));
-                }
-                logger.info("查询成功");
-                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 0).put("data", list)));
-            } else {
-                logger.error("查询失败，刷新试试", result.cause());
-                context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 1).put("data", "查询失败,刷新试试！")));
-            }
-        });
-    }
-
-    /**
-     * 获取所有上传文件信息
-     * 分页
-     *
-     * @param context
-     */
-    private void listLimitHandler(RoutingContext context) {
-        Integer limit = 0;
-        Integer page = 0;
-        try {
-            limit = Integer.valueOf(context.request().getParam("limit"));
-            page = Integer.valueOf(context.request().getParam("page"));
-        } catch (Exception e) {
-            logger.error("参数错误");
-            context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3001).put("data", "参数错误")));
-            return;
-        }
-        StringBuilder limitsql = new StringBuilder();
-        limitsql.append("  limit " + (page - 1) * limit + "," + limit + ";");
-        dbService.listDatas("SELECT count(*) total FROM mission.fileinfo", countResult -> {
-            if (countResult.succeeded()) {
-                Integer total = countResult.result().get(0).getInteger("total");
-                dbService.listDatas("SELECT * FROM mission.fileinfo order by date desc " + limitsql, result -> {
-                    if (result.succeeded()) {
-                        List<JsonObject> list = result.result();
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        for (int i = 0; i < list.size(); i++) {
-                            String date = list.get(i).getString("date");
-                            Date date1 = new Date();
-                            date1.setTime(Long.valueOf(date));
-                            list.get(i).put("date1", sdf.format(date1));
-                            list.get(i).put("path", domainName + "/file?path=" + list.get(i).getString("fileguid"));
-                        }
-                        logger.info("查询成功");
-                        context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3000).put("total", total).put("data", list)));
-                    } else {
-                        logger.error("查询失败，刷新试试", result.cause());
-                        context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3001).put("data", "查询失败,刷新试试！")));
-                    }
-                });
-            } else {
-                logger.error("查询总数失败", countResult.cause());
-                context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 3001)));
-            }
-        });
-    }
-
-    /**
      * 获取所有KEYSTORE信息
      *
      * @param context
@@ -650,7 +604,7 @@ public class MissionHttpVerticle extends AbstractVerticle {
                     Date date1 = new Date();
                     date1.setTime(Long.valueOf(date));
                     list.get(i).put("date1", sdf.format(date1));
-                    list.get(i).put("path", domainName + "/file?path=" + list.get(i).getString("keystoreguid"));
+                    list.get(i).put("path", ResourcePath + list.get(i).getString("keystoreguid"));
                 }
                 logger.info("查询成功");
                 context.response().end(Json.encodePrettily(new JsonObject().put("code", 20000).put("repcode", 0).put("data", list)));

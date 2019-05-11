@@ -28,6 +28,7 @@ import io.vertx.ext.web.sstore.SessionStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -165,7 +166,34 @@ public class AccountHttpVerticle extends AbstractVerticle {
                 startFuture.fail(ar.cause());
             }
         });
+
+        //启动定时器
+        try {
+            logger.info("启动定时器start-------");
+            timer();
+            logger.info("启动定时器end---------");
+        }catch (Exception e){
+            logger.error("定时器出错-------------\n",e);
+        }
     }
+
+    /**
+     * 定时器
+     * @throws Exception
+     */
+    private void timer() throws Exception{
+        //6小时执行一次   1000L * 60 * 60 * 6
+        vertx.setPeriodic(1000L * 60 * 60 * 6, id -> {
+            logger.info("触发定时器，删除缓存文件，保持数据库连接----------");
+            dbService.fetchAllData("SELECT count(*) FROM advertisement.project;", sqlResult -> {
+                if (sqlResult.succeeded()){
+                    logger.info("数据库访问成功------------");
+                }
+                logger.info("定时器完成----------");
+            });
+        });
+    }
+
 
     /**
      * 修改个人密码
@@ -475,6 +503,8 @@ public class AccountHttpVerticle extends AbstractVerticle {
                 res.cause().printStackTrace();
             }
         });
+
+
     }
 
     /**

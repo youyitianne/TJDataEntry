@@ -71,13 +71,16 @@ public class SqlStatement {
     public static String DELETE_CHANNEL = "DELETE FROM `advertisement`.`channel`\n" +
             "WHERE `id` = ?;";
 
-    public static String SELECT_APP = "SELECT * FROM advertisement.appname;\n";
+    //public static String SELECT_APP = "SELECT * FROM advertisement.appname;\n";
+    public static String SELECT_APP="SELECT a.id,a.name,a.system,a.icon,a.project_guid,b.project_name FROM advertisement.appname a left join `advertisement`.`project` b on a.project_guid = b.project_guid;";
+
+    public static String SELECT_APP1="SELECT a.id,a.name,a.system,a.icon,a.project_guid,b.project_name project FROM advertisement.appname a left join `advertisement`.`project` b on a.project_guid = b.project_guid;";
 
     public static String INSERT_APP = "INSERT INTO `advertisement`.`appname`\n" +
             "(`name`,\n" +
             "`system`,\n" +
             "`icon`,\n" +
-            "`project`)\n" +
+            "`project_guid`)\n" +
             "VALUES( ?,? ,?,?);";
 
     public static String UPDATE_APP = "UPDATE `advertisement`.`appname`\n" +
@@ -85,7 +88,7 @@ public class SqlStatement {
             "`name` = ?,\n" +
             "`system` = ?,\n" +
             "`icon` = ?,\n" +
-            "`project` = ? \n" +
+            "`project_guid` = ? \n" +
             "WHERE `id` = ?;";
 
     public static String SELEECT_ADTYPE="SELECT * FROM advertisement.advertisingtype;\n";
@@ -120,17 +123,18 @@ public class SqlStatement {
             "where date >= ? and date <= ?;";
     public static String SELECT_MONDATA=" SELECT sum(`userdata`.`dau`) sumdau,sum(`userdata`.`dnu`) sumdnu FROM  `advertisement`.`userdata` where date >= ? and date < ?;";
 
-    public static String INSERT_PROJECT="INSERT INTO `advertisement`.`project`(`project_name`,`preheat`,`schedule`,`compete_good`,`version_plan`,`note`)VALUES(?,?,?,?,?,?);";
+    public static String INSERT_PROJECT="INSERT INTO `advertisement`.`project`(`project_name`,`preheat`,`schedule`,`compete_good`,`version_plan`,`note`,`project_guid`)VALUES(?,?,?,?,?,?,?);";
 
     public static String REPEAT_PROJECT="SELECT count(*) FROM advertisement.project where project_name= ? ;";
 
-    public static String INSERT_PROJECT_LIST="INSERT INTO `advertisement`.`project_list`(`project_name`,`package_name`,`channel`,`sdkguid`)VALUES ";
+    public static String INSERT_PROJECT_LIST="INSERT INTO `advertisement`.`project_list`(`project_guid`,`package_name`,`channel`,`sdkguid`)VALUES ";
 
     public static String SELECT_PROJECT="SELECT * FROM advertisement.project;";
 
-    public static String SELECT_PROJECT_LIST="SELECT * FROM advertisement.project_list;";
+    //public static String SELECT_PROJECT_LIST="SELECT * FROM advertisement.project_list;";
+    public static String SELECT_PROJECT_LIST="SELECT b.project_name,a.id,a.project_guid,a.package_name,a.channel,a.sdkguid FROM advertisement.project_list a left join `advertisement`.`project` b on a.project_guid=b.project_guid;";
 
-    public static String DELETE_PROJECT_LIST="DELETE FROM `advertisement`.`project_list` WHERE project_name= ? ;";
+    public static String DELETE_PROJECT_LIST="DELETE FROM `advertisement`.`project_list` WHERE project_guid= ? ;";
 
     public static String UPDATE_PROJECT="UPDATE `advertisement`.`project` SET `project_name` = ?,`preheat` = ?,`schedule` = ?,`compete_good` = ?,`version_plan` = ?,`note` = ? WHERE `id` = ?;";
 

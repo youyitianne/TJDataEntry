@@ -32,7 +32,9 @@ public final class ApkUtil {
     //比如你可以放在lib下
     //private String mAaptPath = "lib/aapt";  TJMission/bin/windows/aapt.exe
     //下面是linux下
-    private String mAaptPath = "bin"+File.separator+"windows"+File.separator+"aapt.exe";
+    private String linux_mAaptPath = "bin"+File.separator+"ubuntu"+File.separator+"aapt";
+    private String windows_mAaptPath = "TJMission"+File.separator+"bin"+File.separator+"windows"+File.separator+"aapt.exe";
+
 
     public ApkUtil() {
         mBuilder = new ProcessBuilder();
@@ -49,7 +51,24 @@ public final class ApkUtil {
     public ApkInfo getApkInfo(String apkPath) {
         ApkInfo apkInfo = null;
         try {
+            String mAaptPath="";
+            String osName = System.getProperty("os.name");
+            System.out.println(osName);
+            String [] cmds=null;
+            if (osName.startsWith("Mac OS")) {
+                // 苹果
+            } else if (osName.startsWith("Windows")) {
+                // windows
+                mAaptPath=windows_mAaptPath;
+            } else {
+                // unix or linux
+                mAaptPath=linux_mAaptPath;
+            }
             //通过命令调用aapt工具解析apk文件
+            File file=new File(mAaptPath);
+            if (file.exists()){
+                System.out.println("aapt位置已找到++++"+file.getPath());
+            }
             Process process = mBuilder.command(mAaptPath, "d", "badging", apkPath)
                     .start();
             InputStream is = null;
@@ -61,9 +80,12 @@ public final class ApkUtil {
                 throw new Exception("参数不正确，无法正常解析APK包。输出结果为:\n" + tmp + "...");
             }
             apkInfo = new ApkInfo();
+            System.out.println("++++++++++++++");
             do {
+                System.out.println(tmp);
                 setApkInfoProperty(apkInfo, tmp);
             } while ((tmp = br.readLine()) != null);
+            System.out.println("++++++++++++++++++++");
             process.destroy();
             closeIO(is);
             closeIO(br);
@@ -179,10 +201,20 @@ public final class ApkUtil {
     }
 
     public String getmAaptPath() {
+        String mAaptPath="";
+        String osName = System.getProperty("os.name");
+        System.out.println(osName);
+        String [] cmds=null;
+        if (osName.startsWith("Mac OS")) {
+            // 苹果
+        } else if (osName.startsWith("Windows")) {
+            // windows
+            mAaptPath=windows_mAaptPath;
+        } else {
+            // unix or linux
+            mAaptPath=linux_mAaptPath;
+        }
         return mAaptPath;
     }
 
-    public void setmAaptPath(String mAaptPath) {
-        this.mAaptPath = mAaptPath;
-    }
 }
